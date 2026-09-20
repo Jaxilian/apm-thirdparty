@@ -1,0 +1,4 @@
+*.apkg binary
+*.tar.gz binary
+*.zip binary
+*.minisig -diff
