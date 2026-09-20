@@ -1,0 +1,57 @@
+# Visual Studio Code, from Microsoft's own download: a vendor binary. The
+# recipe unpacks it and writes one wrapper, bin/code, which runs the
+# editor through the GTK3 runtime's gtk3-run with Electron told to use
+# Wayland. Nothing in the tarball is modified. The URL carries the
+# build's hash, so it is stable, and Microsoft's update API publishes the
+# checksum, so a version bump is a text edit.
+#
+# Proprietary: Microsoft Software License Terms. Fetched from Microsoft,
+# never mirrored. The Chromium sandbox works through user namespaces on
+# AOS, so chrome-sandbox needs no setuid bit and --no-sandbox is not passed.
+
+recipe_version = 1
+
+[package]
+name         = "vscode"
+organization = "microsoft"
+version      = "1.138.0"
+release      = 1
+kind         = "app"
+summary      = "Visual Studio Code"
+license      = "LicenseRef-Microsoft-Software-License-Terms"
+homepage     = "https://code.visualstudio.com/"
+
+[[source]]
+url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/7debcd0e2acdea1c52de81bf9ee1620444407dda/code-stable-x64-1789458585.tar.gz"
+sha256 = "59fb0f88eab2fe2e3a053ac020e18fcb2b5c113d255e41c82d26302b675d580c"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["code"]
+
+[launcher]
+name       = "Visual Studio Code"
+comment    = "Code editing, redefined"
+exec       = "bin/code"
+icon       = "vscode/resources/app/resources/linux/code.png"
+categories = ["Development", "IDE"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/vscode $D/bin
+cp -a $APM_SRC/. $D/vscode/
+cat > $D/bin/code <<WRAP
+#!/bin/sh
+# Visual Studio Code on the GTK3 runtime, on Wayland.
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
+exec /opt/apm/bin/gtk3-run $APM_PREFIX/vscode/bin/code "\$@"
+WRAP
+chmod 755 $D/bin/code
+'''
