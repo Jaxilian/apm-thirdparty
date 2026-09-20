@@ -15,7 +15,7 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.138.0"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -50,8 +50,7 @@ cp -a $APM_SRC/. $D/vscode/
 cat > $D/bin/code <<WRAP
 #!/bin/sh
 # Visual Studio Code on the GTK3 runtime, on Wayland.
-export ELECTRON_OZONE_PLATFORM_HINT=wayland
-exec /opt/apm/bin/gtk3-run $APM_PREFIX/vscode/bin/code "\$@"
+exec /opt/apm/bin/gtk3-run $APM_PREFIX/vscode/bin/code --ozone-platform=wayland "\$@"
 WRAP
 chmod 755 $D/bin/code
 '''
