@@ -1,0 +1,69 @@
+# Discord. What Discord publishes for Linux is a 2 MB bootstrap, not the
+# application: updater_bootstrap fetches the current build into the
+# account's own $XDG_CONFIG_HOME/discord at first start, and the
+# application updates itself there from then on. That is Discord's own
+# model on every platform, so this recipe ships the bootstrap and nothing
+# else; the checksum pins the bootstrap, the application is whatever
+# Discord serves. The vendor's discord script is not used: it insists on
+# zenity for its progress window when stdout is not a terminal, and AOS
+# has no zenity. bin/discord does the same three steps without it, and
+# runs the application through the GTK3 runtime with Electron on Wayland.
+#
+# Proprietary: Discord Terms of Service. Fetched from Discord, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "discord"
+organization = "discord"
+version      = "1.0.159"
+release      = 1
+kind         = "app"
+summary      = "Discord voice and text chat"
+license      = "LicenseRef-Discord-Terms-of-Service"
+homepage     = "https://discord.com/"
+
+[[source]]
+url    = "https://stable.dl2.discordapp.net/apps/linux/1.0.159/discord-1.0.159.tar.gz"
+sha256 = "bdc731ee87a59cff44f843e7c477971d1cc5c58dd60b025a94d6c611ef9400a1"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["discord"]
+
+[launcher]
+name       = "Discord"
+comment    = "All-in-one voice and text chat"
+exec       = "bin/discord"
+icon       = "discord/discord.png"
+categories = ["Network", "InstantMessaging"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/discord $D/bin
+install -m 755 $APM_SRC/updater_bootstrap $D/discord/updater_bootstrap
+install -m 644 $APM_SRC/discord.png $D/discord/discord.png
+cat > $D/bin/discord <<WRAP
+#!/bin/sh
+# Discord: the bootstrap fetches the application into the account's
+# config directory the first time, then the application runs from there.
+# Same steps as Discord's own launcher script, without its zenity window.
+cfg=\${XDG_CONFIG_HOME:-\$HOME/.config}
+if [ ! -x "\$cfg/discord/Discord" ]; then
+	mkdir -p "\$cfg/discord" || exit 1
+	app_dir=\$($APM_PREFIX/discord/updater_bootstrap --no-zenity "\$cfg/discord" stable https://updates.discord.com/) || {
+		echo "discord: the bootstrap failed to fetch the application" >&2; exit 2; }
+	exec /opt/apm/bin/gtk3-run "\$cfg/discord/\$app_dir/Discord" --ozone-platform=wayland "\$@"
+fi
+exec /opt/apm/bin/gtk3-run "\$cfg/discord/Discord" --ozone-platform=wayland "\$@"
+WRAP
+chmod 755 $D/bin/discord
+'''
