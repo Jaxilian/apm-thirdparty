@@ -33,7 +33,7 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 4
+release      = 5
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
@@ -83,6 +83,13 @@ cat > $D/bin/steam <<WRAP
 # runtime imports are the OS's. The 64-bit client: opted into the client
 # beta once, by name, and asked for by STEAM_FORCE_CLIENT; steam.sh
 # honours both.
+# The compositor starts XWayland when a session begins and finds it
+# installed; a session older than the install has no DISPLAY yet.
+if [ -z "\$DISPLAY" ]; then
+	echo "steam: no X11 display in this session. XWayland was installed after the session" >&2
+	echo "started; log out and back in (or reboot), then start Steam again." >&2
+	exit 1
+fi
 d=\${XDG_DATA_HOME:-\$HOME/.local/share}/Steam
 [ -f "\$d/package/beta" ] || { mkdir -p "\$d/package" && echo publicbeta > "\$d/package/beta"; }
 export STEAM_FORCE_CLIENT=steamrt64
