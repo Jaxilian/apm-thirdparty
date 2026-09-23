@@ -1,0 +1,92 @@
+# Steam. Valve's launcher package for Linux, as Valve publishes it: the
+# bin_steam.sh script and, beside it where the script looks, the client
+# bootstrap and its scout runtime. The client fetches its updates into the
+# account's home and runs from there, as Steam does on every distribution.
+#
+# The client that runs is the 64-bit one. Valve ships two in the package:
+# the ubuntu12_32 client, a 32-bit binary that wants a 32-bit libGL, X11
+# libraries and a libnsl.so.1 glibc no longer builds, and the "SteamRT3"
+# client, 64-bit, in its own container runtime, which is where Valve is
+# going (the Windows client went 64-bit in 2025). steam.sh starts the
+# latter when STEAM_FORCE_CLIENT says so and the account is opted into the
+# client beta, which is a name in package/beta; bin/steam writes that file
+# once and sets the variable. What the host still provides is X11 --
+# runtime/xwayland, started by the compositor -- with the OS's own libGL
+# for the container to import. And a 32-bit glibc, runtime/compat32,
+# for one thing only: the bootstrap's updater, the program that fetches
+# the client package the 64-bit client is in, is still a 32-bit binary,
+# and steam.sh will not run it without 32-bit libraries. Once the package
+# is down, steam.sh starts the 64-bit client and the 32-bit one is never
+# used again.
+#
+# steamdeps is not installed: it is Valve's hook for apt, in Python, and
+# bin_steam.sh runs it only when it is executable.
+#
+# Proprietary: Steam Subscriber Agreement. Fetched from Valve, never
+# mirrored. The version is Valve's launcher package version, not the
+# client's, which updates itself -- Valve's 1.0.0.87 written as 1.0.87,
+# since a version here has three parts.
+
+recipe_version = 1
+
+[package]
+name         = "steam"
+organization = "valve"
+version      = "1.0.87"
+release      = 4
+kind         = "app"
+summary      = "Steam"
+license      = "LicenseRef-Steam-Subscriber-Agreement"
+homepage     = "https://store.steampowered.com/"
+
+[[source]]
+url    = "https://repo.steampowered.com/steam/archive/stable/steam_1.0.0.87.tar.gz"
+sha256 = "649375d2f9377f8009aaf3e2ff09978041eb9114897d9c5a3886f1d82e27ba1f"
+strip  = 1
+
+# The 32-bit glibc the bootstrap's updater runs on; see above.
+[[dependencies]]
+name         = "compat32"
+organization = "runtime"
+track        = "*"
+
+# The client is X11-only; installing this is what makes the compositor
+# start an X server at the next session.
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["steam"]
+
+[launcher]
+name       = "Steam"
+comment    = "Games, and the friends to play them with"
+exec       = "bin/steam"
+icon       = "steam/icons/256/steam.png"
+categories = ["Game"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/steam/icons $D/bin
+install -m 755 $APM_SRC/bin_steam.sh $D/steam/bin_steam.sh
+install -m 644 $APM_SRC/bootstraplinux_ubuntu12_32.tar.xz $D/steam/bootstraplinux_ubuntu12_32.tar.xz
+cp -a $APM_SRC/icons/. $D/steam/icons/
+cat > $D/bin/steam <<WRAP
+#!/bin/sh
+# Steam in the sandbox: a 32-bit glibc at /lib for the bootstrap's
+# updater, this package, the account's home, the session's sockets, the
+# GPU. Nothing else of the store; libGL and the drivers the container
+# runtime imports are the OS's. The 64-bit client: opted into the client
+# beta once, by name, and asked for by STEAM_FORCE_CLIENT; steam.sh
+# honours both.
+d=\${XDG_DATA_HOME:-\$HOME/.local/share}/Steam
+[ -f "\$d/package/beta" ] || { mkdir -p "\$d/package" && echo publicbeta > "\$d/package/beta"; }
+export STEAM_FORCE_CLIENT=steamrt64
+exec /usr/bin/aos-sandbox --lib32 runtime/compat32 --package runtime/compat32 --package valve/steam -- $APM_PREFIX/steam/bin_steam.sh "\$@"
+WRAP
+chmod 755 $D/bin/steam
+'''
