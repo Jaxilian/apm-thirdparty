@@ -33,7 +33,7 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 5
+release      = 6
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
@@ -83,11 +83,17 @@ cat > $D/bin/steam <<WRAP
 # runtime imports are the OS's. The 64-bit client: opted into the client
 # beta once, by name, and asked for by STEAM_FORCE_CLIENT; steam.sh
 # honours both.
-# The compositor starts XWayland when a session begins and finds it
-# installed; a session older than the install has no DISPLAY yet.
+# The compositor starts XWayland when it finds it installed, at the
+# session's start or within seconds of the install; a shell older than
+# the start did not inherit DISPLAY, and the socket names the display.
 if [ -z "\$DISPLAY" ]; then
-	echo "steam: no X11 display in this session. XWayland was installed after the session" >&2
-	echo "started; log out and back in (or reboot), then start Steam again." >&2
+	for s in /tmp/.X11-unix/X*; do
+		[ -S "\$s" ] && export DISPLAY=":\${s##*/X}" && break
+	done
+fi
+if [ -z "\$DISPLAY" ]; then
+	echo "steam: no X11 display. runtime/xwayland is installed with Steam and the desktop" >&2
+	echo "starts it within seconds; if it was just installed, start Steam again." >&2
 	exit 1
 fi
 d=\${XDG_DATA_HOME:-\$HOME/.local/share}/Steam
