@@ -6,6 +6,14 @@
 # tarball; GTK3, fontconfig, dbus, ALSA and the X11 libraries Firefox
 # still links come from the runtime.
 #
+# One default preference is added. Firefox's content processes run in
+# a sandbox that lets them read fonts only from the directories Firefox
+# knows by name (/usr/share/fonts and a few others); it does not read
+# fontconfig's configuration to learn more. AOS keeps its fonts and the
+# runtime under /opt/apm, so pages rendered as hex boxes while the
+# browser's own chrome, drawn by the unsandboxed parent, was fine. The
+# read whitelist opens the store to the content processes, read-only.
+#
 # Mozilla Public License 2.0, with Mozilla's trademarks on the name and
 # logo; distributing the unmodified official build is what the trademark
 # policy allows. Fetched from Mozilla, never mirrored.
@@ -16,7 +24,7 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "156.0.0"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -48,6 +56,10 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/firefox $D/bin
 cp -a $APM_SRC/. $D/firefox/
+cat > $D/firefox/defaults/pref/aos.js <<PREF
+// AOS: the content sandbox may read the package store (fonts, runtime).
+pref("security.sandbox.content.read_path_whitelist", "/opt/apm/");
+PREF
 cat > $D/bin/firefox <<WRAP
 #!/bin/sh
 # Firefox on the GTK3 runtime, on Wayland. MOZ_ENABLE_WAYLAND is the
