@@ -29,6 +29,12 @@ for r in recipes/*/*/recipe.toml; do
 	cp "$r" "index/$(basename "$(dirname "$r")").recipe.toml"
 done
 
+# Icons for the store, named <org>.<name>.svg or .png: `apm index` puts
+# each in the index's meta.tsv with its hash, and they upload with the rest.
+for i in icons/*; do
+	[ -f "$i" ] && cp "$i" index/
+done
+
 "$APM" index index --sign
 [ "$1" = --local ] && exit 0
 
