@@ -72,7 +72,7 @@ cat > $D/bin/firefox <<WRAP
 # Firefox on the GTK3 runtime, on Wayland. MOZ_ENABLE_WAYLAND is the
 # switch; without it GDK would look for an X display and find none.
 export MOZ_ENABLE_WAYLAND=1
-exec /opt/apm/bin/gtk3-run $APM_PREFIX/firefox/firefox "\$@"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/firefox/firefox "\$@"
 WRAP
 chmod 755 $D/bin/firefox
 '''

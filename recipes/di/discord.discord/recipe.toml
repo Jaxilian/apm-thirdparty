@@ -66,9 +66,9 @@ if [ ! -x "\$cfg/discord/Discord" ]; then
 	mkdir -p "\$cfg/discord" || exit 1
 	app_dir=\$($APM_PREFIX/discord/updater_bootstrap --no-zenity "\$cfg/discord" stable https://updates.discord.com/) || {
 		echo "discord: the bootstrap failed to fetch the application" >&2; exit 2; }
-	exec /opt/apm/bin/gtk3-run "\$cfg/discord/\$app_dir/Discord" --ozone-platform=wayland "\$@"
+	exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "\$cfg/discord/\$app_dir/Discord" --ozone-platform=wayland "\$@"
 fi
-exec /opt/apm/bin/gtk3-run "\$cfg/discord/Discord" --ozone-platform=wayland "\$@"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "\$cfg/discord/Discord" --ozone-platform=wayland "\$@"
 WRAP
 chmod 755 $D/bin/discord
 '''
