@@ -15,7 +15,7 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.138.0"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -33,6 +33,11 @@ track        = "*"
 
 [provides]
 command = ["code"]
+
+# An editor opens the person's projects wherever they are: the whole
+# home. The sandbox still hides the rest of the store, /var and /root.
+[sandbox]
+home = "full"
 
 [launcher]
 name       = "Visual Studio Code"

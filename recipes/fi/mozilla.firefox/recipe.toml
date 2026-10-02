@@ -24,7 +24,7 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "156.0.0"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -42,6 +42,13 @@ track        = "*"
 
 [provides]
 command = ["firefox"]
+
+# What Firefox sees of the person's files: a home of its own and
+# Downloads. Its profile lives in ~/.var/app/mozilla.firefox from this
+# release; a profile made by an earlier release stays in ~/.mozilla.
+[sandbox]
+home  = "private"
+share = ["Downloads"]
 
 [launcher]
 name       = "Firefox"
