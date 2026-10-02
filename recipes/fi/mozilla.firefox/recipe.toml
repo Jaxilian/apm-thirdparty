@@ -24,7 +24,7 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "156.0.0"
-release      = 4
+release      = 5
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -67,6 +67,21 @@ cat > $D/firefox/defaults/pref/aos.js <<PREF
 // AOS: the content sandbox may read the package store (fonts, runtime).
 pref("security.sandbox.content.read_path_whitelist", "/opt/apm/");
 PREF
+# Enterprise policies, read from the install directory: no telemetry, no
+# studies, no first-run or terms page (AOS sends nothing anywhere, and
+# apm updates the package, not Firefox itself).
+install -d $D/firefox/distribution
+cat > $D/firefox/distribution/policies.json <<POL
+{ "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisableAppUpdate": true,
+    "DontCheckDefaultBrowser": true,
+    "SkipTermsOfUse": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": ""
+} }
+POL
 cat > $D/bin/firefox <<WRAP
 #!/bin/sh
 # Firefox on the GTK3 runtime, on Wayland. MOZ_ENABLE_WAYLAND is the
