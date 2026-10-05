@@ -33,7 +33,7 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 6
+release      = 7
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
@@ -57,6 +57,14 @@ name         = "xwayland"
 organization = "runtime"
 track        = "*"
 
+# The declaration apm runs the program under (docs/security-model.md in
+# the OS tree): the whole home -- the game library lives in it -- and the
+# 32-bit glibc at /lib for the bootstrap's updater. Software shows it and
+# lets the person change what it sees.
+[sandbox]
+home  = "full"
+lib32 = "runtime/compat32"
+
 [provides]
 command = ["steam"]
 
@@ -77,12 +85,11 @@ install -m 644 $APM_SRC/bootstraplinux_ubuntu12_32.tar.xz $D/steam/bootstraplinu
 cp -a $APM_SRC/icons/. $D/steam/icons/
 cat > $D/bin/steam <<WRAP
 #!/bin/sh
-# Steam in the sandbox: a 32-bit glibc at /lib for the bootstrap's
-# updater, this package, the account's home, the session's sockets, the
-# GPU. Nothing else of the store; libGL and the drivers the container
-# runtime imports are the OS's. The 64-bit client: opted into the client
-# beta once, by name, and asked for by STEAM_FORCE_CLIENT; steam.sh
-# honours both.
+# Inside the sandbox apm's farm entry made from the [sandbox] section (a
+# 32-bit glibc at /lib for the bootstrap's updater, this package and its
+# dependencies, the account's home, the session's sockets, the GPU). The
+# 64-bit client: opted into the client beta once, by name, and asked for
+# by STEAM_FORCE_CLIENT; steam.sh honours both.
 # The compositor starts XWayland when it finds it installed, at the
 # session's start or within seconds of the install; a shell older than
 # the start did not inherit DISPLAY, and the socket names the display.
@@ -99,7 +106,7 @@ fi
 d=\${XDG_DATA_HOME:-\$HOME/.local/share}/Steam
 [ -f "\$d/package/beta" ] || { mkdir -p "\$d/package" && echo publicbeta > "\$d/package/beta"; }
 export STEAM_FORCE_CLIENT=steamrt64
-exec /usr/bin/aos-sandbox --lib32 runtime/compat32 --package runtime/compat32 --package valve/steam -- $APM_PREFIX/steam/bin_steam.sh "\$@"
+exec $APM_PREFIX/steam/bin_steam.sh "\$@"
 WRAP
 chmod 755 $D/bin/steam
 '''
