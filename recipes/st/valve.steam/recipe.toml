@@ -33,7 +33,7 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 7
+release      = 8
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
@@ -64,6 +64,9 @@ track        = "*"
 [sandbox]
 home  = "full"
 lib32 = "runtime/compat32"
+# Voice chat: the microphone from the start; Software's Permissions
+# switch it off.
+microphone = true
 
 [provides]
 command = ["steam"]

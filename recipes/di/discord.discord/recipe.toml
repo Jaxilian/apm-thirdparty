@@ -18,7 +18,7 @@ recipe_version = 1
 name         = "discord"
 organization = "discord"
 version      = "1.0.159"
-release      = 3
+release      = 4
 kind         = "app"
 summary      = "Discord voice and text chat"
 license      = "LicenseRef-Discord-Terms-of-Service"
@@ -41,6 +41,9 @@ command = ["discord"]
 [sandbox]
 home  = "private"
 share = ["Downloads"]
+# Voice and video calls: the microphone from the start; Software's
+# Permissions switch it off.
+microphone = true
 
 [launcher]
 name       = "Discord"

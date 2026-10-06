@@ -24,7 +24,7 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "156.0.0"
-release      = 5
+release      = 6
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -49,6 +49,9 @@ command = ["firefox"]
 [sandbox]
 home  = "private"
 share = ["Downloads"]
+# Voice and video calls: the microphone from the start; Software's
+# Permissions switch it off.
+microphone = true
 
 [launcher]
 name       = "Firefox"
