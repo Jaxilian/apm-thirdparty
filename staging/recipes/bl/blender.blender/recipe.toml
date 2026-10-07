@@ -1,0 +1,86 @@
+# Blender, from the Blender Foundation's release directory: the official
+# Linux tarball, unpacked as it is, with its own Python, libraries and
+# Cycles kernels. It draws natively on Wayland (ade offers server-side
+# decorations, so libdecor is not needed) with OpenGL or Vulkan from the
+# system's Mesa or NVIDIA driver.
+#
+# Two kinds of library come from elsewhere. The X client libraries Blender
+# links are the GTK3 runtime's, through gtk3-run. And its USD library
+# links libXt, libSM and libICE, which neither the runtime nor AOS has;
+# those come from Debian 13's archive as further sources, by the exact
+# versions and checksums of Debian's index, into lib/ here. What Blender
+# names and does not find -- CUDA, HIP, oneAPI, ncurses for Python's
+# curses -- it loads only when asked and does without.
+#
+# The Foundation publishes blender-<version>.sha256 beside each release;
+# a bump is two text edits. GPL-2.0-or-later; the libXt/SM/ICE libraries
+# are MIT/X11. Fetched from the Foundation and Debian, unmodified.
+
+recipe_version = 1
+
+[package]
+name         = "blender"
+organization = "blender"
+version      = "5.2.2"
+release      = 1
+kind         = "app"
+summary      = "Blender 3D creation suite"
+license      = "GPL-2.0-or-later AND MIT"
+homepage     = "https://www.blender.org/"
+
+[[source]]
+url    = "https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz"
+sha256 = "84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168"
+strip  = 1
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libx/libxt/libxt6t64_1.2.1-1.2+b2_amd64.deb"
+sha256 = "a1f4557c03113681ee24863495adc244cecec95fe3ab7256ce76e87320157300"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libs/libsm/libsm6_1.2.6-1_amd64.deb"
+sha256 = "03038b3002e6f44322554e335d60d8ff87acfcf2e21c904b6866610a9913ee00"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libi/libice/libice6_1.1.1-1_amd64.deb"
+sha256 = "38185997162793b5dfb768644badc57852879784a2f9d83c6c4e47efa5e36698"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["blender"]
+
+# A creative tool opens and saves the person's files wherever they are:
+# the whole home. The sandbox still hides the rest of the store, /var and
+# /root.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "Blender"
+comment    = "3D modelling, animation, rendering and more"
+exec       = "bin/blender"
+icon       = "blender/blender.svg"
+categories = ["Graphics", "3DGraphics"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/blender $D/lib $D/bin
+cp -a $APM_SRC/. $D/blender/
+for s in $APM_SOURCE_2 $APM_SOURCE_3 $APM_SOURCE_4; do
+	cp -a $s/usr/lib/x86_64-linux-gnu/*.so* $D/lib/
+done
+cat > $D/bin/blender <<WRAP
+#!/bin/sh
+# Blender on Wayland, the X client libraries from the GTK3 runtime and
+# libXt/SM/ICE from this package.
+export LD_LIBRARY_PATH="$APM_PREFIX/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/blender/blender "\$@"
+WRAP
+chmod 755 $D/bin/blender
+'''
