@@ -24,9 +24,18 @@ both.
 ## What goes here
 
 The GTK3 runtime and what runs on it; Electron applications (VS Code,
-Discord, Spotify); Firefox; Steam, when a 32-bit userspace exists. Vendor
-binaries are never mirrored: a recipe points at the vendor's own download
-and pins its checksum.
+Discord, Spotify); Firefox and Chrome; Steam and Lutris; the creative
+tools people ask for (Blender, Krita, Inkscape); and the Python runtime
+Lutris runs on. Vendor binaries are never mirrored: a recipe points at
+the vendor's own download and pins its checksum.
+
+`staging/` holds recipes that are written and tested but not published:
+Chrome, Spotify, Blender, Krita, Inkscape and Lutris fetch `.deb` files
+or AppImages, which apm reads from v0.1.13 on, so they go into the index
+with the AOS release that carries that apm (`git mv staging/recipes/<xx>
+recipes/`, the icon beside it, `runtime-python.sh` from the OS tree for
+Lutris's runtime, then `./publish.sh`). `apps-test.py` installs each of
+them on the live ISO in QEMU and screendumps it.
 
 Layout, publishing and the rules for a recipe are as in
 [apm-recipes](https://github.com/Jaxilian/apm-recipes#layout).
