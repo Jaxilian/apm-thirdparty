@@ -5,15 +5,23 @@
 # launcher finds both without an install step. It runs on Python and the
 # GObject bindings of runtime/python, and GTK3 of runtime/gtk3.
 #
-# One file is changed. Lutris imports its web sign-in dialog (GOG, Epic,
-# EA, Ubisoft accounts) at startup, and that dialog requires WebKitGTK,
-# which AOS does not carry -- it is a browser engine of its own. The
-# import is made optional: Lutris starts, installs and runs games, and
-# only the sign-in to those stores is unavailable. Nothing else is
-# patched.
+# Two lines are changed. Lutris imports its web sign-in dialog (GOG,
+# Epic, EA, Ubisoft accounts) at startup, and that dialog requires
+# WebKitGTK, which AOS does not carry -- it is a browser engine of its
+# own. The import is made optional: Lutris starts, installs and runs
+# games, and only the sign-in to those stores is unavailable. And a tool
+# Lutris looks up and does not find (xrandr) is run as None, which its
+# command runner did not expect; it now counts as a failed command (see
+# prepare). Nothing else is patched.
 #
 # Games run on Wine or Proton builds that Lutris downloads into the
 # person's home itself; those are X11 programs, hence runtime/xwayland.
+# Known limit: Lutris unpacks parts of its own runtime with 7z, and also
+# wants cabextract, unzip, glxinfo and vulkaninfo for some installers;
+# AOS has none of them, so "Runtime update failed: 7z" is logged at start
+# and those installers fail until a runtime/gametools package carries
+# them (p7zip, unzip, mesa3d-demos and vulkan-tools are Buildroot
+# packages; cabextract is not).
 #
 # GPL-3.0-or-later. Fetched from GitHub, never mirrored.
 
@@ -76,6 +84,13 @@ try:\
 except (ValueError, ImportError):\
     WebKit2 = None  # AOS has no WebKitGTK: the web sign-in dialogs are unavailable' usr/lib/python3/dist-packages/lutris/gui/dialogs/webconnect_dialog.py
 grep -q '^    WebKit2 = None' usr/lib/python3/dist-packages/lutris/gui/dialogs/webconnect_dialog.py
+# The display list comes from xrandr, which AOS has not (an X11 tool, and
+# Wayland lets no program switch the resolution anyway). Lutris looks the
+# tool up and passes None where it found nothing; the shared command
+# runner treats that like a tool that failed, so the window comes up
+# with an empty display list instead of not at all.
+sed -i 's/    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as ex:/    except (OSError, TypeError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as ex:/' usr/lib/python3/dist-packages/lutris/util/system.py
+grep -q 'OSError, TypeError' usr/lib/python3/dist-packages/lutris/util/system.py
 '''
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
