@@ -102,7 +102,9 @@ def main():
                             cwd=www, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     cmd = bt.qemu_command()
     cmd[cmd.index("-m") + 1] = "10G"
-    q = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    # QEMU's own words (a watchdog reset, a guest crash) go to qemu.log.
+    qemu_log = open(os.path.join(WORK, "qemu.log"), "w")
+    q = subprocess.Popen(cmd, stdout=qemu_log, stderr=subprocess.STDOUT)
     results = {}
     try:
         ser = bt.Serial(bt.SER, os.path.join(WORK, "apps.serial.txt"))
@@ -111,8 +113,20 @@ def main():
             return False
         ser.send("root\n")
         ser.read_until(b"# ", 30)
-        ser.send("stty -echo cols 200 rows 50; export SYSTEMD_PAGER= PAGER=cat\n")
-        ser.read_until(b"# ", 10)
+        # Echo must be off: an echoed command line carries the completion
+        # marker, and `run` would return it with nothing in it. The shell
+        # is not always ready for the first stty, so prove it with a value
+        # the echoed line cannot contain and try again until it holds.
+        for _ in range(6):
+            ser.send("stty -echo cols 200 rows 50; export SYSTEMD_PAGER= PAGER=cat\n")
+            ser.read_until(b"# ", 10)
+            ser.read_until(b"__drain__", 1)
+            if "42" in ser.run("echo $((6*7))"):
+                break
+            ser.read_until(b"__drain__", 2)
+        else:
+            print("!! the serial shell keeps echoing; aborting")
+            return False
         for _ in range(60):
             if "ade-comp" in ser.run("pgrep -x ade-comp >/dev/null && echo ade-comp"):
                 break
@@ -128,8 +142,12 @@ def main():
             "/aos/t/apm update --force 2>&1; df -h /aos | tail -1"
             % (HTTP_PORT, HTTP_PORT, HTTP_PORT), timeout=300)
         print("$ setup\n%s" % setup)
+        updated = lambda text, repo: any(line.startswith(repo) and "updated" in line for line in text.split("\n"))
+        if not all(updated(setup, r) for r in ("main", "thirdparty", "newapps")):
+            setup = ser.run("/aos/t/apm update --force 2>&1", timeout=300)
+            print("$ update again\n%s" % setup)
         for repo in ("main", "thirdparty", "newapps"):
-            if not any(line.startswith(repo) and "updated" in line for line in setup.split("\n")):
+            if not updated(setup, repo):
                 print("!! repository %s was not updated; aborting" % repo)
                 return False
         before = bt.shot("apps-before")
@@ -144,11 +162,19 @@ def main():
             ser.run("printf '#!/bin/sh\\nexec >/tmp/%s.log 2>&1\\nexec /opt/apm/bin/%s\\n' > /tmp/run-%s.sh; chmod 755 /tmp/run-%s.sh; "
                     "su -s /bin/sh admin -c 'export %s; setsid /tmp/run-%s.sh &' </dev/null"
                     % (name, command, name, name, ENV.replace(" ", "; export "), name))
-            time.sleep(45)
+            # 45 s in nine steps, the log's tail each time: when the VM
+            # dies with the app, the serial transcript still has the last
+            # thing it said.
+            for _ in range(9):
+                time.sleep(5)
+                print(ser.run("tail -2 /tmp/%s.log | cut -c1-160; dmesg | tail -1 | cut -c1-160" % name).replace("virtio_gpu: driver missing", "").strip())
             alive = ser.run("pgrep -f '%s' >/dev/null && echo ALIVE || echo DEAD" % proc)
             log = ser.run("cut -c1-180 /tmp/%s.log | grep -v 'virtio_gpu: driver missing' | tail -%d" % (name, 15 if "ALIVE" in alive else 80))
             shot = bt.shot("apps-%s" % name)
-            changed = shot is not None and before is not None and shot[1] != before[1]
+            # Below the bar: its clock changes the top rows on its own.
+            # The VGA output is 1280x800 RGB; the bar is the top 30 rows.
+            bar = 30 * 1280 * 3
+            changed = shot is not None and before is not None and shot[1][bar:] != before[1][bar:]
             print("%s\n-- log tail:\n%s" % (alive.strip(), log))
             results[name] = "ok" if "ALIVE" in alive and changed else ("running, screen unchanged" if "ALIVE" in alive else "died")
             ser.run("for p in $(pgrep -u admin); do kill $p 2>/dev/null; done; sleep 3; "
