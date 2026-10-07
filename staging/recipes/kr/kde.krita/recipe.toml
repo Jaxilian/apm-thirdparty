@@ -1,0 +1,85 @@
+# Krita, from KDE's download server: the official AppImage, which apm
+# fetches as it is (an ELF source arrives executable, apm v0.1.13) and
+# the recipe extracts with the AppImage's own --appimage-extract -- its
+# runtime is static and needs no FUSE. Krita 6 is Qt 6 and draws on
+# Wayland with the Qt Wayland plugin it carries, which the wrapper asks
+# for (Qt would try X11 first).
+#
+# The wrapper sets APPDIR and FONTCONFIG_FILE, which the AppImage runtime
+# or the build machine would otherwise provide (see bin/krita below).
+#
+# One file of the AppImage is removed: its own libsystemd, built with
+# libgcrypt, whose libgpg-error the AppImage leaves to the host and AOS
+# does not have. Without it the loader takes AOS's own libsystemd, which
+# is newer and needs neither. Everything else runs as KDE built it,
+# through the AppImage's AppRun.
+#
+# The version is KDE's 6.0.4.1 (a hotfix of 6.0.4) without its fourth
+# part, since a version here has three. KDE signs its AppImages with GPG
+# (.sig beside each) and publishes no checksum file; the sha256 here is
+# of the file as downloaded on 2026-10-07. GPL-3.0-or-later. Fetched from
+# KDE, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "krita"
+organization = "kde"
+version      = "6.0.4"
+release      = 1
+kind         = "app"
+summary      = "Krita digital painting"
+license      = "GPL-3.0-or-later"
+homepage     = "https://krita.org/"
+
+[[source]]
+url    = "https://download.kde.org/stable/krita/6.0.4.1/krita-6.0.4.1-x86_64.AppImage"
+sha256 = "9ab5a78927c7369f8665df4d85f186fcbae46501968715aac0685776e1399f91"
+
+# The AppImage brings its own toolkit but reads the machine's fonts
+# through /usr/share/fonts, which on AOS is the aos/fonts package.
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["krita"]
+
+# Paintings live wherever the person keeps them: the whole home.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "Krita"
+comment    = "Digital painting"
+exec       = "bin/krita"
+icon       = "krita/krita.png"
+categories = ["Graphics", "2DGraphics", "RasterGraphics"]
+terminal   = false
+
+[build]
+prepare = '''
+./krita-6.0.4.1-x86_64.AppImage --appimage-extract >/dev/null
+rm -f squashfs-root/usr/lib/libsystemd.so*
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/krita $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/krita/
+cat > $D/bin/krita <<WRAP
+#!/bin/sh
+# Krita as KDE ships it: AppRun sets its own loader path and starts it.
+# Qt picks X11 first when told nothing; Krita carries the Wayland plugin.
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland}"
+# What the AppImage runtime would set: Krita's Python plugin takes its
+# PYTHONHOME from APPDIR (without it the bundled interpreter finds no
+# standard library and Krita aborts), and the bundled fontconfig has a
+# build machine's path compiled in, so the machine's configuration is
+# named outright; it reads /usr/share/fonts, the aos/fonts package.
+export APPDIR=$APM_PREFIX/krita
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/krita/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/krita
+'''
