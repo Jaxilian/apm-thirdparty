@@ -1,0 +1,69 @@
+# Google Chrome, from Google's own apt pool: the .deb Google publishes,
+# unpacked (apm reads a .deb since v0.1.13), with one wrapper that runs
+# Chrome's own launcher script through the GTK3 runtime on Wayland. NSS,
+# NSPR, CUPS and the X client libraries Chrome links come from the
+# runtime; nothing in the package is modified.
+#
+# The version is Google's 155.0.8059.39 written as 155.8059.39, since a
+# version here has three parts and the 0 never moves. Google keeps only
+# the current release in its pool, so the URL stops working when Chrome
+# moves on: bump it from
+# https://dl.google.com/linux/chrome/deb/dists/stable/main/binary-amd64/Packages
+# (Filename and SHA256 of google-chrome-stable).
+#
+# Proprietary: Google Chrome Terms of Service. Fetched from Google, never
+# mirrored. Chrome does not update itself on Linux (that is apt's job
+# there, apm's here). The Chromium sandbox works through user namespaces,
+# as for VS Code, so chrome-sandbox needs no setuid bit.
+
+recipe_version = 1
+
+[package]
+name         = "chrome"
+organization = "google"
+version      = "155.8059.39"
+release      = 1
+kind         = "app"
+summary      = "Google Chrome web browser"
+license      = "LicenseRef-Google-Chrome-Terms-of-Service"
+homepage     = "https://www.google.com/chrome/"
+
+[[source]]
+url    = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_155.0.8059.39-1_amd64.deb"
+sha256 = "c58aa0f2cd66179c9f050e062c882d27aa9b9f8c2b7c73fee3498560b5ed0b38"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["google-chrome"]
+
+# As Firefox: a home of its own and Downloads; the microphone for calls,
+# which Software's Permissions switch off.
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+
+[launcher]
+name       = "Google Chrome"
+comment    = "Browse the web"
+exec       = "bin/google-chrome"
+icon       = "chrome/product_logo_256.png"
+categories = ["Network", "WebBrowser"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/chrome $D/bin
+cp -a $APM_SRC/opt/google/chrome/. $D/chrome/
+cat > $D/bin/google-chrome <<WRAP
+#!/bin/sh
+# Google Chrome on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/chrome/google-chrome --ozone-platform=wayland "\$@"
+WRAP
+chmod 755 $D/bin/google-chrome
+'''
