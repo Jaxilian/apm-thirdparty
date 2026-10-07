@@ -1,0 +1,93 @@
+# Spotify, from Spotify's own apt repository: the .deb Spotify publishes,
+# unpacked (apm reads a .deb since v0.1.13), run through the GTK3 runtime
+# with its Chromium Embedded Framework told to use Wayland.
+#
+# The client links the Ayatana tray-icon libraries outright, so it does
+# not start without them, and neither AOS nor the runtime has them. They
+# come from Debian 13's archive as further sources, by the exact
+# versions and checksums of Debian's own index, and go into lib/ here,
+# which the wrapper puts first on the loader path. Their own needs (GTK3,
+# GLib, ATK, Pango) are the runtime's and the system's.
+#
+# The version is Spotify's 1.2.96.518 without the build number, since a
+# version here has three parts. Bump from
+# https://repository.spotify.com/dists/testing/non-free/binary-amd64/Packages
+#
+# Proprietary: Spotify Terms of Use. Fetched from Spotify, never mirrored.
+# The Debian libraries are LGPL-3 (Ayatana) and LGPL-3 / GPL-3
+# (libdbusmenu), unmodified.
+
+recipe_version = 1
+
+[package]
+name         = "spotify"
+organization = "spotify"
+version      = "1.2.96"
+release      = 1
+kind         = "app"
+summary      = "Spotify music streaming"
+license      = "LicenseRef-Spotify-Terms-of-Use AND LGPL-3.0-only"
+homepage     = "https://www.spotify.com/"
+
+[[source]]
+url    = "https://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_1.2.96.518.g366879e1_amd64.deb"
+sha256 = "1a86581f53c2b0e2c406150665ea05e245b9e6b286390ea61d5d193ba617eb2f"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/liba/libayatana-appindicator/libayatana-appindicator3-1_0.5.94-1_amd64.deb"
+sha256 = "bfe87d971606ebaf980999490d6ccc49d02d31e9df3013df82b45a74103df304"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/liba/libayatana-indicator/libayatana-indicator3-7_0.9.4-1+b1_amd64.deb"
+sha256 = "fddbdad474290ba668d6c0637dab1bab3224582782833e833e42420fed160b7f"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/a/ayatana-ido/libayatana-ido3-0.4-0_0.10.4-1_amd64.deb"
+sha256 = "c0c2fd5501ad7d24647c79d18d37210b0109a83ee12a1adc713e7ee488aa182f"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libd/libdbusmenu/libdbusmenu-glib4_18.10.20180917~bzr492+repack1-4_amd64.deb"
+sha256 = "497128ea59ad99d26379bf1cff5a0897f6f0520e9cc0b5a44707676c6cf3f589"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libd/libdbusmenu/libdbusmenu-gtk3-4_18.10.20180917~bzr492+repack1-4_amd64.deb"
+sha256 = "04b73c2590bd8a99e9ee5ae51bf6b66229edf896278bcb0b450f88e32fb51c73"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["spotify"]
+
+# A home of its own (the cache of downloaded songs lives there) and Music,
+# for Spotify's local files.
+[sandbox]
+home  = "private"
+share = ["Music"]
+
+[launcher]
+name       = "Spotify"
+comment    = "Music for everyone"
+exec       = "bin/spotify"
+icon       = "spotify/icons/spotify-linux-256.png"
+categories = ["Audio", "Music", "Player", "AudioVideo"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/spotify $D/lib $D/bin
+cp -a $APM_SRC/usr/share/spotify/. $D/spotify/
+for s in $APM_SOURCE_2 $APM_SOURCE_3 $APM_SOURCE_4 $APM_SOURCE_5 $APM_SOURCE_6; do
+	cp -a $s/usr/lib/x86_64-linux-gnu/*.so* $D/lib/
+done
+cat > $D/bin/spotify <<WRAP
+#!/bin/sh
+# Spotify on the GTK3 runtime, on Wayland; the tray libraries first.
+export LD_LIBRARY_PATH="$APM_PREFIX/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/spotify/spotify --enable-features=UseOzonePlatform --ozone-platform=wayland "\$@"
+WRAP
+chmod 755 $D/bin/spotify
+'''
