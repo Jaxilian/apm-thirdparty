@@ -1,0 +1,68 @@
+# Inkscape, from inkscape.org: the official AppImage, which apm fetches as
+# it is (an ELF source arrives executable, apm v0.1.13) and the recipe
+# extracts with the AppImage's own --appimage-extract -- its runtime is
+# static and needs no FUSE. The AppImage carries its own GTK3, Python and
+# libraries; GTK draws on Wayland. It runs through the AppImage's AppRun,
+# as Inkscape built it. Two symbolic links that point outside the
+# AppImage are removed (see prepare).
+#
+# The sha256 is the one inkscape.org shows on the download page.
+# GPL-3.0-or-later. Fetched from inkscape.org, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "inkscape"
+organization = "inkscape"
+version      = "1.4.4"
+release      = 1
+kind         = "app"
+summary      = "Inkscape vector graphics editor"
+license      = "GPL-3.0-or-later"
+homepage     = "https://inkscape.org/"
+
+[[source]]
+url    = "https://media.inkscape.org/dl/resources/file/Inkscape-1.4.4.AppImage"
+sha256 = "d217fe05c92faaed5c3af46856b6299c98933dc722819cb5bc2ca052c5522166"
+
+# The AppImage brings its own toolkit but reads the machine's fonts
+# through /usr/share/fonts, which on AOS is the aos/fonts package.
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["inkscape"]
+
+# Drawings live wherever the person keeps them: the whole home.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "Inkscape"
+comment    = "Vector graphics editor"
+exec       = "bin/inkscape"
+icon       = "inkscape/org.inkscape.Inkscape.png"
+categories = ["Graphics", "VectorGraphics"]
+terminal   = false
+
+[build]
+prepare = '''
+./Inkscape-1.4.4.AppImage --appimage-extract >/dev/null
+# Two links point outside the AppImage, which apm refuses in a package:
+# lib64/ld-linux (AppRun uses lib/<platform>/ld-linux, the bundled one)
+# and Debian's sitecustomize.py (/etc/python3.8, which no AOS machine has).
+rm -f squashfs-root/lib64/ld-linux-x86-64.so.2 squashfs-root/usr/lib/python3.8/sitecustomize.py
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/inkscape $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/inkscape/
+cat > $D/bin/inkscape <<WRAP
+#!/bin/sh
+# Inkscape as its AppImage starts it: AppRun sets the paths and runs it.
+exec $APM_PREFIX/inkscape/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/inkscape
+'''
