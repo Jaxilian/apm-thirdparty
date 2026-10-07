@@ -1,0 +1,98 @@
+# Lutris, from its GitHub release: the .deb the Lutris team publishes
+# (pure Python, architecture all), unpacked (apm reads a .deb since
+# v0.1.13) and laid out the way Lutris runs from a source checkout --
+# bin/lutris beside the lutris package and share/lutris -- so its own
+# launcher finds both without an install step. It runs on Python and the
+# GObject bindings of runtime/python, and GTK3 of runtime/gtk3.
+#
+# One file is changed. Lutris imports its web sign-in dialog (GOG, Epic,
+# EA, Ubisoft accounts) at startup, and that dialog requires WebKitGTK,
+# which AOS does not carry -- it is a browser engine of its own. The
+# import is made optional: Lutris starts, installs and runs games, and
+# only the sign-in to those stores is unavailable. Nothing else is
+# patched.
+#
+# Games run on Wine or Proton builds that Lutris downloads into the
+# person's home itself; those are X11 programs, hence runtime/xwayland.
+#
+# GPL-3.0-or-later. Fetched from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "lutris"
+organization = "lutris"
+version      = "0.5.22"
+release      = 1
+kind         = "app"
+summary      = "Lutris game launcher"
+license      = "GPL-3.0-or-later"
+homepage     = "https://lutris.net/"
+
+[[source]]
+url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
+sha256 = "88a350357e0438b423cdf93108f27942de094dc19f973df73839f3b0b0bafaa0"
+
+[[dependencies]]
+name         = "python"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["lutris"]
+
+# Game libraries live wherever the person keeps them: the whole home.
+[sandbox]
+home       = "full"
+microphone = true
+
+[launcher]
+name       = "Lutris"
+comment    = "Install and play games from anywhere"
+exec       = "bin/lutris"
+icon       = "lutris/share/icons/hicolor/scalable/apps/net.lutris.Lutris.svg"
+categories = ["Game"]
+terminal   = false
+
+[build]
+prepare = '''
+sed -i '/^try:$/,/^from gi.repository import WebKit2/c\
+try:\
+    try:\
+        gi.require_version("WebKit2", "4.1")\
+    except ValueError:\
+        gi.require_version("WebKit2", "4.0")\
+    from gi.repository import WebKit2  # type: ignore[attr-defined]\
+except (ValueError, ImportError):\
+    WebKit2 = None  # AOS has no WebKitGTK: the web sign-in dialogs are unavailable' usr/lib/python3/dist-packages/lutris/gui/dialogs/webconnect_dialog.py
+grep -q '^    WebKit2 = None' usr/lib/python3/dist-packages/lutris/gui/dialogs/webconnect_dialog.py
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/lutris/bin $D/bin
+cp -a $APM_SRC/usr/lib/python3/dist-packages/lutris $D/lutris/lutris
+cp -a $APM_SRC/usr/share $D/lutris/share
+rm -rf $D/lutris/share/doc $D/lutris/share/man
+install -m 755 $APM_SRC/usr/games/lutris $D/lutris/bin/lutris
+cat > $D/bin/lutris <<WRAP
+#!/bin/sh
+# Lutris: Python and its GObject bindings from runtime/python, GTK3 from
+# runtime/gtk3 (whose gtk3-run sets the toolkit's paths), on Wayland.
+PY=/opt/apm/packages/runtime/python/current
+export PATH="\$PY/bin:\$PATH"
+export LD_LIBRARY_PATH="\$PY/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+export GI_TYPELIB_PATH="\$PY/lib/girepository-1.0"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run \$PY/bin/python3 $APM_PREFIX/lutris/bin/lutris "\$@"
+WRAP
+chmod 755 $D/bin/lutris
+'''
