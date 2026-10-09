@@ -1,0 +1,77 @@
+# GIMP, from download.gimp.org: the official AppImage of GIMP 3.2, which
+# apm fetches as it is (an ELF source arrives executable, apm v0.1.13) and
+# the recipe extracts with the AppImage's own --appimage-extract -- its
+# runtime is static and needs no FUSE. The AppImage carries its own GTK3,
+# GEGL, Python and libraries, down to the loader, and leaves nothing to
+# the machine but the fonts; GTK draws on Wayland. It runs through the
+# AppImage's AppRun, as the GIMP team built it.
+#
+# The wrapper sets APPDIR, which the AppImage runtime would otherwise
+# provide, and FONTCONFIG_FILE, so the bundled fontconfig reads the
+# machine's configuration (/usr/share/fonts, the aos/fonts package). One
+# symbolic link that points outside the AppImage is removed (see prepare).
+#
+# The sha256 is the one in the SHA256SUMS file GIMP publishes beside the
+# AppImage (download.gimp.org/gimp/v3.2/linux/), checked on 2026-10-09.
+# GPL-3.0-or-later. Fetched from gimp.org, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "gimp"
+organization = "gimp"
+version      = "3.2.6"
+release      = 1
+kind         = "app"
+summary      = "GIMP image editor"
+license      = "GPL-3.0-or-later"
+homepage     = "https://www.gimp.org/"
+
+[[source]]
+url    = "https://download.gimp.org/gimp/v3.2/linux/GIMP-3.2.6-x86_64.AppImage"
+sha256 = "79ea41bc9b06f78fda181849a9ca8e42d83f1124dedb756f4d52352e2465010f"
+
+# The AppImage brings its own toolkit but reads the machine's fonts
+# through /usr/share/fonts, which on AOS is the aos/fonts package.
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["gimp"]
+
+# Pictures live wherever the person keeps them: the whole home.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "GIMP"
+comment    = "Image editor"
+exec       = "bin/gimp"
+icon       = "gimp/org.gimp.GIMP.Stable.svg"
+categories = ["Graphics", "2DGraphics", "RasterGraphics"]
+terminal   = false
+
+[build]
+prepare = '''
+./GIMP-3.2.6-x86_64.AppImage --appimage-extract >/dev/null
+# A link points outside the AppImage, which apm refuses in a package:
+# Debian's sitecustomize.py (/etc/python3.13, which no AOS machine has).
+rm -f squashfs-root/usr/lib/python3.13/sitecustomize.py
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/gimp $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/gimp/
+cat > $D/bin/gimp <<WRAP
+#!/bin/sh
+# GIMP as its AppImage starts it: AppRun sets the paths and runs it. What
+# the AppImage runtime would set: APPDIR; and the machine's fontconfig
+# configuration, which reads /usr/share/fonts (the aos/fonts package).
+export APPDIR=$APM_PREFIX/gimp
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/gimp/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/gimp
+'''

@@ -1,0 +1,83 @@
+# ONLYOFFICE Desktop Editors, from Ascensio System's GitHub releases (the
+# AppImage onlyoffice.com links to): the official AppImage, which apm
+# fetches as it is (an ELF source arrives executable, apm v0.1.13) and
+# the recipe extracts with the AppImage's own --appimage-extract -- its
+# runtime is static and needs no FUSE. Documents, spreadsheets,
+# presentations and PDF forms, in Microsoft's formats first.
+#
+# The editors are Qt 5 with an embedded Chromium (CEF) and carry no Qt
+# Wayland plugin, so they draw through XWayland (QT_QPA_PLATFORM=xcb,
+# GDK_BACKEND=x11). Chromium's GTK3, ATK, Pango, Cairo and NSS are left
+# to the machine; they come from the GTK3 runtime through gtk3-run. Two
+# symbolic links that point outside the AppImage are removed (see
+# prepare). Everything else runs as ONLYOFFICE built it, through the
+# AppImage's AppRun and its desktopeditors script, which want APPDIR.
+#
+# ONLYOFFICE publishes no checksum or signature for the AppImage; the
+# sha256 is of the file as downloaded on 2026-10-09 and matches GitHub's
+# own digest of the release asset. AGPL-3.0-only. Fetched from
+# ONLYOFFICE, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "onlyoffice"
+organization = "onlyoffice"
+version      = "9.4.0"
+release      = 1
+kind         = "app"
+summary      = "ONLYOFFICE Desktop Editors"
+license      = "AGPL-3.0-only"
+homepage     = "https://www.onlyoffice.com/desktop"
+
+[[source]]
+url    = "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v9.4.0/DesktopEditors-x86_64.AppImage"
+sha256 = "f5faf24552665262fe94486a510b997d2e5a24bde14df94c802c79bf17f9254c"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["onlyoffice"]
+
+# Documents live wherever the person keeps them: the whole home.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "ONLYOFFICE"
+comment    = "Documents, spreadsheets and presentations"
+exec       = "bin/onlyoffice"
+icon       = "onlyoffice/onlyoffice-desktopeditors.png"
+categories = ["Office"]
+terminal   = false
+
+[build]
+prepare = '''
+./DesktopEditors-x86_64.AppImage --appimage-extract >/dev/null
+# Two links point outside the AppImage, which apm refuses in a package:
+# usr/bin/touch (/bin/touch, which AOS has on PATH anyway) and X11's
+# rgb.txt (/etc/X11, which no AOS machine has).
+rm -f squashfs-root/usr/bin/touch squashfs-root/usr/share/X11/rgb.txt
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/onlyoffice $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/onlyoffice/
+cat > $D/bin/onlyoffice <<WRAP
+#!/bin/sh
+# ONLYOFFICE as its AppImage starts it, on the GTK3 runtime, through
+# XWayland: the editors carry no Qt Wayland plugin.
+export QT_QPA_PLATFORM=xcb GDK_BACKEND=x11
+export APPDIR=$APM_PREFIX/onlyoffice
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/onlyoffice/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/onlyoffice
+'''

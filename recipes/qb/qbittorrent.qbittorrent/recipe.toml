@@ -1,0 +1,84 @@
+# qBittorrent, from the project's GitHub releases (the AppImage
+# qbittorrent.org links to): the official AppImage, built with
+# libtorrent 2, which apm fetches as it is (an ELF source arrives
+# executable, apm v0.1.13) and the recipe extracts with the AppImage's own
+# --appimage-extract -- its runtime is static and needs no FUSE.
+# qBittorrent 5 is Qt 6 and draws on Wayland with the Qt Wayland plugin
+# it carries, which the wrapper asks for (Qt would try X11 first).
+#
+# The AppImage leaves HarfBuzz to the machine, which AOS's core does not
+# have; the GTK3 runtime does, so qBittorrent runs through gtk3-run.
+# One file of the AppImage is removed: its own libsystemd, built with
+# libgcrypt, whose libgpg-error the AppImage leaves to the host and AOS
+# does not have (as for Krita). Without it the loader takes AOS's own
+# libsystemd, which needs neither.
+#
+# The project signs each file with GPG (.asc beside it); the signature
+# was checked against the release key of sledgehammer_999
+# (D8F3DA77AAC6741053599C136E4A2D025B7CC9A2) on 2026-10-09, and the
+# sha256 is of that file. GPL-2.0-or-later. Fetched from the qBittorrent
+# project, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "qbittorrent"
+organization = "qbittorrent"
+version      = "5.2.4"
+release      = 1
+kind         = "app"
+summary      = "qBittorrent BitTorrent client"
+license      = "GPL-2.0-or-later"
+homepage     = "https://www.qbittorrent.org/"
+
+[[source]]
+url    = "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.4/qbittorrent-5.2.4_x86_64.AppImage"
+sha256 = "9ab0e97a3245a1d596271878a75aa208049cc62be8b682aa3f3109511c5f17b7"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["qbittorrent"]
+
+# A torrent client needs the network and a place to put what it fetches:
+# a home of its own, and the person's Downloads, nothing else of ~.
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "qBittorrent"
+comment    = "Download with BitTorrent"
+exec       = "bin/qbittorrent"
+icon       = "qbittorrent/qbittorrent.svg"
+categories = ["Network", "FileTransfer", "P2P"]
+terminal   = false
+
+[build]
+prepare = '''
+./qbittorrent-5.2.4_x86_64.AppImage --appimage-extract >/dev/null
+rm -f squashfs-root/usr/lib/libsystemd.so*
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/qbittorrent $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/qbittorrent/
+cat > $D/bin/qbittorrent <<WRAP
+#!/bin/sh
+# qBittorrent as the project ships it, through AppRun, with HarfBuzz from
+# the GTK3 runtime. Qt picks X11 first when told nothing; qBittorrent
+# carries the Wayland plugin.
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland;xcb}"
+export APPDIR=$APM_PREFIX/qbittorrent
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/qbittorrent/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/qbittorrent
+'''
