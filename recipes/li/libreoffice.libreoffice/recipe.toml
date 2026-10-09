@@ -1,0 +1,70 @@
+# LibreOffice, from The Document Foundation's own download server: the
+# official .deb set for x86-64, unpacked (each .deb's data.tar.xz) into
+# the package as the .debs would install it under /opt/libreoffice26.8,
+# with the Swedish language pack beside it (the interface follows LANG:
+# sv_SE gives Swedish menus). LibreOffice links its own copies of almost
+# everything; GTK3 for its native look and Wayland comes from the runtime,
+# as for Firefox. The office suite of alpha-roadmap.md tier 2.
+#
+# MPL-2.0. TDF publishes GPG signatures (.asc) and no checksum file; the
+# sha256 sums are of the files as downloaded on 2026-10-09. Fetched from
+# TDF, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "libreoffice"
+organization = "libreoffice"
+version      = "26.8.1"
+release      = 1
+kind         = "app"
+summary      = "LibreOffice office suite"
+license      = "MPL-2.0"
+homepage     = "https://www.libreoffice.org/"
+
+[[source]]
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/x86_64/LibreOffice_26.8.1_Linux_x86-64_deb.tar.gz"
+sha256 = "30903df3b9f61360d9660cd707de48cd2831469114492a5008ed58a0ac77d044"
+strip  = 1
+
+[[source]]
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/x86_64/LibreOffice_26.8.1_Linux_x86-64_deb_langpack_sv.tar.gz"
+sha256 = "d3f551b20c7db86b50a841477f5f4fb83523513805161d42358bad000cb0ab5f"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["libreoffice"]
+
+# Documents live wherever the person keeps them: the whole home.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "LibreOffice"
+comment    = "Documents, spreadsheets and presentations"
+exec       = "bin/libreoffice"
+icon       = "lo/usr/share/icons/hicolor/128x128/apps/libreoffice26.8-startcenter.png"
+categories = ["Office"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/lo $D/bin
+for deb in $APM_SOURCE_1/DEBS/*.deb $APM_SOURCE_2/DEBS/*.deb; do
+	(cd $D/lo && ar p "$deb" data.tar.xz | tar xJ)
+done
+cat > $D/bin/libreoffice <<WRAP
+#!/bin/sh
+# LibreOffice on the GTK3 runtime, on Wayland (SAL_USE_VCLPLUGIN picks
+# the GTK3 interface; GDK_BACKEND keeps GTK off X11).
+export SAL_USE_VCLPLUGIN=gtk3 GDK_BACKEND=wayland
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/lo/opt/libreoffice26.8/program/soffice "\$@"
+WRAP
+chmod 755 $D/bin/libreoffice
+'''
