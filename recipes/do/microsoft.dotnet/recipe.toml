@@ -1,0 +1,54 @@
+# The .NET SDK, the current LTS (.NET 10, SDK 10.0.401 with runtime
+# 10.0.12), from Microsoft's official build server: the linux-x64 tarball
+# the install script and the download page fetch, unpacked into dotnet/
+# with one wrapper, bin/dotnet, that sets
+#
+#   DOTNET_ROOT                          the SDK's directory, for apphosts
+#                                        and global tools started from it
+#   DOTNET_CLI_TELEMETRY_OPTOUT=1        the CLI sends nothing
+#   DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+#                                        AOS has no libicu, and without it
+#                                        .NET aborts at start; invariant
+#                                        mode formats every culture as the
+#                                        invariant one
+#
+# No sandbox, like the Rust toolchain: a developer tool.
+#
+# Microsoft publishes a sha512 per file in the release metadata
+# (release-metadata/10.0/releases.json); the file as downloaded on
+# 2026-10-09 matched it, and its sha256 is the one here. MIT. Fetched
+# from Microsoft, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "dotnet"
+organization = "microsoft"
+version      = "10.0.401"
+release      = 1
+kind         = "bin"
+summary      = ".NET 10 SDK"
+license      = "MIT"
+homepage     = "https://dotnet.microsoft.com/"
+
+[[source]]
+url    = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz"
+sha256 = "137268c8ad939c064ff1ee2a6fdf0899d8725377114ea012fbd1ad5fa2550418"
+
+[provides]
+command = ["dotnet"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/dotnet $D/bin
+cp -a $APM_SRC/. $D/dotnet/
+cat > $D/bin/dotnet <<WRAP
+#!/bin/sh
+export DOTNET_ROOT=$APM_PREFIX/dotnet
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+exec $APM_PREFIX/dotnet/dotnet "\$@"
+WRAP
+chmod 755 $D/bin/dotnet
+'''

@@ -1,0 +1,42 @@
+# Java: Eclipse Temurin JDK 21 (LTS), from Adoptium's own release on
+# GitHub (adoptium/temurin21-binaries): the linux x64 JDK tarball, copied
+# into the package as it is. The JDK finds its home from the binary's
+# real path, so it needs no JAVA_HOME and no wrapper; set JAVA_HOME to
+# /opt/apm/packages/adoptium/java/current for tools that ask for one.
+#
+# The version is Temurin's 21.0.12.1+1 (a respin of 21.0.12) without its
+# fourth part, since a version here has three.
+#
+# No sandbox, like the Rust toolchain: a developer tool.
+#
+# The sha256 is the one in Adoptium's .sha256.txt beside the tarball
+# (and in its API), checked against the file as downloaded on
+# 2026-10-09. GPL-2.0 with the Classpath Exception. Fetched from
+# Adoptium, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "java"
+organization = "adoptium"
+version      = "21.0.12"
+release      = 1
+kind         = "bin"
+summary      = "Java 21 development kit (Eclipse Temurin)"
+license      = "GPL-2.0-only WITH Classpath-exception-2.0"
+homepage     = "https://adoptium.net/"
+
+[[source]]
+url    = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_linux_hotspot_21.0.12.1_1.tar.gz"
+sha256 = "ce79869e1307ed8ee1e2baa86a412b1eb5b75d10a01006d788a6f968bcfaee94"
+strip  = 1
+
+[provides]
+command = ["java", "javac", "jar", "jshell"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D
+cp -a $APM_SRC/. $D/
+'''

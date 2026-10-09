@@ -25,8 +25,9 @@ both.
 
 The GTK3 runtime and what runs on it; Electron applications (VS Code,
 Discord, Spotify); Firefox and Chrome; Steam and Lutris; the creative
-tools people ask for (Blender, Krita, Inkscape); and the Python runtime
-Lutris runs on. Vendor binaries are never mirrored: a recipe points at
+tools people ask for (Blender, Krita, Inkscape); Thunderbird; the
+developer toolchains (Node.js, Java, .NET, Python), unsandboxed like
+Rust in the official repository; and the Python runtime Lutris runs on. Vendor binaries are never mirrored: a recipe points at
 the vendor's own download and pins its checksum.
 
 Chrome, Spotify, Blender, Krita, Inkscape and Lutris fetch `.deb` files

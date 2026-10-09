@@ -1,0 +1,43 @@
+# Python: CPython 3.13 from python-build-standalone (astral-sh on GitHub),
+# the relocatable "install_only" build for x86_64 Linux, copied into the
+# package as it is (bin/ lib/ include/ share/). AOS has no system Python
+# (runtime/python is Lutris's, with no commands of its own); this is the
+# person's python3 and pip3.
+#
+# The store is read-only, so pip installs into ~/.local by itself
+# ("normal site-packages is not writeable"); a venv works as anywhere.
+# pip's scripts find their interpreter from their own real path.
+#
+# No sandbox, like the Rust toolchain: a developer tool.
+#
+# The sha256 is the one in the release's SHA256SUMS (and GitHub's asset
+# digest) for this file, checked against it as downloaded on 2026-10-09.
+# PSF-2.0 (CPython; the bundled libraries' licences are under
+# share/). Fetched from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "python"
+organization = "astral"
+version      = "3.13.16"
+release      = 1
+kind         = "bin"
+summary      = "Python 3.13"
+license      = "PSF-2.0"
+homepage     = "https://github.com/astral-sh/python-build-standalone"
+
+[[source]]
+url    = "https://github.com/astral-sh/python-build-standalone/releases/download/20261003/cpython-3.13.16%2B20261003-x86_64-unknown-linux-gnu-install_only.tar.gz"
+sha256 = "0a0272910b10417c659a9312fb3f2d7a6d774da7bd510999be7a3ba83273dc1f"
+strip  = 1
+
+[provides]
+command = ["python3", "pip3"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D
+cp -a $APM_SRC/. $D/
+'''
