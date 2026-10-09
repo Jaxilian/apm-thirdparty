@@ -1,0 +1,92 @@
+# Prism Launcher (Minecraft), from the Prism Launcher project's own GitHub
+# release: the official x86_64 AppImage, which apm fetches as it is (an
+# ELF source arrives executable, apm v0.1.13) and the recipe extracts with
+# the AppImage's own --appimage-extract. It is a self-contained bundle
+# (its own loader, glibc, Qt 6 with the Wayland plugin); the wrapper runs
+# its AppRun on Wayland.
+#
+# Two files of the AppImage are removed: its updaters (bin/
+# prismlauncher_updater, bin/AppImageUpdate.AppImage). Prism offers no
+# self-update without them; apm updates the package.
+#
+# Minecraft needs Java: the wrapper puts adoptium/java (Temurin 21) first
+# on PATH, where Prism finds it. Minecraft versions that want another
+# Java get it from Prism's own Java download (Settings, Java).
+# Minecraft's window is X11 through GLFW, hence runtime/xwayland.
+#
+# The sha256 is the one GitHub records for the asset in
+# PrismLauncher/PrismLauncher's 11.1.1 release, checked against the file
+# as downloaded on 2026-10-09; the extracted AppRun --version printed
+# "PrismLauncher 11.1.1". GPL-3.0-only. Fetched from GitHub, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "prismlauncher"
+organization = "prismlauncher"
+version      = "11.1.1"
+release      = 1
+kind         = "app"
+summary      = "Prism Launcher for Minecraft"
+license      = "GPL-3.0-only"
+homepage     = "https://prismlauncher.org/"
+
+[[source]]
+url    = "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.1/PrismLauncher-Linux-x86_64.AppImage"
+sha256 = "bb81038c56a09e944659e4b808dbfbc52d52d5e3a3ffe32216689a3ca1508d3d"
+
+[[dependencies]]
+name         = "java"
+organization = "adoptium"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+# The bundle reads the machine's fonts through /usr/share/fonts, which on
+# AOS is the aos/fonts package.
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["prismlauncher"]
+
+# Instances, worlds and the Java Prism downloads live in its data
+# directory, in a home of its own; Downloads for modpacks and mods
+# fetched with a browser.
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "Prism Launcher"
+comment    = "Manage Minecraft instances"
+exec       = "bin/prismlauncher"
+icon       = "prismlauncher/org.prismlauncher.PrismLauncher.png"
+categories = ["Game"]
+terminal   = false
+
+[build]
+prepare = '''
+./PrismLauncher-Linux-x86_64.AppImage --appimage-extract >/dev/null
+rm -f squashfs-root/bin/prismlauncher_updater squashfs-root/bin/AppImageUpdate.AppImage
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/prismlauncher $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/prismlauncher/
+cat > $D/bin/prismlauncher <<WRAP
+#!/bin/sh
+# Prism Launcher as the project ships it, on Wayland, with Temurin first
+# on PATH for Minecraft.
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland}"
+export PATH="/opt/apm/packages/adoptium/java/current/bin:\$PATH"
+exec $APM_PREFIX/prismlauncher/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/prismlauncher
+'''

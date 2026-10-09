@@ -1,0 +1,73 @@
+# Zed, from zed.dev: the linux x86_64 tarball that
+# https://zed.dev/api/releases/stable/latest/zed-linux-x86_64.tar.gz hands
+# out, which is the asset of Zed Industries' own GitHub release. Unpacked
+# as it is (zed.app: bin/zed, the CLI, starts libexec/zed-editor, which
+# finds the few libraries Zed bundles in lib/), with one wrapper. Zed is
+# native Wayland and draws with Vulkan; everything else it links (glib,
+# ALSA, xkbcommon) is in the AOS core.
+#
+# Zed updates itself into its install directory; the store is read-only
+# and apm updates the package, so the wrapper turns that off the
+# documented way (ZED_UPDATE_EXPLANATION, which Zed shows instead of
+# updating).
+#
+# The sha256 is the one GitHub records for the asset in
+# zed-industries/zed's v1.23.2 release, checked against the file as
+# downloaded on 2026-10-09; `zed --version` printed
+# "Zed 1.23.2 c0199504b9cc". GPL-3.0-or-later (the editor; AGPL and
+# Apache parts are listed in licenses.md). Fetched from Zed, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "zed"
+organization = "zed"
+version      = "1.23.2"
+release      = 1
+kind         = "app"
+summary      = "Zed code editor"
+license      = "GPL-3.0-or-later"
+homepage     = "https://zed.dev/"
+
+[[source]]
+url    = "https://zed.dev/api/releases/stable/1.23.2/zed-linux-x86_64.tar.gz"
+sha256 = "cabddd5af2b26a19633ea39f5dde070e2aad204bb815bfa74cb65073ffd5ff39"
+strip  = 1
+
+# Zed reads the machine's fonts through fontconfig: /usr/share/fonts,
+# which on AOS is the aos/fonts package.
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["zed"]
+
+# An editor opens the person's projects wherever they are: the whole
+# home, as for VS Code.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "Zed"
+comment    = "Code at the speed of thought"
+exec       = "bin/zed"
+icon       = "zed/share/icons/hicolor/512x512/apps/zed.png"
+categories = ["Development", "IDE", "TextEditor"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/zed $D/bin
+cp -a $APM_SRC/. $D/zed/
+cat > $D/bin/zed <<WRAP
+#!/bin/sh
+# Zed as Zed ships it; updates come from apm.
+export ZED_UPDATE_EXPLANATION="Zed is updated by apm (Software)."
+exec $APM_PREFIX/zed/bin/zed "\$@"
+WRAP
+chmod 755 $D/bin/zed
+'''

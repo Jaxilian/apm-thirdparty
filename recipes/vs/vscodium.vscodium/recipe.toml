@@ -1,0 +1,65 @@
+# VSCodium, from the VSCodium project's own GitHub release: the linux x64
+# tarball, unpacked as it is, with one wrapper, bin/codium, which runs
+# the editor through the GTK3 runtime with Electron on Wayland -- the VS
+# Code recipe over again, for the build without Microsoft's telemetry and
+# licence. Its extensions come from Open VSX.
+#
+# The version is VSCodium's 1.135.06055 (VS Code 1.135 and VSCodium's
+# own build number) written 1.135.6055, since a part here has no leading
+# zero. The sha256 is the one in VSCodium's .sha256 file beside the
+# tarball, checked against the file as downloaded on 2026-10-09.
+#
+# MIT (VSCodium's build of Code - OSS). Fetched from GitHub, never
+# mirrored. The Chromium sandbox works through user namespaces on AOS, so
+# chrome-sandbox needs no setuid bit and --no-sandbox is not passed.
+
+recipe_version = 1
+
+[package]
+name         = "vscodium"
+organization = "vscodium"
+version      = "1.135.6055"
+release      = 1
+kind         = "app"
+summary      = "VSCodium, VS Code without Microsoft's telemetry"
+license      = "MIT"
+homepage     = "https://vscodium.com/"
+
+[[source]]
+url    = "https://github.com/VSCodium/vscodium/releases/download/1.135.06055/VSCodium-linux-x64-1.135.06055.tar.gz"
+sha256 = "c09d8ac8dd7f52b09ee159ee24b440541dfd8f937a0f6f88cc428c78e48ee1f2"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["codium"]
+
+# An editor opens the person's projects wherever they are: the whole
+# home, as for VS Code.
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "VSCodium"
+comment    = "Code editing, without telemetry"
+exec       = "bin/codium"
+icon       = "vscodium/resources/app/resources/linux/code.png"
+categories = ["Development", "IDE"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/vscodium $D/bin
+cp -a $APM_SRC/. $D/vscodium/
+# --password-store=gnome-libsecret: as for VS Code and Chrome.
+cat > $D/bin/codium <<WRAP
+#!/bin/sh
+# VSCodium on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscodium/bin/codium --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/codium
+'''

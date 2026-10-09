@@ -1,0 +1,76 @@
+# Telegram Desktop, from telegram.org: the official linux-x64 tarball
+# that https://telegram.org/dl/desktop/linux hands out (td.telegram.org),
+# unpacked, with one wrapper. Telegram is built with Qt linked in and
+# draws on Wayland by itself; Pango, Cairo, fontconfig and the X
+# libraries it links or loads come from the GTK3 runtime.
+#
+# Telegram updates itself where it is installed, with the Updater binary
+# beside it. The store is read-only and apm updates the package, so
+# Updater is left out and the wrapper passes -noupdate (do not install a
+# downloaded update at start). Telegram may still fetch an update into
+# its own data directory; it is never applied. The tarball carries no
+# icon (Telegram writes its own at first start), so the launcher has none.
+#
+# telegram.org serves 7.2.9 while the GitHub release of tdesktop is
+# already at 7.3.0; this follows telegram.org. Telegram publishes no
+# checksum on its site; the sha256 here is of the file as downloaded on
+# 2026-10-09, and equals the sha256 GitHub records for the same file in
+# telegramdesktop/tdesktop's v7.2.9 release (Telegram's own repository).
+#
+# GPL-3.0-or-later with the OpenSSL exception. Fetched from Telegram,
+# never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "telegram"
+organization = "telegram"
+version      = "7.2.9"
+release      = 1
+kind         = "app"
+summary      = "Telegram Desktop messenger"
+license      = "GPL-3.0-or-later WITH openvpn-openssl-exception"
+homepage     = "https://desktop.telegram.org/"
+
+[[source]]
+url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.2.9.tar.xz"
+sha256 = "dc0698eb8011ed4e75f1fad9d55a8ab54e375c9791b9c577baa6073d9a4c50fa"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["telegram-desktop"]
+
+# A messenger: a home of its own (~/.local/share/TelegramDesktop inside
+# it) and Downloads, where Telegram saves files; the microphone and the
+# camera for calls, which Software's Permissions switch off.
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+camera     = true
+
+[launcher]
+name       = "Telegram"
+comment    = "Fast and secure messaging"
+exec       = "bin/telegram-desktop"
+categories = ["Network", "InstantMessaging", "Chat"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/telegram $D/bin
+install -m 755 $APM_SRC/Telegram $D/telegram/Telegram
+cat > $D/bin/telegram-desktop <<WRAP
+#!/bin/sh
+# Telegram Desktop with the GTK3 runtime's libraries; Wayland is its own.
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/telegram/Telegram -noupdate "\$@"
+WRAP
+chmod 755 $D/bin/telegram-desktop
+'''

@@ -1,0 +1,72 @@
+# Heroic Games Launcher (Epic, GOG and Amazon games), from the Heroic
+# team's own GitHub release: the linux x64 tarball (the unpacked
+# Electron application), copied as it is, with one wrapper that runs it
+# through the GTK3 runtime with Electron on Wayland. The tarball rather
+# than the AppImage: the same files, with nothing to extract.
+#
+# Games run on Wine or Proton builds Heroic downloads into the home
+# itself; those are X11 programs, hence runtime/xwayland. Heroic does not
+# update itself from the tarball; apm updates the package.
+#
+# The sha256 is the one GitHub records for the asset in
+# Heroic-Games-Launcher/HeroicGamesLauncher's v2.22.3 release, checked
+# against the file as downloaded on 2026-10-09. GPL-3.0-only. Fetched
+# from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "heroic"
+organization = "heroic"
+version      = "2.22.3"
+release      = 1
+kind         = "app"
+summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
+license      = "GPL-3.0-only"
+homepage     = "https://heroicgameslauncher.com/"
+
+[[source]]
+url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.3/Heroic-2.22.3-linux-x64.tar.xz"
+sha256 = "7382d719a5114c5f0761eea05cdb22f73f58fe98ec840d16b3d85a054d0d3efd"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["heroic"]
+
+# As Lutris: game libraries live wherever the person keeps them (~/Games
+# by default), so the whole home; the microphone for voice chat in games,
+# which Software's Permissions switch off.
+[sandbox]
+home       = "full"
+microphone = true
+
+[launcher]
+name       = "Heroic Games Launcher"
+comment    = "Play Epic, GOG and Amazon games"
+exec       = "bin/heroic"
+icon       = "heroic/resources/app.asar.unpacked/build/icon.png"
+categories = ["Game"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/heroic $D/bin
+cp -a $APM_SRC/. $D/heroic/
+cat > $D/bin/heroic <<WRAP
+#!/bin/sh
+# Heroic on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/heroic/heroic --ozone-platform=wayland "\$@"
+WRAP
+chmod 755 $D/bin/heroic
+'''

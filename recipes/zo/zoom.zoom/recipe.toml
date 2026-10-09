@@ -1,0 +1,154 @@
+# Zoom Workplace, from Zoom's own download (cdn.zoom.us, where
+# https://zoom.us/client/latest/zoom_amd64.deb redirects): the .deb Zoom
+# publishes, unpacked (apm reads a .deb since v0.1.13), with one wrapper.
+# The .deb rather than the tar.xz beside it: the same /opt/zoom, plus the
+# icon, and Zoom signs the .deb. Zoom carries its own Qt (with the Wayland
+# and xcb platform plugins) and its own Chromium Embedded Framework; the X
+# libraries, PulseAudio client and fontconfig it links come from the GTK3
+# runtime. ZoomLauncher picks the platform itself, as on any Linux.
+#
+# Zoom links libraries that neither AOS nor the runtime has: the xcb-util
+# family its Qt xcb plugin and the client need (cursor, image, keysyms,
+# icccm, render-util, util), Kerberos (its Qt Network links
+# libgssapi_krb5), libSM/libICE and libgomp. They come from Debian 13's
+# archive as further sources, by the exact versions and checksums of
+# Debian's own index (Packages.xz, whose hash matches trixie's InRelease
+# as fetched on 2026-10-09), and go into lib/ here, which the wrapper
+# puts on the loader path.
+#
+# The version is Zoom's 7.2.1.5760 without the build number, since a
+# version here has three parts. Zoom publishes no checksum file; the .deb
+# carries a dpkg-sig builder signature (_gpgbuilder), which was checked
+# with gpgv against Zoom's key (https://zoom.us/linux/download/pubkey,
+# 84C365D6 CC9A4886 CA926BCC 4F219739 9706AC24) together with the sha1
+# and md5 it lists for each member, and the sha256 here is of the file as
+# downloaded on 2026-10-09.
+#
+# Proprietary: Zoom Terms of Service. Fetched from Zoom, never mirrored.
+# The Debian libraries are MIT/X11 (xcb-util, libSM, libICE, Kerberos),
+# LGPL-2+ (keyutils) and GPL-3 with the GCC runtime exception (libgomp),
+# unmodified.
+
+recipe_version = 1
+
+[package]
+name         = "zoom"
+organization = "zoom"
+version      = "7.2.1"
+release      = 1
+kind         = "app"
+summary      = "Zoom video meetings"
+license      = "LicenseRef-Zoom-Terms-of-Service AND MIT AND X11 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND LGPL-2.0-or-later"
+homepage     = "https://zoom.us/"
+
+[[source]]
+url    = "https://cdn.zoom.us/prod/7.2.1.5760/zoom_amd64.deb"
+sha256 = "e9a522c794622633b24908ac0589a8e4df8a542846b97818e76f6c27e117cbdb"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util-cursor/libxcb-cursor0_0.1.5-1_amd64.deb"
+sha256 = "e0c77e6e96843581ff2668dc9a10f676be0e78209ef198e98646184858efe164"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util-image/libxcb-image0_0.4.0-2+b2_amd64.deb"
+sha256 = "81e2654e1b1da5cff9ea2bf46970a46eb5c81f1e35b1356691705e8cd6ab3ed6"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util-keysyms/libxcb-keysyms1_0.4.1-1_amd64.deb"
+sha256 = "6989138382e5b9966aa731db68f851858c1d40cf8c98d7e5d7952c9e5a09d710"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util-wm/libxcb-icccm4_0.4.2-1_amd64.deb"
+sha256 = "28f04c7fa76939bbc03fbaa1191dc58200c0c894d48ac6105a7039ba4d223b4a"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util-renderutil/libxcb-render-util0_0.3.10-1_amd64.deb"
+sha256 = "9bdd6247e45cea5047e4da883dabf168366474fb1b00a37bb194359ca1f975ab"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/x/xcb-util/libxcb-util1_0.4.1-1_amd64.deb"
+sha256 = "c242371fdfc806aa5599290150c6008a723c9b0fdb34ac6688f1a4083682172a"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libs/libsm/libsm6_1.2.6-1_amd64.deb"
+sha256 = "03038b3002e6f44322554e335d60d8ff87acfcf2e21c904b6866610a9913ee00"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/libi/libice/libice6_1.1.1-1_amd64.deb"
+sha256 = "38185997162793b5dfb768644badc57852879784a2f9d83c6c4e47efa5e36698"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "30847c1fde4240567d7ed3aeab4f655dd591203758b857e85e824045aae70299"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "47d71d6a7f2e59b9bae5f89602397594805113b95889ad18fa703cd53abafc97"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "7da07ee674b47f1f0be7cc89317c25310086a1f1761217d0f72e6ae2c5a69b84"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "3a0acd8b37955c0e102c756b52c97df2a31f67b96453c35dab70df218d309117"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/keyutils/libkeyutils1_1.6.3-6_amd64.deb"
+sha256 = "0b11ad17be0300b63ad4eeb4c6450fed24d34b7b740f23e5363dcb29ee6d5eba"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/g/gcc-14/libgomp1_14.2.0-19_amd64.deb"
+sha256 = "72b7a1a33c48f3195efeb044111b34ae684b1e640bb6495c832443b798601cd5"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+# Zoom draws Wayland or X11 as ZoomLauncher decides; XWayland for the
+# latter.
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["zoom"]
+
+# A home of its own (~/.zoom inside it) and Downloads, where recordings
+# and files go; the microphone and the camera, which is what Zoom is for,
+# and which Software's Permissions switch off.
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+camera     = true
+
+[launcher]
+name       = "Zoom"
+comment    = "Video meetings"
+exec       = "bin/zoom"
+icon       = "zoom/Zoom.png"
+categories = ["Network", "VideoConference", "AudioVideo"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/zoom $D/lib $D/bin
+cp -a $APM_SRC/opt/zoom/. $D/zoom/
+for n in $(seq 2 15); do
+	eval s=\$APM_SOURCE_$n
+	find $s -name '*.so*' -exec cp -a {} $D/lib/ \;
+done
+install -m 644 $APM_SRC/usr/share/pixmaps/Zoom.png $D/zoom/Zoom.png
+cat > $D/bin/zoom <<WRAP
+#!/bin/sh
+# Zoom with the GTK3 runtime's libraries; its own Qt and CEF, and the
+# Debian libraries in lib/.
+export LD_LIBRARY_PATH="$APM_PREFIX/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/zoom/ZoomLauncher "\$@"
+WRAP
+chmod 755 $D/bin/zoom
+'''

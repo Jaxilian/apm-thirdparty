@@ -1,0 +1,73 @@
+# Slack, from Slack's own apt repository (packagecloud.io/slacktechnologies):
+# the .deb Slack publishes, unpacked (apm reads a .deb since v0.1.13), with
+# one wrapper that runs it through the GTK3 runtime with Electron on
+# Wayland. The package's cron job (it adds Slack's apt source) is left
+# out; nothing else is changed. Slack does not update itself on Linux.
+#
+# --password-store=gnome-libsecret, as for Chrome: Slack keeps its sign-in
+# in the keyring through Electron's safeStorage, and Chromium knows none
+# of our desktops by name.
+#
+# Bump from https://packagecloud.io/slacktechnologies/slack/debian/dists/jessie/main/binary-amd64/Packages
+# (Filename and SHA256 of slack-desktop). The sha256 here is the one in
+# that Packages file, whose own hash is in the repository's InRelease;
+# InRelease was checked with gpgv against the repository's key
+# (https://packagecloud.io/slacktechnologies/slack/gpgkey, D537997A
+# BE0E1079 C0E8EBD6 C6ABDCF6 4DB9A0B2) and the .deb against the sha256,
+# as downloaded on 2026-10-09.
+#
+# Proprietary: Slack Terms of Service. Fetched from Slack, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "slack"
+organization = "slack"
+version      = "4.52.178"
+release      = 1
+kind         = "app"
+summary      = "Slack team messaging"
+license      = "LicenseRef-Slack-Terms-of-Service"
+homepage     = "https://slack.com/"
+
+[[source]]
+url    = "https://packagecloud.io/slacktechnologies/slack/debian/pool/jessie/main/s/slack-desktop/slack-desktop_4.52.178_amd64.deb"
+sha256 = "1f110efeeb7d82e927fa209cd767278f27a4ddc7fed4a60c23fbc4ab374e1d3a"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["slack"]
+
+# A messenger: a home of its own and Downloads; the microphone and the
+# camera for huddles and calls, which Software's Permissions switch off.
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+camera     = true
+
+[launcher]
+name       = "Slack"
+comment    = "Team messaging"
+exec       = "bin/slack"
+icon       = "slack/slack.png"
+categories = ["Network", "InstantMessaging"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/slack $D/bin
+cp -a $APM_SRC/usr/lib/slack/. $D/slack/
+install -m 644 $APM_SRC/usr/share/pixmaps/slack.png $D/slack/slack.png
+cat > $D/bin/slack <<WRAP
+#!/bin/sh
+# Slack on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/slack/slack --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/slack
+'''

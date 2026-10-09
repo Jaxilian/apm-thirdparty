@@ -1,0 +1,76 @@
+# Signal Desktop, from Signal's own apt repository: the .deb Signal
+# publishes, unpacked (apm reads a .deb since v0.1.13), with one wrapper
+# that runs it through the GTK3 runtime with Electron on Wayland. Nothing
+# in the package is modified. Signal Desktop does not update itself on
+# Linux (that is apt's job there, apm's here).
+#
+# --password-store=gnome-libsecret: Signal keeps the key of its message
+# database in the system keyring through Electron's safeStorage, and
+# Chromium picks the keyring by the desktop's name and knows none of
+# ours; AOS has the Secret Service (oo7) and libsecret in the core.
+#
+# Bump from https://updates.signal.org/desktop/apt/dists/xenial/main/binary-amd64/Packages
+# (Filename and SHA256 of signal-desktop). The sha256 here is the one in
+# that Packages file, whose own hash is in the repository's InRelease;
+# InRelease was checked with gpgv against Signal's key
+# (https://updates.signal.org/desktop/apt/keys.asc, DBA36B51 81D0C816
+# F630E889 D980A174 57F6FB06) and the .deb against the sha256, as
+# downloaded on 2026-10-09.
+#
+# AGPL-3.0-only (Signal Desktop), with Electron's and Chromium's licences
+# in the package. Fetched from Signal, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "signal"
+organization = "signal"
+version      = "8.30.0"
+release      = 1
+kind         = "app"
+summary      = "Signal private messenger"
+license      = "AGPL-3.0-only"
+homepage     = "https://signal.org/"
+
+[[source]]
+url    = "https://updates.signal.org/desktop/apt/pool/s/signal-desktop/signal-desktop_8.30.0_amd64.deb"
+sha256 = "645cb8968f59f4b318e85e5c8800d78259ee3d79068e7b354d2f1f3240cbe549"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["signal-desktop"]
+
+# A messenger: a home of its own (the message database lives there) and
+# Downloads, where attachments are saved and picked from; the microphone
+# and the camera for calls, which Software's Permissions switch off.
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+camera     = true
+
+[launcher]
+name       = "Signal"
+comment    = "Private messaging"
+exec       = "bin/signal-desktop"
+icon       = "signal/signal-desktop.png"
+categories = ["Network", "InstantMessaging", "Chat"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/signal $D/bin
+cp -a $APM_SRC/opt/Signal/. $D/signal/
+install -m 644 $APM_SRC/usr/share/icons/hicolor/256x256/apps/signal-desktop.png $D/signal/signal-desktop.png
+cat > $D/bin/signal-desktop <<WRAP
+#!/bin/sh
+# Signal Desktop on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/signal/signal-desktop --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/signal-desktop
+'''

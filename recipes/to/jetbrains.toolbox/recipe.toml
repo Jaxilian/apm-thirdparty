@@ -1,0 +1,77 @@
+# JetBrains Toolbox, from JetBrains' own download server: the linux
+# tarball that https://data.services.jetbrains.com/products/releases?code=TBA
+# names, unpacked, with one wrapper. Toolbox is a JVM program with its own
+# runtime (bin/jre) and draws through X11, so it runs on XWayland with the
+# X client libraries of the GTK3 runtime.
+#
+# What this package holds is, like Discord's, a bootstrap: at first start
+# Toolbox copies itself into ~/.local/share/JetBrains/Toolbox, runs from
+# there and updates itself there, and installs the IDEs (IntelliJ IDEA,
+# PyCharm, ...) into the home as well, with launchers in
+# ~/.local/share/applications. That is JetBrains' own model; apm updates
+# only this bootstrap. Hence the whole home and the network: the IDEs it
+# installs work on the person's projects wherever they are.
+#
+# The version is JetBrains' 3.8.1.88030 without the build number, since a
+# version here has three parts. The sha256 is the one in JetBrains'
+# .sha256 file beside the tarball, checked against the file as downloaded
+# on 2026-10-09.
+#
+# Proprietary: JetBrains Toolbox App licence (free of charge). Fetched
+# from JetBrains, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "toolbox"
+organization = "jetbrains"
+version      = "3.8.1"
+release      = 1
+kind         = "app"
+summary      = "JetBrains Toolbox: installs and updates JetBrains IDEs"
+license      = "LicenseRef-JetBrains-Toolbox-App"
+homepage     = "https://www.jetbrains.com/toolbox-app/"
+
+[[source]]
+url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.8.1.88030.tar.gz"
+sha256 = "25cbe2ad027f5a5749bf8d8ae7c2215a8665403cfe94ff5d05cd48b25daac345"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["jetbrains-toolbox"]
+
+# It installs IDEs into the home and the IDEs open projects anywhere in
+# it: the whole home, the network on (the default).
+[sandbox]
+home = "full"
+
+[launcher]
+name       = "JetBrains Toolbox"
+comment    = "Install and update JetBrains IDEs"
+exec       = "bin/jetbrains-toolbox"
+icon       = "toolbox/bin/toolbox.svg"
+categories = ["Development"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/toolbox $D/bin
+cp -a $APM_SRC/. $D/toolbox/
+cat > $D/bin/jetbrains-toolbox <<WRAP
+#!/bin/sh
+# JetBrains Toolbox with the GTK3 runtime's X libraries, on XWayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/toolbox/bin/jetbrains-toolbox "\$@"
+WRAP
+chmod 755 $D/bin/jetbrains-toolbox
+'''
