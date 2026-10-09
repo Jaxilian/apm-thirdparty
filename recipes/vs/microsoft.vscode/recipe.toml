@@ -15,7 +15,7 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.138.0"
-release      = 4
+release      = 5
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -52,10 +52,14 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/vscode $D/bin
 cp -a $APM_SRC/. $D/vscode/
+# --password-store=gnome-libsecret: Chromium picks its keyring by the
+# desktop's name and knows none of ours, so without it stored logins are
+# kept in the clear; AOS 0.3.3 has the Secret Service (oo7) and libsecret
+# in the core, reachable from the sandbox through the session bus.
 cat > $D/bin/code <<WRAP
 #!/bin/sh
 # Visual Studio Code on the GTK3 runtime, on Wayland.
-exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscode/bin/code --ozone-platform=wayland "\$@"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscode/bin/code --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
 WRAP
 chmod 755 $D/bin/code
 '''
