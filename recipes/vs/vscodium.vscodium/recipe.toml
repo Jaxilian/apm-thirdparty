@@ -19,7 +19,7 @@ recipe_version = 1
 name         = "vscodium"
 organization = "vscodium"
 version      = "1.135.6055"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "VSCodium, VS Code without Microsoft's telemetry"
 license      = "MIT"
@@ -56,10 +56,14 @@ D=$APM_DESTDIR$APM_PREFIX
 install -d $D/vscodium $D/bin
 cp -a $APM_SRC/. $D/vscodium/
 # --password-store=gnome-libsecret: as for VS Code and Chrome.
+# The Electron binary itself, not the tarball's bin/codium: that is the
+# command-line client, which starts the editor detached and exits at
+# once, and aos-sandbox's pid namespace dies with its first process,
+# taking the editor with it -- the launcher did nothing at all.
 cat > $D/bin/codium <<WRAP
 #!/bin/sh
 # VSCodium on the GTK3 runtime, on Wayland.
-exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscodium/bin/codium --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscodium/codium --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
 WRAP
 chmod 755 $D/bin/codium
 '''
