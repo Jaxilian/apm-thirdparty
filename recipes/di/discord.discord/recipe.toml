@@ -18,7 +18,7 @@ recipe_version = 1
 name         = "discord"
 organization = "discord"
 version      = "1.0.159"
-release      = 5
+release      = 6
 kind         = "app"
 summary      = "Discord voice and text chat"
 license      = "LicenseRef-Discord-Terms-of-Service"
@@ -65,6 +65,15 @@ cat > $D/bin/discord <<WRAP
 # config directory the first time, then the application runs from there.
 # Same steps as Discord's own launcher script, without its zenity window.
 cfg=\${XDG_CONFIG_HOME:-\$HOME/.config}
+# Discord updates itself into the config directory otherwise, and ran a
+# build apm never saw (1.0.161 over the package's 1.0.159, the G14,
+# 0.3.8); updates come from apm. Discord's documented switch.
+mkdir -p "\$cfg/discord"
+if [ ! -f "\$cfg/discord/settings.json" ]; then
+	printf '{\n  "SKIP_HOST_UPDATE": true\n}\n' > "\$cfg/discord/settings.json"
+elif ! grep -q SKIP_HOST_UPDATE "\$cfg/discord/settings.json"; then
+	sed -i 's/^{/{\n  "SKIP_HOST_UPDATE": true,/' "\$cfg/discord/settings.json"
+fi
 if [ ! -x "\$cfg/discord/Discord" ]; then
 	mkdir -p "\$cfg/discord" || exit 1
 	app_dir=\$($APM_PREFIX/discord/updater_bootstrap --no-zenity "\$cfg/discord" stable https://updates.discord.com/) || {

@@ -19,7 +19,7 @@ recipe_version = 1
 name         = "vscodium"
 organization = "vscodium"
 version      = "1.135.6055"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "VSCodium, VS Code without Microsoft's telemetry"
 license      = "MIT"
@@ -41,6 +41,10 @@ command = ["codium"]
 # home, as for VS Code.
 [sandbox]
 home = "full"
+# The installed command-line tools (node, java, dotnet, python, cargo),
+# read-only: an editor without them is an editor without a terminal
+# (the G14, 0.3.8: inside VS Code python3 was the OS's stripped build).
+tools = true
 
 [launcher]
 name       = "VSCodium"
