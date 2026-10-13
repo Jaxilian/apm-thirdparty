@@ -1,0 +1,105 @@
+# Podman, rootless: containers for the person's own account, with the
+# static build of mgoltzsche/podman-static (podman, crun, conmon,
+# netavark, aardvark-dns, pasta, catatonit, rootlessport in one tarball;
+# the project signs its releases, the sha256 below pins this one). The
+# core's part is small and already there: user namespaces, the setuid
+# newuidmap/newgidmap, a subordinate id range per account
+# (aos-subids.service) and /var/lib/containers/user for the layers --
+# a homed home is an idmapped mount of its owner's uid alone, and an
+# image's files carry other ids, so the storage lives outside the home
+# (storage.conf); volumes and bind mounts are in the home as usual.
+#
+# No sandbox: podman makes namespaces of its own and needs the setuid
+# id mappers, which a sandbox (no new privileges) forbids. bin/podman is
+# a wrapper that points podman at this package's helpers and files
+# through the documented environment (CONTAINERS_CONF_OVERRIDE and the
+# storage and registries files), and writes the account's policy.json
+# once, since the store holds no /etc/containers. The API socket
+# ($XDG_RUNTIME_DIR/podman/podman.sock, `podman system service`) is what
+# the docker package and VS Code's Docker extension talk to.
+#
+# Apache-2.0 (podman, conmon, netavark, aardvark-dns, catatonit),
+# GPL-2.0-or-later (crun, pasta). Fetched from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "podman"
+organization = "containers"
+version      = "6.1.4"
+release      = 1
+kind         = "bin"
+summary      = "Podman: rootless containers (docker-compatible)"
+license      = "Apache-2.0 AND GPL-2.0-or-later"
+homepage     = "https://podman.io/"
+
+[[source]]
+url    = "https://github.com/mgoltzsche/podman-static/releases/download/v6.1.4/podman-linux-amd64.tar.gz"
+sha256 = "9dd51073fac5a1742f88cf3caff5554615cb4d67ba554d25e8807be635547af5"
+strip  = 1
+
+[provides]
+command = ["podman"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec $D/lib/podman $D/etc
+S=$APM_SRC/usr/local
+install -m 755 $S/bin/podman $D/libexec/podman
+for b in crun pasta pasta.avx2 passt passt.avx2; do install -m 755 $S/bin/$b $D/bin/$b; done
+for b in conmon netavark aardvark-dns catatonit rootlessport; do install -m 755 $S/lib/podman/$b $D/lib/podman/$b; done
+cat > $D/etc/containers.conf <<CONF
+# Read on top of the defaults and the account's own
+# ~/.config/containers/containers.conf (CONTAINERS_CONF_OVERRIDE): where
+# this package keeps podman's helpers.
+[containers]
+init_path = "$APM_PREFIX/lib/podman/catatonit"
+# The static conmon and podman have no journald: logs and events to files.
+log_driver = "k8s-file"
+
+[engine]
+conmon_path = ["$APM_PREFIX/lib/podman/conmon"]
+helper_binaries_dir = ["$APM_PREFIX/lib/podman", "$APM_PREFIX/bin"]
+runtime = "crun"
+events_logger = "file"
+
+[engine.runtimes]
+crun = ["$APM_PREFIX/bin/crun"]
+
+[network]
+network_backend = "netavark"
+default_rootless_network_cmd = "pasta"
+CONF
+cat > $D/etc/storage.conf <<CONF
+# Container storage (containers-storage.conf(5)). The layers live under
+# /var/lib/containers/user/<uid> (the core's tmpfiles.d makes the
+# directory, 1777 like /tmp): a homed home maps its owner's uid alone,
+# and an image's files carry other ids. \$UID is expanded by podman;
+# the run root stays the default (\$XDG_RUNTIME_DIR/containers).
+# Native overlay; no fuse.
+[storage]
+driver = "overlay"
+graphroot = "/var/lib/containers/user/\$UID/storage"
+CONF
+cat > $D/etc/registries.conf <<CONF
+# Where a bare image name is looked up (alpine = docker.io/library/alpine).
+unqualified-search-registries = ["docker.io", "quay.io", "ghcr.io"]
+short-name-mode = "permissive"
+CONF
+cat > $D/etc/policy.json <<CONF
+{ "default": [ { "type": "insecureAcceptAnything" } ] }
+CONF
+cat > $D/bin/podman <<WRAP
+#!/bin/sh
+# Podman from the AOS package: its helpers and files through the
+# documented environment; the account's policy.json written once.
+export CONTAINERS_CONF_OVERRIDE=$APM_PREFIX/etc/containers.conf
+export CONTAINERS_STORAGE_CONF=$APM_PREFIX/etc/storage.conf
+export CONTAINERS_REGISTRIES_CONF=$APM_PREFIX/etc/registries.conf
+cfg=\${XDG_CONFIG_HOME:-\$HOME/.config}/containers
+[ -f "\$cfg/policy.json" ] || { mkdir -p "\$cfg" && cp $APM_PREFIX/etc/policy.json "\$cfg/policy.json"; }
+exec $APM_PREFIX/libexec/podman "\$@"
+WRAP
+chmod 755 $D/bin/podman
+'''

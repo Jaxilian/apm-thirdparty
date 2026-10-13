@@ -1,0 +1,76 @@
+# The Docker command line and Compose, talking to podman: `docker run`,
+# `docker build`, `docker compose up` work as developers type them,
+# through podman's docker-compatible API socket. Docker's static client
+# from download.docker.com (the daemon and containerd in the same
+# tarball are not installed: podman is the engine) and the Compose
+# plugin from its GitHub release. bin/docker starts `podman system
+# service` for the account once (a transient user unit, or a detached
+# process where there is no user manager), points DOCKER_HOST at its
+# socket and links the Compose plugin into ~/.docker/cli-plugins, the
+# place the client looks that is not the read-only store.
+#
+# No sandbox: it is a client of the podman package. Apache-2.0 (both).
+# Fetched from Docker and GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "docker"
+organization = "docker"
+version      = "29.9.0"
+release      = 1
+kind         = "bin"
+summary      = "Docker CLI and Compose, on podman"
+license      = "Apache-2.0"
+homepage     = "https://docs.docker.com/reference/cli/docker/"
+
+[[source]]
+url    = "https://download.docker.com/linux/static/stable/x86_64/docker-29.9.0.tgz"
+sha256 = "33e1ab8b63d14bca449f7a3d30d7f6aa669daa544e60a86b17fec87f61afe2b4"
+strip  = 1
+
+[[source]]
+url    = "https://github.com/docker/compose/releases/download/v5.6.0/docker-compose-linux-x86_64"
+sha256 = "40343e21ca777173e69cff5dbafeb37c6f81f3b0d57d9e597f036e95eb63e76a"
+
+[[dependencies]]
+name         = "podman"
+organization = "containers"
+track        = "*"
+
+[provides]
+command = ["docker", "docker-compose"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec $D/lib/docker/cli-plugins
+install -m 755 $APM_SRC/docker $D/libexec/docker
+install -m 755 $APM_SOURCE_2/docker-compose-linux-x86_64 $D/lib/docker/cli-plugins/docker-compose
+cat > $D/bin/docker <<WRAP
+#!/bin/sh
+# Docker's client on podman's API socket, started for the account on
+# the first call; Compose linked where the client finds plugins.
+rt=\${XDG_RUNTIME_DIR:-/run/user/\$(id -u)}
+sock=\$rt/podman/podman.sock
+export DOCKER_HOST=unix://\$sock
+if [ ! -S "\$sock" ]; then
+	if ! systemd-run --user --quiet --collect --unit=podman-api podman system service --time=0 2>/dev/null; then
+		setsid podman system service --time=0 >/dev/null 2>&1 </dev/null &
+	fi
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+		[ -S "\$sock" ] && break
+		sleep 0.25
+	done
+fi
+plug=\${DOCKER_CONFIG:-\$HOME/.docker}/cli-plugins
+[ -e "\$plug/docker-compose" ] || { mkdir -p "\$plug" && ln -sfn $APM_PREFIX/lib/docker/cli-plugins/docker-compose "\$plug/docker-compose"; }
+exec $APM_PREFIX/libexec/docker "\$@"
+WRAP
+cat > $D/bin/docker-compose <<WRAP
+#!/bin/sh
+# The old spelling: Compose v2 is a docker plugin.
+exec $APM_PREFIX/bin/docker compose "\$@"
+WRAP
+chmod 755 $D/bin/docker $D/bin/docker-compose
+'''

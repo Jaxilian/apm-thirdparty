@@ -1,0 +1,48 @@
+# Distrobox: another distribution's userland in a rootless podman
+# container that shares the home, the display and the session -- a
+# developer's Ubuntu or Fedora toolbox on AOS, as Silverblue and SteamOS
+# users have it. Shell scripts, installed as the project's own
+# `install` script does (bin/distrobox*), running the podman package.
+# `distrobox-export` writes launchers into ~/.local/share/applications,
+# which the AOS launcher reads.
+#
+# No sandbox: it drives podman. GPL-3.0-only. Fetched from GitHub,
+# never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "distrobox"
+organization = "distrobox"
+# Upstream's 1.8.2.5 (a fourth number apm's versions do not have): the
+# source names the real tag.
+version      = "1.8.2"
+release      = 1
+kind         = "bin"
+summary      = "Distrobox: any distribution's tools in a container"
+license      = "GPL-3.0-only"
+homepage     = "https://distrobox.it/"
+
+[[source]]
+url    = "https://github.com/89luca89/distrobox/archive/refs/tags/1.8.2.5.tar.gz"
+sha256 = "0c3bc4785ee3be3b89f93abb7cc0a9f60e56989e81319af140a4b60403b18f80"
+strip  = 1
+
+[[dependencies]]
+name         = "podman"
+organization = "containers"
+track        = "*"
+
+[provides]
+command = ["distrobox", "distrobox-assemble", "distrobox-create", "distrobox-enter", "distrobox-ephemeral", "distrobox-export", "distrobox-generate-entry", "distrobox-host-exec", "distrobox-init", "distrobox-list", "distrobox-rm", "distrobox-stop", "distrobox-upgrade"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/share/man/man1
+for f in $APM_SRC/distrobox*; do
+	case "$f" in *.md|*.1) continue ;; esac
+	[ -f "$f" ] && install -m 755 "$f" $D/bin/
+done
+install -m 644 $APM_SRC/man/man1/*.1 $D/share/man/man1/ 2>/dev/null || true
+'''
