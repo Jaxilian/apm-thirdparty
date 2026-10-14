@@ -75,6 +75,8 @@ def local_index():
     # recipes/ is what publish.sh ships; staging/ holds the apps that wait
     # for an OS release with the apm they need.
     for recipes in (os.path.join(HERE, "recipes"), os.path.join(HERE, "staging", "recipes")):
+        if not os.path.isdir(recipes):
+            continue
         for shard in os.listdir(recipes):
             for pkg in os.listdir(os.path.join(recipes, shard)):
                 if pkg.split(".", 1)[1] not in APPS:
@@ -87,6 +89,8 @@ def local_index():
         if apkg.endswith(".apkg"):
             shutil.copy(os.path.join(extra, apkg), idx)
     for icons in (os.path.join(HERE, "icons"), os.path.join(HERE, "staging", "icons")):
+        if not os.path.isdir(icons):
+            continue
         for icon in os.listdir(icons):
             shutil.copy(os.path.join(icons, icon), idx)
     subprocess.run([APM, "index", idx, "--sign"], check=True, stdout=subprocess.DEVNULL)
