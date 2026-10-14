@@ -1,0 +1,17 @@
+[[source]]
+kind      = "regex"
+dir_page  = "https://download.documentfoundation.org/libreoffice/stable/"
+dir_regex = 'href="(\d+\.\d+\.\d+)/"'
+page      = "https://download.documentfoundation.org/libreoffice/stable/{dir}/deb/x86_64/"
+regex     = 'href="LibreOffice_(\d+\.\d+\.\d+)_Linux_x86-64_deb\.tar\.gz"'
+url       = "https://download.documentfoundation.org/libreoffice/stable/{version}/deb/x86_64/LibreOffice_{version}_Linux_x86-64_deb.tar.gz"
+sums      = "{url}.mirrorlist"
+
+[[source]]
+kind      = "regex"
+dir_page  = "https://download.documentfoundation.org/libreoffice/stable/"
+dir_regex = 'href="(\d+\.\d+\.\d+)/"'
+page      = "https://download.documentfoundation.org/libreoffice/stable/{dir}/deb/x86_64/"
+regex     = 'href="LibreOffice_(\d+\.\d+\.\d+)_Linux_x86-64_deb_langpack_sv\.tar\.gz"'
+url       = "https://download.documentfoundation.org/libreoffice/stable/{version}/deb/x86_64/LibreOffice_{version}_Linux_x86-64_deb_langpack_sv.tar.gz"
+sums      = "{url}.mirrorlist"

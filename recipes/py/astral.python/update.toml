@@ -1,0 +1,8 @@
+[[source]]
+kind     = "github"
+repo     = "astral-sh/python-build-standalone"
+tag      = '^(\d{8})$'
+asset    = '^cpython-(3\.\d+\.\d+)\+\d+-x86_64-unknown-linux-gnu-install_only\.tar\.gz$'
+track    = "3.13"
+releases = 10
+rebuild  = false

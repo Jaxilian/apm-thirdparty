@@ -22,7 +22,7 @@ recipe_version = 1
 [package]
 name         = "spotify"
 organization = "spotify"
-version      = "1.2.96"
+version      = "1.3.4"
 release      = 1
 kind         = "app"
 summary      = "Spotify music streaming"
@@ -30,8 +30,8 @@ license      = "LicenseRef-Spotify-Terms-of-Use AND LGPL-3.0-only"
 homepage     = "https://www.spotify.com/"
 
 [[source]]
-url    = "https://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_1.2.96.518.g366879e1_amd64.deb"
-sha256 = "1a86581f53c2b0e2c406150665ea05e245b9e6b286390ea61d5d193ba617eb2f"
+url    = "https://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_1.3.4.258.gc60b10b0946a_amd64.deb"
+sha256 = "20f327441d11b202c82e65b69ec990ef631eb66605da15f41076c049acb718e4"
 
 [[source]]
 url    = "https://deb.debian.org/debian/pool/main/liba/libayatana-appindicator/libayatana-appindicator3-1_0.5.94-1_amd64.deb"

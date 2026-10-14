@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "Heroic-Games-Launcher/HeroicGamesLauncher"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^Heroic-\d+\.\d+\.\d+-linux-x64\.tar\.xz$'

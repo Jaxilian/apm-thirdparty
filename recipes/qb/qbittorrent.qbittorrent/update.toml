@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "qbittorrent/qBittorrent"
+tag   = '^release-(\d+\.\d+\.\d+)$'
+asset = '^qbittorrent-\d+\.\d+\.\d+_x86_64\.AppImage$'

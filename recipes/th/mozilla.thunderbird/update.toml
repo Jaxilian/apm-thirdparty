@@ -1,0 +1,6 @@
+[[source]]
+kind  = "regex"
+page  = "https://product-details.mozilla.org/1.0/thunderbird_versions.json"
+regex = '"LATEST_THUNDERBIRD_VERSION":\s*"(\d+\.\d+(?:\.\d+)?)"'
+url   = "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/{version}/linux-x86_64/en-US/thunderbird-{version}.tar.xz"
+sums  = "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/{version}/SHA256SUMS"

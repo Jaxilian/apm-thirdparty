@@ -22,6 +22,8 @@ kind         = "bin"
 summary      = "Distrobox: any distribution's tools in a container"
 license      = "GPL-3.0-only"
 homepage     = "https://distrobox.it/"
+# Needs the subordinate ids and the storage directory (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
 url    = "https://github.com/89luca89/distrobox/archive/refs/tags/1.8.2.5.tar.gz"

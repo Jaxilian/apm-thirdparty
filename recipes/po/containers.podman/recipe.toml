@@ -32,6 +32,8 @@ kind         = "bin"
 summary      = "Podman: rootless containers (docker-compatible)"
 license      = "Apache-2.0 AND GPL-2.0-or-later"
 homepage     = "https://podman.io/"
+# Needs the subordinate ids and the storage directory (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
 url    = "https://github.com/mgoltzsche/podman-static/releases/download/v6.1.4/podman-linux-amd64.tar.gz"

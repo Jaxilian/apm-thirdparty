@@ -1,0 +1,11 @@
+[[source]]
+kind  = "regex"
+page  = "https://download.docker.com/linux/static/stable/x86_64/"
+regex = 'href="docker-(\d+\.\d+\.\d+)\.tgz"'
+url   = "https://download.docker.com/linux/static/stable/x86_64/docker-{version}.tgz"
+
+[[source]]
+kind  = "github"
+repo  = "docker/compose"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^docker-compose-linux-x86_64$'

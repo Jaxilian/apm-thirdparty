@@ -1,0 +1,23 @@
+[[source]]
+kind      = "regex"
+dir_page  = "https://download.blender.org/release/"
+dir_regex = 'href="Blender(\d+\.\d+)/"'
+page      = "https://download.blender.org/release/Blender{dir}/"
+regex     = 'href="blender-(\d+\.\d+\.\d+)-linux-x64\.tar\.xz"'
+url       = "https://download.blender.org/release/Blender{dir}/blender-{version}-linux-x64.tar.xz"
+sums      = "https://download.blender.org/release/Blender{dir}/blender-{version}.sha256"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxt6t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libsm6"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libice6"

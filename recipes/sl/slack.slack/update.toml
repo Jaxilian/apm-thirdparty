@@ -1,0 +1,4 @@
+[[source]]
+kind     = "apt"
+packages = "https://packagecloud.io/slacktechnologies/slack/debian/dists/jessie/main/binary-amd64/Packages"
+package  = "slack-desktop"

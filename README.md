@@ -39,3 +39,36 @@ and screendumps it.
 
 Layout, publishing and the rules for a recipe are as in
 [apm-recipes](https://github.com/Jaxilian/apm-recipes#layout).
+
+## Keeping the recipes current
+
+`bump.py` (Python 3, standard library only) looks up each recipe's newest
+upstream version and, when there is one, rewrites the recipe: version,
+the source URL and sha256 (the file is downloaded and checked against the
+checksum the vendor publishes, where there is one), `release = 1`. How to
+look is in an `update.toml` beside the recipe, one `[[source]]` per
+source: a GitHub release, an apt Packages index, a listing page and a
+regex, a redirect, a JSON API, Node's or .NET's release metadata; the
+format is in bump.py's docstring. A recipe without one is left alone.
+apm reads recipe.toml strictly (unknown tables are an error), which is
+why the rule is a sidecar; publish.sh does not copy it.
+
+```sh
+python3 -I bump.py                   # dry run: recipe, current, newest, action
+python3 -I bump.py --write           # rewrite what has a newer upstream
+python3 -I bump.py --only zed/zed    # one recipe
+```
+
+`.github/workflows/bump.yml` runs it daily on GitHub's hosted runner and
+opens, or refreshes, the pull request `bump/auto` with the table. It
+cannot publish: the index is signed with the key on the owner's machine.
+The routine is three steps:
+
+1. Read the PR (the table says what each checksum was checked against;
+   the apps were not run) and merge it. Optionally first
+   `python3 apps-test.py <name>...` for the bumped apps.
+2. `git pull`
+3. `./publish.sh`
+
+The workflow needs "Allow GitHub Actions to create and approve pull
+requests" switched on under Settings, Actions, General.

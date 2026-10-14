@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "ONLYOFFICE/DesktopEditors"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^DesktopEditors-x86_64\.AppImage$'

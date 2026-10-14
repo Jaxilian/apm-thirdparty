@@ -18,16 +18,18 @@ recipe_version = 1
 [package]
 name         = "vscodium"
 organization = "vscodium"
-version      = "1.135.6055"
-release      = 3
+version      = "1.140.6880"
+release      = 1
 kind         = "app"
 summary      = "VSCodium, VS Code without Microsoft's telemetry"
 license      = "MIT"
 homepage     = "https://vscodium.com/"
+# Needs the sandbox's tools field (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://github.com/VSCodium/vscodium/releases/download/1.135.06055/VSCodium-linux-x64-1.135.06055.tar.gz"
-sha256 = "c09d8ac8dd7f52b09ee159ee24b440541dfd8f937a0f6f88cc428c78e48ee1f2"
+url    = "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/VSCodium-linux-x64-1.140.06880.tar.gz"
+sha256 = "61223b74f9e40834117311ec4177cb386d09b84c1aae4f9e674c96580569cef3"
 
 [[dependencies]]
 name         = "gtk3"

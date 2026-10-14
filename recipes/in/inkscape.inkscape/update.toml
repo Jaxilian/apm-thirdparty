@@ -1,0 +1,6 @@
+[[source]]
+kind  = "regex"
+page  = "https://inkscape.org/release/"
+regex = 'release/inkscape-(\d+\.\d+\.\d+)/'
+url   = "https://media.inkscape.org/dl/resources/file/Inkscape-{version}.AppImage"
+sums  = "https://inkscape.org/release/inkscape-{version}/gnulinux/appimage/dl/"

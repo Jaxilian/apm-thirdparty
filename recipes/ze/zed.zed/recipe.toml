@@ -23,16 +23,18 @@ recipe_version = 1
 [package]
 name         = "zed"
 organization = "zed"
-version      = "1.23.2"
-release      = 2
+version      = "1.23.3"
+release      = 1
 kind         = "app"
 summary      = "Zed code editor"
 license      = "GPL-3.0-or-later"
 homepage     = "https://zed.dev/"
+# Needs the sandbox's tools field (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://zed.dev/api/releases/stable/1.23.2/zed-linux-x86_64.tar.gz"
-sha256 = "cabddd5af2b26a19633ea39f5dde070e2aad204bb815bfa74cb65073ffd5ff39"
+url    = "https://zed.dev/api/releases/stable/1.23.3/zed-linux-x86_64.tar.gz"
+sha256 = "f7191294295699bb5ac810a4c50f8290ad3d0191c3e506114fb14a7236921a61"
 strip  = 1
 
 # Zed reads the machine's fonts through fontconfig: /usr/share/fonts,

@@ -1,0 +1,7 @@
+[[source]]
+kind      = "regex"
+dir_page  = "https://download.kde.org/stable/krita/"
+dir_regex = 'href="(\d+\.\d+\.\d+(?:\.\d+)?)/"'
+page      = "https://download.kde.org/stable/krita/{dir}/"
+regex     = 'href="krita-(\d+\.\d+\.\d+(?:\.\d+)?)-x86_64\.AppImage"'
+url       = "https://download.kde.org/stable/krita/{dir}/krita-{version}-x86_64.AppImage"

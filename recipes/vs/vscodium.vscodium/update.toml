@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "VSCodium/vscodium"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^VSCodium-linux-x64-\d+\.\d+\.\d+\.tar\.gz$'

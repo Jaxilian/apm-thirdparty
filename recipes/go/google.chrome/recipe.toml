@@ -21,16 +21,16 @@ recipe_version = 1
 [package]
 name         = "chrome"
 organization = "google"
-version      = "155.8059.39"
-release      = 2
+version      = "155.8059.79"
+release      = 1
 kind         = "app"
 summary      = "Google Chrome web browser"
 license      = "LicenseRef-Google-Chrome-Terms-of-Service"
 homepage     = "https://www.google.com/chrome/"
 
 [[source]]
-url    = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_155.0.8059.39-1_amd64.deb"
-sha256 = "c58aa0f2cd66179c9f050e062c882d27aa9b9f8c2b7c73fee3498560b5ed0b38"
+url    = "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_155.0.8059.79-1_amd64.deb"
+sha256 = "b7726070ca707965e9a17b38e4f15ba283bf6f65c339626c092862af7b19badc"
 
 [[dependencies]]
 name         = "gtk3"

@@ -23,6 +23,8 @@ kind         = "bin"
 summary      = "Docker CLI and Compose, on podman"
 license      = "Apache-2.0"
 homepage     = "https://docs.docker.com/reference/cli/docker/"
+# Needs the subordinate ids and the storage directory (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
 url    = "https://download.docker.com/linux/static/stable/x86_64/docker-29.9.0.tgz"

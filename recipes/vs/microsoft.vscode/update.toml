@@ -1,0 +1,6 @@
+[[source]]
+kind        = "json"
+page        = "https://update.code.visualstudio.com/api/update/linux-x64/stable/latest"
+version_key = "productVersion"
+url_key     = "url"
+sha256_key  = "sha256hash"

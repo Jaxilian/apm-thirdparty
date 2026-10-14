@@ -1,0 +1,6 @@
+[[source]]
+kind  = "regex"
+page  = "https://www.gimp.org/gimp_versions.json"
+regex = '"STABLE":\s*\[\s*\{\s*"version":\s*"(\d+\.\d+\.\d+)"'
+url   = "https://download.gimp.org/gimp/v{v1}.{v2}/linux/GIMP-{version}-x86_64.AppImage"
+sums  = "https://download.gimp.org/gimp/v{v1}.{v2}/linux/SHA256SUMS"

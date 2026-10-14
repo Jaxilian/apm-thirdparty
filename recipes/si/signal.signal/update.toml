@@ -1,0 +1,4 @@
+[[source]]
+kind     = "apt"
+packages = "https://updates.signal.org/desktop/apt/dists/xenial/main/binary-amd64/Packages"
+package  = "signal-desktop"

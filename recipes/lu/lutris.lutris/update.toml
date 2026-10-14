@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "lutris/lutris"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^lutris_\d+\.\d+\.\d+_all\.deb$'

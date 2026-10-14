@@ -1,0 +1,7 @@
+[[source]]
+kind        = "json"
+page        = "https://api.adoptium.net/v3/assets/latest/21/hotspot?architecture=x64&image_type=jdk&os=linux&vendor=eclipse"
+version_key = "0.version.openjdk_version"
+url_key     = "0.binary.package.link"
+sha256_key  = "0.binary.package.checksum"
+track       = "21"

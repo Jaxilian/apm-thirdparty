@@ -14,16 +14,18 @@ recipe_version = 1
 [package]
 name         = "vscode"
 organization = "microsoft"
-version      = "1.138.0"
-release      = 7
+version      = "1.141.1"
+release      = 1
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
 homepage     = "https://code.visualstudio.com/"
+# Needs the sandbox's tools field (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/7debcd0e2acdea1c52de81bf9ee1620444407dda/code-stable-x64-1789458585.tar.gz"
-sha256 = "59fb0f88eab2fe2e3a053ac020e18fcb2b5c113d255e41c82d26302b675d580c"
+url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/7baac39ec3ca969dab74ac12c097f6a486e46593/code-stable-x64-1791833019.tar.gz"
+sha256 = "ec695e5ba070eb314261341ca1433e46799702b6208ee65094aeaa922a7d827b"
 strip  = 1
 
 [[dependencies]]

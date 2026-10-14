@@ -1,0 +1,29 @@
+[[source]]
+kind     = "apt"
+packages = "https://repository.spotify.com/dists/testing/non-free/binary-amd64/Packages"
+package  = "spotify-client"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libayatana-appindicator3-1"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libayatana-indicator3-7"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libayatana-ido3-0.4-0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libdbusmenu-glib4"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libdbusmenu-gtk3-4"

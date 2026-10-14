@@ -1,0 +1,6 @@
+[[source]]
+kind  = "github"
+repo  = "zed-industries/zed"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^zed-linux-x86_64\.tar\.gz$'
+url   = "https://zed.dev/api/releases/stable/{version}/zed-linux-x86_64.tar.gz"

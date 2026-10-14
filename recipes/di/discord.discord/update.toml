@@ -1,0 +1,4 @@
+[[source]]
+kind  = "redirect"
+page  = "https://discord.com/api/download?platform=linux&format=tar.gz"
+regex = '/(\d+\.\d+\.\d+)/discord-'

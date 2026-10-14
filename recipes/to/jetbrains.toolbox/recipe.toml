@@ -31,6 +31,8 @@ kind         = "app"
 summary      = "JetBrains Toolbox: installs and updates JetBrains IDEs"
 license      = "LicenseRef-JetBrains-Toolbox-App"
 homepage     = "https://www.jetbrains.com/toolbox-app/"
+# Needs the sandbox's tools field (round 38/39); an older apm holds it.
+min_aos      = "0.3.10"
 
 [[source]]
 url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.8.1.88030.tar.gz"

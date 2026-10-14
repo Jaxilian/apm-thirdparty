@@ -1,0 +1,5 @@
+[[source]]
+kind = "github"
+repo = "89luca89/distrobox"
+tag  = '^(\d+\.\d+\.\d+(?:\.\d+)?)$'
+url  = "https://github.com/89luca89/distrobox/archive/refs/tags/{tag}.tar.gz"

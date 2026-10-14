@@ -1,0 +1,43 @@
+# Once a day (and on request) bump.py looks for newer upstream versions
+# and opens, or refreshes, the pull request bump/auto with its table.
+# Publishing stays on the owner's machine: publish.sh signs the index
+# with the local key (README.md, "Keeping the recipes current").
+name: bump
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bump the recipes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 -I bump.py --write --dl "$RUNNER_TEMP/dl" | tee "$RUNNER_TEMP/table.md"
+          {
+            echo "Newer upstream versions, found by bump.py. The last column says"
+            echo "what each new sha256 was checked against."
+            echo
+            cat "$RUNNER_TEMP/table.md"
+            echo
+            echo "The apps were NOT run: the owner tests them (apps-test.py) and publishes with publish.sh."
+          } > "$RUNNER_TEMP/body.md"
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bump/auto
+          delete-branch: true
+          title: "bump: newer upstream versions"
+          commit-message: "bump: newer upstream versions (bump.py)"
+          body-path: ${{ runner.temp }}/body.md
+          add-paths: recipes/

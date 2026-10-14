@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "PrismLauncher/PrismLauncher"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^PrismLauncher-Linux-x86_64\.AppImage$'

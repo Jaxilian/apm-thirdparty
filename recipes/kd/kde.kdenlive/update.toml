@@ -1,0 +1,8 @@
+[[source]]
+kind      = "regex"
+dir_page  = "https://download.kde.org/stable/kdenlive/"
+dir_regex = 'href="(\d+\.\d+)/"'
+page      = "https://download.kde.org/stable/kdenlive/{dir}/linux/"
+regex     = 'href="kdenlive-(\d+\.\d+\.\d+)-x86_64\.AppImage"'
+url       = "https://download.kde.org/stable/kdenlive/{dir}/linux/kdenlive-{version}-x86_64.AppImage"
+sums      = "{url}.sha256"

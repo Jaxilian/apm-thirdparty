@@ -1,0 +1,74 @@
+[[source]]
+kind  = "redirect"
+page  = "https://zoom.us/client/latest/zoom_amd64.deb"
+regex = '/prod/(\d+\.\d+\.\d+\.\d+)/'
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-cursor0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-image0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-keysyms1"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-icccm4"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-render-util0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libxcb-util1"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libsm6"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libice6"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libgssapi-krb5-2"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5-3"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libk5crypto3"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5support0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkeyutils1"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libgomp1"

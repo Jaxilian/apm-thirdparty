@@ -1,0 +1,4 @@
+[[source]]
+kind  = "redirect"
+page  = "https://telegram.org/dl/desktop/linux"
+regex = '-(\d+\.\d+\.\d+)\.tar\.xz$'

@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "audacity/audacity"
+tag   = '^Audacity-(\d+\.\d+\.\d+)$'
+asset = '^audacity-linux-\d+\.\d+\.\d+-x86_64\.AppImage$'

@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "mgoltzsche/podman-static"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^podman-linux-amd64\.tar\.gz$'

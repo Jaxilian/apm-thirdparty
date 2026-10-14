@@ -1,0 +1,5 @@
+[[source]]
+kind         = "apt"
+packages     = "https://dl.google.com/linux/chrome/deb/dists/stable/main/binary-amd64/Packages"
+package      = "google-chrome-stable"
+version_from = '^(\d+)\.0\.(\d+)\.(\d+)'
