@@ -19,11 +19,13 @@ recipe_version = 1
 name         = "heroic"
 organization = "heroic"
 version      = "2.22.3"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
 license      = "GPL-3.0-only"
 homepage     = "https://heroicgameslauncher.com/"
+# Needs the sandbox's gpu field (round 41); an older apm holds it.
+min_aos      = "0.3.12"
 
 [[source]]
 url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.3/Heroic-2.22.3-linux-x64.tar.xz"
@@ -49,6 +51,8 @@ command = ["heroic"]
 [sandbox]
 home       = "full"
 microphone = true
+# A game: the discrete GPU where the laptop has one.
+gpu = true
 
 [launcher]
 name       = "Heroic Games Launcher"

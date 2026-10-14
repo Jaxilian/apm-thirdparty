@@ -43,6 +43,7 @@ APPS = {
     "krita":    ("krita", "krita"),
     "inkscape": ("inkscape", "inkscape"),
     "lutris":   ("lutris", "lutris"),
+    "vscode":   ("code", "vscode/code"),
 }
 ENV = ("WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000 HOME=/home/admin "
        "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus")
@@ -138,7 +139,12 @@ def main():
         time.sleep(10)
         setup = ser.run(
             "systemctl stop aos-update-check.timer aos-update-check.service 2>/dev/null; "
-            "mkdir -p /aos/t; curl -sf -o /aos/t/apm http://10.0.2.2:%d/apm && chmod 755 /aos/t/apm && /aos/t/apm help | head -1; "
+            # A development build's os-release says 0.1.0, which no recipe's
+            # min_aos accepts: apm reads the version from where APM_OS_RELEASE
+            # points, so a copy saying 9.9.9 lets every recipe install here.
+            "mkdir -p /aos/t; curl -sf -o /aos/t/apm.bin http://10.0.2.2:%d/apm && chmod 755 /aos/t/apm.bin && "
+            "sed 's/^VERSION_ID=.*/VERSION_ID=9.9.9/' /usr/lib/os-release > /aos/t/os-release && "
+            "printf '#!/bin/sh\\nexport APM_OS_RELEASE=/aos/t/os-release\\nexec /aos/t/apm.bin \"$@\"\\n' > /aos/t/apm && chmod 755 /aos/t/apm && /aos/t/apm help | head -1; "
             "mkdir -p /aos/t/index && cd /aos/t/index && "
             "for f in $(curl -sf http://10.0.2.2:%d/index/ | sed -n 's/.*href=\"\\([^\"]*\\)\".*/\\1/p'); do curl -sf -O http://10.0.2.2:%d/index/$f; done; cd /; "
             "/aos/t/apm repo add thirdparty https://github.com/Jaxilian/apm-thirdparty/releases/download/index --third-party 2>&1 | tail -1; "
@@ -181,6 +187,18 @@ def main():
             changed = shot is not None and before is not None and shot[1][bar:] != before[1][bar:]
             print("%s\n-- log tail:\n%s" % (alive.strip(), log))
             results[name] = "ok" if "ALIVE" in alive and changed else ("running, screen unchanged" if "ALIVE" in alive else "died")
+            # An editor must take keys (round 37: Electron ignored every
+            # key while its keyring helper waited): Escape closes the
+            # welcome dialog, Ctrl+Shift+P opens the command palette;
+            # either changes the screen.
+            if name == "vscode" and results[name] == "ok":
+                bt.monitor("sendkey esc")
+                time.sleep(2)
+                bt.monitor("sendkey ctrl-shift-p")
+                time.sleep(4)
+                after = bt.shot("apps-%s-keys" % name)
+                if after is None or after[1][bar:] == shot[1][bar:]:
+                    results[name] = "running, no input"
             ser.run("for p in $(pgrep -u admin); do kill $p 2>/dev/null; done; sleep 3; "
                     "for p in $(pgrep -u admin); do kill -9 $p 2>/dev/null; done; true")
             time.sleep(3)

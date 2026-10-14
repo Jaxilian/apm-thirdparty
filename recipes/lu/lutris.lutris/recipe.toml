@@ -31,11 +31,13 @@ recipe_version = 1
 name         = "lutris"
 organization = "lutris"
 version      = "0.5.22"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
 homepage     = "https://lutris.net/"
+# Needs the sandbox's gpu field (round 41); an older apm holds it.
+min_aos      = "0.3.12"
 
 [[source]]
 url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
@@ -63,6 +65,8 @@ command = ["lutris"]
 [sandbox]
 home       = "full"
 microphone = true
+# A game: the discrete GPU where the laptop has one.
+gpu = true
 
 [launcher]
 name       = "Lutris"

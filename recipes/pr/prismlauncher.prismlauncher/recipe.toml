@@ -26,11 +26,13 @@ recipe_version = 1
 name         = "prismlauncher"
 organization = "prismlauncher"
 version      = "11.1.1"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Prism Launcher for Minecraft"
 license      = "GPL-3.0-only"
 homepage     = "https://prismlauncher.org/"
+# Needs the sandbox's gpu field (round 41); an older apm holds it.
+min_aos      = "0.3.12"
 
 [[source]]
 url    = "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.1/PrismLauncher-Linux-x86_64.AppImage"
@@ -62,6 +64,8 @@ command = ["prismlauncher"]
 [sandbox]
 home  = "private"
 share = ["Downloads"]
+# A game: the discrete GPU where the laptop has one.
+gpu = true
 
 [launcher]
 name       = "Prism Launcher"

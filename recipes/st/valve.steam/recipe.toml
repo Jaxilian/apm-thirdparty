@@ -33,11 +33,13 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 8
+release      = 9
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
 homepage     = "https://store.steampowered.com/"
+# Needs the sandbox's gpu field (round 41); an older apm holds it.
+min_aos      = "0.3.12"
 
 [[source]]
 url    = "https://repo.steampowered.com/steam/archive/stable/steam_1.0.0.87.tar.gz"
@@ -67,6 +69,8 @@ lib32 = "runtime/compat32"
 # Voice chat: the microphone from the start; Software's Permissions
 # switch it off.
 microphone = true
+# A game: the discrete GPU where the laptop has one.
+gpu = true
 
 [provides]
 command = ["steam"]
