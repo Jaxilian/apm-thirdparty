@@ -22,16 +22,16 @@ recipe_version = 1
 [package]
 name         = "node"
 organization = "nodejs"
-version      = "24.21.0"
-release      = 2
+version      = "24.22.0"
+release      = 1
 kind         = "bin"
 summary      = "Node.js JavaScript runtime"
 license      = "MIT"
 homepage     = "https://nodejs.org/"
 
 [[source]]
-url    = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz"
-sha256 = "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6"
+url    = "https://nodejs.org/dist/v24.22.0/node-v24.22.0-linux-x64.tar.xz"
+sha256 = "cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008"
 strip  = 1
 
 [provides]
