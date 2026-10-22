@@ -1,0 +1,6 @@
+[[source]]
+kind  = "github"
+repo  = "cli/cli"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^gh_[\d.]+_linux_amd64\.tar\.gz$'
+sums  = "https://github.com/cli/cli/releases/download/v{version}/gh_{version}_checksums.txt"

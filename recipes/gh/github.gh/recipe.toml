@@ -1,0 +1,40 @@
+# GitHub CLI (gh), from GitHub's own release: the official linux_amd64
+# tarball, copied as it is (bin/gh and the manual pages), the way the
+# Node.js and Rust toolchain recipes do it. A static Go binary: nothing
+# of the runtime is needed.
+#
+# No sandbox, like the other developer tools: it works on the person's
+# repositories and keeps its token in ~/.config/gh (or the keyring).
+#
+# The sha256 is the one in gh_<version>_checksums.txt beside the release
+# asset, checked against the file as downloaded on 2026-10-22. MIT.
+# Fetched from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "gh"
+organization = "github"
+version      = "2.103.0"
+release      = 1
+kind         = "bin"
+summary      = "GitHub CLI: repositories, pull requests, issues and releases from the terminal"
+license      = "MIT"
+homepage     = "https://cli.github.com/"
+
+[[source]]
+url    = "https://github.com/cli/cli/releases/download/v2.103.0/gh_2.103.0_linux_amd64.tar.gz"
+sha256 = "fdd768eb70f6409f80fcfa9f3a1c0adf0fc98d827ab3ce0bed2ac22762c5d786"
+strip  = 1
+
+[provides]
+command = ["gh"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/share/man/man1 $D/share/doc/gh
+install -m 755 $APM_SRC/bin/gh $D/bin/gh
+cp -a $APM_SRC/share/man/man1/. $D/share/man/man1/
+cp $APM_SRC/LICENSE $D/share/doc/gh/
+'''
