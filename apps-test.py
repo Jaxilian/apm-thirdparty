@@ -44,6 +44,7 @@ APPS = {
     "inkscape": ("inkscape", "inkscape"),
     "lutris":   ("lutris", "lutris"),
     "vscode":   ("code", "vscode/code"),
+    "claude":   ("claude-desktop", "claude/claude-desktop"),
 }
 ENV = ("WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000 HOME=/home/admin "
        "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus")
