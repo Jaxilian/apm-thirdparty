@@ -25,7 +25,7 @@ recipe_version = 1
 [package]
 name         = "telegram"
 organization = "telegram"
-version      = "7.3.1"
+version      = "7.3.3"
 release      = 1
 kind         = "app"
 summary      = "Telegram Desktop messenger"
@@ -33,8 +33,8 @@ license      = "GPL-3.0-or-later WITH openvpn-openssl-exception"
 homepage     = "https://desktop.telegram.org/"
 
 [[source]]
-url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.3.1.tar.xz"
-sha256 = "654a5b266d653b072b4407a4644bd441e37ee393f502c71b2e1d86fc115b8ab6"
+url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.3.3.tar.xz"
+sha256 = "7bcd524ea17f3eefda95b2ffdb3d5b355e7f727d44045a6ff2316cd077355df9"
 strip  = 1
 
 [[dependencies]]

@@ -24,7 +24,7 @@ recipe_version = 1
 [package]
 name         = "qbittorrent"
 organization = "qbittorrent"
-version      = "5.2.4"
+version      = "5.3.0"
 release      = 1
 kind         = "app"
 summary      = "qBittorrent BitTorrent client"
@@ -32,8 +32,8 @@ license      = "GPL-2.0-or-later"
 homepage     = "https://www.qbittorrent.org/"
 
 [[source]]
-url    = "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.4/qbittorrent-5.2.4_x86_64.AppImage"
-sha256 = "9ab0e97a3245a1d596271878a75aa208049cc62be8b682aa3f3109511c5f17b7"
+url    = "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.3.0/qbittorrent-5.3.0_x86_64.AppImage"
+sha256 = "1c64f2e95740be41f2822f909f56e4dd0da2637f312098a06da113d7add7418b"
 
 [[dependencies]]
 name         = "gtk3"
@@ -64,7 +64,7 @@ terminal   = false
 
 [build]
 prepare = '''
-./qbittorrent-5.2.4_x86_64.AppImage --appimage-extract >/dev/null
+./qbittorrent-5.3.0_x86_64.AppImage --appimage-extract >/dev/null
 rm -f squashfs-root/usr/lib/libsystemd.so*
 '''
 install = '''

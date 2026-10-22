@@ -25,8 +25,8 @@ recipe_version = 1
 [package]
 name         = "toolbox"
 organization = "jetbrains"
-version      = "3.8.1"
-release      = 2
+version      = "3.9.0"
+release      = 1
 kind         = "app"
 summary      = "JetBrains Toolbox: installs and updates JetBrains IDEs"
 license      = "LicenseRef-JetBrains-Toolbox-App"
@@ -35,8 +35,8 @@ homepage     = "https://www.jetbrains.com/toolbox-app/"
 min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.8.1.88030.tar.gz"
-sha256 = "25cbe2ad027f5a5749bf8d8ae7c2215a8665403cfe94ff5d05cd48b25daac345"
+url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.9.0.88839.tar.gz"
+sha256 = "e578d49627da13a6e196e234bfb6325db02a64a07fd22414909daae378ab4049"
 strip  = 1
 
 [[dependencies]]

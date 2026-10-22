@@ -23,7 +23,7 @@ recipe_version = 1
 [package]
 name         = "onlyoffice"
 organization = "onlyoffice"
-version      = "9.4.0"
+version      = "10.0.0"
 release      = 1
 kind         = "app"
 summary      = "ONLYOFFICE Desktop Editors"
@@ -31,8 +31,8 @@ license      = "AGPL-3.0-only"
 homepage     = "https://www.onlyoffice.com/desktop"
 
 [[source]]
-url    = "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v9.4.0/DesktopEditors-x86_64.AppImage"
-sha256 = "f5faf24552665262fe94486a510b997d2e5a24bde14df94c802c79bf17f9254c"
+url    = "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v10.0.0/DesktopEditors-x86_64.AppImage"
+sha256 = "3e4668d44f6881d1d8873b38ea9c9fd81b9c77132facdb735bfebfe960edb745"
 
 [[dependencies]]
 name         = "gtk3"

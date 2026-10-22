@@ -17,7 +17,7 @@ recipe_version = 1
 [package]
 name         = "docker"
 organization = "docker"
-version      = "29.9.0"
+version      = "29.9.2"
 release      = 1
 kind         = "bin"
 summary      = "Docker CLI and Compose, on podman"
@@ -27,13 +27,13 @@ homepage     = "https://docs.docker.com/reference/cli/docker/"
 min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://download.docker.com/linux/static/stable/x86_64/docker-29.9.0.tgz"
-sha256 = "33e1ab8b63d14bca449f7a3d30d7f6aa669daa544e60a86b17fec87f61afe2b4"
+url    = "https://download.docker.com/linux/static/stable/x86_64/docker-29.9.2.tgz"
+sha256 = "9ac225999fd5e863f7694c728ef23d480616b1e5639328fa309befd4243d69eb"
 strip  = 1
 
 [[source]]
-url    = "https://github.com/docker/compose/releases/download/v5.6.0/docker-compose-linux-x86_64"
-sha256 = "40343e21ca777173e69cff5dbafeb37c6f81f3b0d57d9e597f036e95eb63e76a"
+url    = "https://github.com/docker/compose/releases/download/v5.6.1/docker-compose-linux-x86_64"
+sha256 = "47737f4236e6d3ccea7291995203f8f018058783b4c3a9469119811a0b5db8c0"
 
 [[dependencies]]
 name         = "podman"

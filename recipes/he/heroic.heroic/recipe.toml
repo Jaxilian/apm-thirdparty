@@ -18,8 +18,8 @@ recipe_version = 1
 [package]
 name         = "heroic"
 organization = "heroic"
-version      = "2.22.3"
-release      = 2
+version      = "2.22.4"
+release      = 1
 kind         = "app"
 summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
 license      = "GPL-3.0-only"
@@ -28,8 +28,8 @@ homepage     = "https://heroicgameslauncher.com/"
 min_aos      = "0.3.12"
 
 [[source]]
-url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.3/Heroic-2.22.3-linux-x64.tar.xz"
-sha256 = "7382d719a5114c5f0761eea05cdb22f73f58fe98ec840d16b3d85a054d0d3efd"
+url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.4/Heroic-2.22.4-linux-x64.tar.xz"
+sha256 = "81497c4e67d42905da5839a32be053c011eae35fb1fd5ec9441249b238d8f99b"
 strip  = 1
 
 [[dependencies]]
