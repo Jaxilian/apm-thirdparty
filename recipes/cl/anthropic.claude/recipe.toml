@@ -1,0 +1,83 @@
+# Claude Desktop (the Linux beta, 2026-06-30), from Anthropic's own apt
+# repository: the .deb they publish, unpacked, with one wrapper that runs
+# the Electron app through the GTK3 runtime on Wayland, as VS Code and
+# Slack. The package's apt registration (its postinst writes Anthropic's
+# keyring and sources entry) is apt's business and is left out; nothing
+# else is changed. The app does not update itself on Linux.
+#
+# --password-store=gnome-libsecret: the sign-in is kept through Electron's
+# safeStorage in the keyring, and Chromium knows none of our desktops by
+# name; AOS has the Secret Service (oo7) and libsecret in the core.
+#
+# Like VS Code: the whole home (Chat, Cowork and Claude Code work on the
+# person's repositories) and the installed developer tools (cargo, node,
+# gh through /opt/apm); AOS 0.4.1's sandbox also gives a tools program
+# /dev/kvm, which Cowork's virtual machine wants (it brings its own
+# QEMU helper; the host's qemu is not needed). Computer Use and dictation
+# are not in the Linux beta.
+#
+# Bump from https://downloads.claude.ai/claude-desktop/apt/stable/dists/stable/main/binary-amd64/Packages
+# (Filename and SHA256 of claude-desktop; update.toml does it). The sha256
+# here is the one in that Packages file, whose own hash is in the
+# repository's InRelease; InRelease was checked with gpgv against
+# Anthropic's key (https://downloads.claude.ai/claude-desktop/key.asc,
+# 31DDDE24 DDFAB679 F42D7BD2 BAA929FF 1A7ECACE, "Anthropic Claude Code
+# Release Signing") and the .deb against the sha256, as downloaded on
+# 2026-10-22.
+#
+# Proprietary: Anthropic's consumer terms. Fetched from Anthropic, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "claude"
+organization = "anthropic"
+version      = "3.1623.3"
+release      = 1
+kind         = "app"
+summary      = "Claude Desktop: chat, Cowork and Claude Code from Anthropic (Linux beta)"
+license      = "LicenseRef-Anthropic-Consumer-Terms"
+homepage     = "https://claude.ai/download"
+min_aos      = "0.3.10"
+
+[[source]]
+url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_3.1623.3_amd64.deb"
+sha256 = "851be2cc89c007b65b243f71a0a0e7f3d5a8874eaf91f01941528deb653bd593"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["claude-desktop"]
+
+# A developer's assistant: the whole home and the installed tools, as VS
+# Code; the microphone is not used on Linux (no dictation in the beta).
+[sandbox]
+home  = "full"
+tools = true
+
+[launcher]
+name       = "Claude"
+comment    = "Chat, Cowork and Claude Code"
+exec       = "bin/claude-desktop"
+icon       = "claude/claude-desktop.png"
+categories = ["Utility", "Development"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/claude $D/bin
+cp -a $APM_SRC/usr/lib/claude-desktop/. $D/claude/
+install -m 644 $APM_SRC/usr/share/icons/hicolor/256x256/apps/claude-desktop.png $D/claude/claude-desktop.png
+install -m 644 $APM_SRC/usr/share/doc/claude-desktop/copyright $D/claude/copyright
+cat > $D/bin/claude-desktop <<WRAP
+#!/bin/sh
+# Claude Desktop on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/claude/claude-desktop --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/claude-desktop
+'''
