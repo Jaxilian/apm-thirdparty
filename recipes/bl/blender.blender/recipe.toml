@@ -21,7 +21,7 @@ recipe_version = 1
 [package]
 name         = "blender"
 organization = "blender"
-version      = "5.2.2"
+version      = "5.2.3"
 release      = 1
 kind         = "app"
 summary      = "Blender 3D creation suite"
@@ -29,8 +29,8 @@ license      = "GPL-2.0-or-later AND MIT"
 homepage     = "https://www.blender.org/"
 
 [[source]]
-url    = "https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz"
-sha256 = "84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168"
+url    = "https://download.blender.org/release/Blender5.2/blender-5.2.3-linux-x64.tar.xz"
+sha256 = "78486c018b4443efe5e75ab54c290ed8c15abafd249b862c2c9ce2530a918eec"
 strip  = 1
 
 [[source]]
