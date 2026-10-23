@@ -22,11 +22,14 @@ recipe_version = 1
 name         = "blender"
 organization = "blender"
 version      = "5.2.3"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Blender 3D creation suite"
 license      = "GPL-2.0-or-later AND MIT"
 homepage     = "https://www.blender.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.blender.org/release/Blender5.2/blender-5.2.3-linux-x64.tar.xz"
@@ -53,11 +56,12 @@ track        = "*"
 [provides]
 command = ["blender"]
 
-# A creative tool opens and saves the person's files wherever they are:
-# the whole home. The sandbox still hides the rest of the store, /var and
-# /root.
+# Its own folder for settings and add-ons, and ~/Documents and
+# ~/Pictures read-write for scenes and renders. Blender uses its own file
+# browser, not the dialog: it sees nothing else of the home.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Documents", "Pictures"]
 
 [launcher]
 name       = "Blender"

@@ -16,11 +16,14 @@ recipe_version = 1
 name         = "libreoffice"
 organization = "libreoffice"
 version      = "26.8.1"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "LibreOffice office suite"
 license      = "MPL-2.0"
 homepage     = "https://www.libreoffice.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/x86_64/LibreOffice_26.8.1_Linux_x86-64_deb.tar.gz"
@@ -40,9 +43,11 @@ track        = "*"
 [provides]
 command = ["libreoffice"]
 
-# Documents live wherever the person keeps them: the whole home.
+# Its own folder for its profile, and ~/Documents read-write; a file
+# elsewhere is opened through the file dialog.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Documents"]
 
 [launcher]
 name       = "LibreOffice"

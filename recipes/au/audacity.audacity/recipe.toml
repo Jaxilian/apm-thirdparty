@@ -18,11 +18,14 @@ recipe_version = 1
 name         = "audacity"
 organization = "audacity"
 version      = "4.0.1"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Audacity audio editor and recorder"
 license      = "GPL-3.0-only"
 homepage     = "https://www.audacityteam.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://github.com/audacity/audacity/releases/download/Audacity-4.0.1/audacity-linux-4.0.1-x86_64.AppImage"
@@ -38,10 +41,11 @@ track        = "*"
 [provides]
 command = ["audacity"]
 
-# Recordings and projects live wherever the person keeps them: the whole
-# home. Audacity records, so it asks for the microphone.
+# Its own folder for settings, and ~/Music read-write for recordings
+# and projects. Audacity records, so it asks for the microphone.
 [sandbox]
-home       = "full"
+home = "private"
+share = ["Music"]
 microphone = true
 
 [launcher]

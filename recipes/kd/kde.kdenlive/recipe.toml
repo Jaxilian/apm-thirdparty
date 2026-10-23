@@ -24,11 +24,14 @@ recipe_version = 1
 name         = "kdenlive"
 organization = "kde"
 version      = "26.8.2"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Kdenlive video editor"
 license      = "GPL-3.0-or-later"
 homepage     = "https://kdenlive.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.kde.org/stable/kdenlive/26.08/linux/kdenlive-26.08.2-x86_64.AppImage"
@@ -44,10 +47,11 @@ track        = "*"
 [provides]
 command = ["kdenlive"]
 
-# Footage and projects live wherever the person keeps them: the whole
-# home.
+# Its own folder for settings and projects' caches, and ~/Videos,
+# ~/Music and ~/Pictures read-write for footage, sound and stills.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Videos", "Music", "Pictures"]
 
 [launcher]
 name       = "Kdenlive"

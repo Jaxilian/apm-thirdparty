@@ -14,8 +14,8 @@
 # command runner did not expect; it now counts as a failed command (see
 # prepare). Nothing else is patched.
 #
-# Games run on Wine or Proton builds that Lutris downloads into the
-# person's home itself; those are X11 programs, hence runtime/xwayland.
+# Games run on Wine or Proton builds that Lutris downloads into its own
+# home (~/AppData/lutris.lutris); those are X11 programs, hence runtime/xwayland.
 # Known limit: Lutris unpacks parts of its own runtime with 7z, and also
 # wants cabextract, unzip, glxinfo and vulkaninfo for some installers;
 # AOS has none of them, so "Runtime update failed: 7z" is logged at start
@@ -31,13 +31,14 @@ recipe_version = 1
 name         = "lutris"
 organization = "lutris"
 version      = "0.5.22"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
 homepage     = "https://lutris.net/"
-# Needs the sandbox's gpu field (round 41); an older apm holds it.
-min_aos      = "0.3.12"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
@@ -61,9 +62,14 @@ track        = "*"
 [provides]
 command = ["lutris"]
 
-# Game libraries live wherever the person keeps them: the whole home.
+# Game libraries live in its own folder (~/AppData/lutris.lutris is its
+# home, ~/Games inside it): nothing else of the home. No /.flatpak-info:
+# Lutris 0.5.22 takes the file to mean it is the Flatpak build
+# (util/linux.py is_flatpak) and then reaches for flatpak-spawn and the
+# Flatpak Steam's paths.
 [sandbox]
-home       = "full"
+home = "private"
+flatpak_info = false
 microphone = true
 # A game: the discrete GPU where the laptop has one.
 gpu = true

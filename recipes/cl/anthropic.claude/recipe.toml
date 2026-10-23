@@ -9,7 +9,7 @@
 # safeStorage in the keyring, and Chromium knows none of our desktops by
 # name; AOS has the Secret Service (oo7) and libsecret in the core.
 #
-# Like VS Code: the whole home (Chat, Cowork and Claude Code work on the
+# Like VS Code: ~/Projects (Chat, Cowork and Claude Code work on the
 # person's repositories) and the installed developer tools (cargo, node,
 # gh through /opt/apm); AOS 0.4.1's sandbox also gives a tools program
 # /dev/kvm, which Cowork's virtual machine wants (it brings its own
@@ -34,12 +34,14 @@ recipe_version = 1
 name         = "claude"
 organization = "anthropic"
 version      = "3.6556.2"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Claude Desktop: chat, Cowork and Claude Code from Anthropic (Linux beta)"
 license      = "LicenseRef-Anthropic-Consumer-Terms"
 homepage     = "https://claude.ai/download"
-min_aos      = "0.3.10"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_3.6556.2_amd64.deb"
@@ -53,10 +55,14 @@ track        = "*"
 [provides]
 command = ["claude-desktop"]
 
-# A developer's assistant: the whole home and the installed tools, as VS
-# Code; the microphone is not used on Linux (no dictation in the beta).
+# A developer's assistant: its own folder for its data, ~/Projects
+# read-write (Claude Code works on repositories there), ~/.gitconfig
+# read-only and the installed tools, as VS Code; no SSH keys (it has no
+# business pushing). The microphone is not used on Linux (no dictation in
+# the beta).
 [sandbox]
-home  = "full"
+home = "private"
+share = ["Projects", ".gitconfig:ro"]
 tools = true
 
 [launcher]

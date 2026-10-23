@@ -21,11 +21,14 @@ recipe_version = 1
 name         = "gimp"
 organization = "gimp"
 version      = "3.2.6"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "GIMP image editor"
 license      = "GPL-3.0-or-later"
 homepage     = "https://www.gimp.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.gimp.org/gimp/v3.2/linux/GIMP-3.2.6-x86_64.AppImage"
@@ -41,9 +44,11 @@ track        = "*"
 [provides]
 command = ["gimp"]
 
-# Pictures live wherever the person keeps them: the whole home.
+# Its own folder for settings and plug-ins, and ~/Pictures read-write;
+# a picture elsewhere is opened through the file dialog.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Pictures"]
 
 [launcher]
 name       = "GIMP"

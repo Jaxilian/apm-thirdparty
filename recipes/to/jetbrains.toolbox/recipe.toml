@@ -9,8 +9,9 @@
 # there and updates itself there, and installs the IDEs (IntelliJ IDEA,
 # PyCharm, ...) into the home as well, with launchers in
 # ~/.local/share/applications. That is JetBrains' own model; apm updates
-# only this bootstrap. Hence the whole home and the network: the IDEs it
-# installs work on the person's projects wherever they are.
+# only this bootstrap. Its home is its own folder in ~/AppData, so all of
+# that lands there (the IDEs' launchers do not reach the menu); the IDEs
+# work on projects in ~/Projects and need the network.
 #
 # The version is JetBrains' 3.8.1.88030 without the build number, since a
 # version here has three parts. The sha256 is the one in JetBrains'
@@ -26,13 +27,14 @@ recipe_version = 1
 name         = "toolbox"
 organization = "jetbrains"
 version      = "3.9.0"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "JetBrains Toolbox: installs and updates JetBrains IDEs"
 license      = "LicenseRef-JetBrains-Toolbox-App"
 homepage     = "https://www.jetbrains.com/toolbox-app/"
-# Needs the sandbox's tools field (round 38/39); an older apm holds it.
-min_aos      = "0.3.10"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.9.0.88839.tar.gz"
@@ -52,14 +54,15 @@ track        = "*"
 [provides]
 command = ["jetbrains-toolbox"]
 
-# It installs IDEs into the home and the IDEs open projects anywhere in
-# it: the whole home, the network on (the default).
+# The IDEs it installs land in its own folder (~/AppData/<org>.<name>
+# is their home) and open projects from ~/Projects, read-write;
+# ~/.gitconfig read-only, the SSH keys (read-only, the agent's socket) for
+# git over ssh, the installed tools, the network on (the default).
 [sandbox]
-home = "full"
-# The installed command-line tools (node, java, dotnet, python, cargo),
-# read-only: an editor without them is an editor without a terminal
-# (the G14, 0.3.8: inside VS Code python3 was the OS's stripped build).
+home = "private"
+share = ["Projects", ".gitconfig:ro"]
 tools = true
+ssh   = true
 
 [launcher]
 name       = "JetBrains Toolbox"

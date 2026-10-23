@@ -1,7 +1,8 @@
 # Steam. Valve's launcher package for Linux, as Valve publishes it: the
 # bin_steam.sh script and, beside it where the script looks, the client
-# bootstrap and its scout runtime. The client fetches its updates into the
-# account's home and runs from there, as Steam does on every distribution.
+# bootstrap and its scout runtime. The client fetches its updates into its
+# home (~/AppData/valve.steam) and runs from there, as Steam does on every
+# distribution.
 #
 # The client that runs is the 64-bit one. Valve ships two in the package:
 # the ubuntu12_32 client, a 32-bit binary that wants a 32-bit libGL, X11
@@ -33,13 +34,14 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 9
+release      = 10
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
 homepage     = "https://store.steampowered.com/"
-# Needs the sandbox's gpu field (round 41); an older apm holds it.
-min_aos      = "0.3.12"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://repo.steampowered.com/steam/archive/stable/steam_1.0.0.87.tar.gz"
@@ -60,11 +62,15 @@ organization = "runtime"
 track        = "*"
 
 # The declaration apm runs the program under (docs/security-model.md in
-# the OS tree): the whole home -- the game library lives in it -- and the
-# 32-bit glibc at /lib for the bootstrap's updater. Software shows it and
-# lets the person change what it sees.
+# the OS tree): its own folder, ~/AppData/valve.steam, is its home and
+# holds the game library; nothing else of the home. The 32-bit glibc at
+# /lib for the bootstrap's updater. No /.flatpak-info: Steam's launcher
+# takes that file to mean it is the Flatpak build and exits 71 asking for
+# flatpak-spawn (the Zenbook, 2026-10-23). Software shows it and lets the
+# person change what it sees.
 [sandbox]
-home  = "full"
+home = "private"
+flatpak_info = false
 lib32 = "runtime/compat32"
 # Voice chat: the microphone from the start; Software's Permissions
 # switch it off.
@@ -94,7 +100,7 @@ cat > $D/bin/steam <<WRAP
 #!/bin/sh
 # Inside the sandbox apm's farm entry made from the [sandbox] section (a
 # 32-bit glibc at /lib for the bootstrap's updater, this package and its
-# dependencies, the account's home, the session's sockets, the GPU). The
+# dependencies, its own home in ~/AppData, the session's sockets, the GPU). The
 # 64-bit client: opted into the client beta once, by name, and asked for
 # by STEAM_FORCE_CLIENT; steam.sh honours both.
 # The compositor starts XWayland when it finds it installed, at the

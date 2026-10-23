@@ -4,8 +4,8 @@
 # through the GTK3 runtime with Electron on Wayland. The tarball rather
 # than the AppImage: the same files, with nothing to extract.
 #
-# Games run on Wine or Proton builds Heroic downloads into the home
-# itself; those are X11 programs, hence runtime/xwayland. Heroic does not
+# Games run on Wine or Proton builds Heroic downloads into its own home
+# (~/AppData/heroic.heroic); those are X11 programs, hence runtime/xwayland. Heroic does not
 # update itself from the tarball; apm updates the package.
 #
 # The sha256 is the one GitHub records for the asset in
@@ -19,13 +19,14 @@ recipe_version = 1
 name         = "heroic"
 organization = "heroic"
 version      = "2.22.4"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
 license      = "GPL-3.0-only"
 homepage     = "https://heroicgameslauncher.com/"
-# Needs the sandbox's gpu field (round 41); an older apm holds it.
-min_aos      = "0.3.12"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.4/Heroic-2.22.4-linux-x64.tar.xz"
@@ -45,11 +46,14 @@ track        = "*"
 [provides]
 command = ["heroic"]
 
-# As Lutris: game libraries live wherever the person keeps them (~/Games
-# by default), so the whole home; the microphone for voice chat in games,
-# which Software's Permissions switch off.
+# As Lutris: game libraries (~/Games by default) and the Wine and Proton
+# builds it downloads live in its own folder, ~/AppData/heroic.heroic,
+# its home; nothing else of the home. Heroic tells the Flatpak build by
+# FLATPAK_ID, which aos-sandbox does not set, so /.flatpak-info stays
+# (not checked against this payload). The microphone for voice chat in
+# games, which Software's Permissions switch off.
 [sandbox]
-home       = "full"
+home = "private"
 microphone = true
 # A game: the discrete GPU where the laptop has one.
 gpu = true

@@ -24,11 +24,14 @@ recipe_version = 1
 name         = "onlyoffice"
 organization = "onlyoffice"
 version      = "10.0.0"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "ONLYOFFICE Desktop Editors"
 license      = "AGPL-3.0-only"
 homepage     = "https://www.onlyoffice.com/desktop"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v10.0.0/DesktopEditors-x86_64.AppImage"
@@ -47,9 +50,11 @@ track        = "*"
 [provides]
 command = ["onlyoffice"]
 
-# Documents live wherever the person keeps them: the whole home.
+# Its own folder for its settings, and ~/Documents read-write; a file
+# elsewhere is opened through the file dialog.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Documents"]
 
 [launcher]
 name       = "ONLYOFFICE"

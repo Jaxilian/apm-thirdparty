@@ -15,13 +15,14 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.143.1"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
 homepage     = "https://code.visualstudio.com/"
-# Needs the sandbox's tools field (round 38/39); an older apm holds it.
-min_aos      = "0.3.10"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/e646868227c3e3a9e3f24277c8c7220be42c0be7/code-stable-x64-1792691793.tar.gz"
@@ -36,19 +37,23 @@ track        = "*"
 [provides]
 command = ["code"]
 
-# An editor opens the person's projects wherever they are: the whole
-# home. The sandbox still hides the rest of the store, /var and /root.
+# Its own folder, ~/AppData/<org>.<name>, is its home: settings,
+# extensions and caches stay there. It sees ~/Projects read-write (where
+# repositories live; Open Folder on anything else asks once and restarts
+# it into the folder) and ~/.gitconfig read-only, plus the SSH keys
+# (read-only, the agent's socket) for git over ssh and the installed
+# command-line tools (node, java, dotnet, python, cargo), without which an
+# editor has no terminal (the G14, 0.3.8).
 [sandbox]
-home = "full"
-# The installed command-line tools (node, java, dotnet, python, cargo),
-# read-only: an editor without them is an editor without a terminal
-# (the G14, 0.3.8: inside VS Code python3 was the OS's stripped build).
+home = "private"
+share = ["Projects", ".gitconfig:ro"]
 tools = true
+ssh   = true
 
 [launcher]
 name       = "Visual Studio Code"
 comment    = "Code editing, redefined"
-exec       = "bin/code"
+exec       = "bin/code %F"
 icon       = "vscode/resources/app/resources/linux/code.png"
 categories = ["Development", "IDE"]
 terminal   = false

@@ -26,11 +26,14 @@ recipe_version = 1
 name         = "krita"
 organization = "kde"
 version      = "6.0.4"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Krita digital painting"
 license      = "GPL-3.0-or-later"
 homepage     = "https://krita.org/"
+# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
+# --ssh, --no-flatpak-info); an older one would not know them.
+min_aos      = "0.4.12"
 
 [[source]]
 url    = "https://download.kde.org/stable/krita/6.0.4.1/krita-6.0.4.1-x86_64.AppImage"
@@ -46,9 +49,11 @@ track        = "*"
 [provides]
 command = ["krita"]
 
-# Paintings live wherever the person keeps them: the whole home.
+# Its own folder for settings and resources, and ~/Pictures read-write
+# for paintings; a file elsewhere is opened through the file dialog.
 [sandbox]
-home = "full"
+home = "private"
+share = ["Pictures"]
 
 [launcher]
 name       = "Krita"
