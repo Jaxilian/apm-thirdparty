@@ -97,6 +97,7 @@ if [ -z "$published" ]; then
 	echo "auto-bump $(date +%F): nothing moved.${skipped:+ Skipped: $skipped}"
 	exit 0
 fi
+moved=${moved%; } skipped=${skipped%; }
 summary="auto-bump $(date +%F): moved: ${moved:-nothing}. Skipped: ${skipped:-nothing}. Published:$published."
 echo
 echo "$summary"
