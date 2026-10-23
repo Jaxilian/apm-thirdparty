@@ -35,6 +35,17 @@ for i in icons/*; do
 	[ -f "$i" ] && cp "$i" index/
 done
 
+# Only the newest release of each org-name-version stays in index/: an apm
+# before 0.1.25 took the first release listed, not the highest
+# (aos/perl 5.42.3-2 over -5, 2026-10-23), and machines on AOS 0.4.6 and
+# older still run one. The release is the number before ".<arch>.apkg".
+for f in index/*.apkg; do
+	[ -f "$f" ] || continue
+	base=${f%-*.*.apkg}
+	newest=$(ls "$base"-*.apkg | sed 's/.*-\([0-9]*\)\.[^.]*\.apkg$/\1 &/' | sort -n | tail -1 | cut -d' ' -f2)
+	[ "$f" = "$newest" ] || { echo "superseded: $f"; rm -f "$f"; }
+done
+
 "$APM" index index --sign
 [ "$1" = --local ] && exit 0
 
