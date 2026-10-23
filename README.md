@@ -72,3 +72,28 @@ The routine is three steps:
 
 The workflow needs "Allow GitHub Actions to create and approve pull
 requests" switched on under Settings, Actions, General.
+
+## The weekly bump
+
+`auto-bump.sh` does the routine above on this machine, for both indexes
+(this one and apm-recipes, through `bump.py --root`), and publishes
+without a PR: it runs `bump.py --write`, builds every changed recipe with
+`apm --user build` (the new source is downloaded and its sha256
+verified), puts back with `git checkout` any recipe that failed to build,
+commits and pushes only the recipes that built, and runs each repo's
+`publish.sh`. A repo with uncommitted changes, or one that cannot
+fast-forward to origin, stops the run before anything is written.
+
+- **When:** the systemd user timer `aos-bump.timer`, Mondays 06:00;
+  `Persistent=true` runs a missed Monday at the next boot. Linger is on
+  for jax, so it runs logged out too -- but `gh auth token` reads the
+  login keyring, and with it locked the run stops at the start.
+- **Log:** `~/Projects/OS/tmp-build/auto-bump/<date>.log`; its last
+  paragraph says what moved, what was skipped and why, what was published.
+  Nothing moved = exit 0, nothing on stdout.
+- **By hand:** `./auto-bump.sh` (or `systemctl --user start aos-bump.service`).
+  The dry run is still `python3 -I bump.py [--root ../apm-recipes]`.
+- **Pause:** `systemctl --user disable --now aos-bump.timer`; `enable --now`
+  to resume. `systemctl --user list-timers aos-bump.timer` shows the next run.
+
+The apps are built, not run: `apps-test.py` stays the owner's check.

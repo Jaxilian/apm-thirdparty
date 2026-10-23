@@ -6,6 +6,8 @@
     python3 -I bump.py --only org/name   one recipe (repeatable)
     python3 -I bump.py --dl DIR          where the downloads go (default: $TMPDIR/apm-bump)
     python3 -I bump.py --selftest        the checks of the pure parts
+    python3 -I bump.py --root DIR        the recipes of another index (DIR/recipes/...):
+                                         apm-recipes is bumped by this same script
 
 Standard library only. GITHUB_TOKEN in the environment raises GitHub's API
 rate limit (60/h without it; `GITHUB_TOKEN=$(gh auth token)` locally).
@@ -471,10 +473,13 @@ def main():
     ap.add_argument("--only", action="append", default=[], metavar="ORG/NAME")
     ap.add_argument("--dl", default=os.path.join(tempfile.gettempdir(), "apm-bump"), help="download directory")
     ap.add_argument("--selftest", action="store_true")
+    # One script for both indexes: apm-recipes has the same layout, so it is
+    # pointed at rather than given a copy that would drift.
+    ap.add_argument("--root", default=HERE, help="the index repository whose recipes/ to bump")
     args = ap.parse_args()
     if args.selftest:
         return selftest()
-    dirs = sorted(d for d, _, files in os.walk(os.path.join(HERE, "recipes")) if "recipe.toml" in files)
+    dirs = sorted(d for d, _, files in os.walk(os.path.join(args.root, "recipes")) if "recipe.toml" in files)
     without = [d for d in dirs if not os.path.exists(os.path.join(d, "update.toml"))]
     print("| recipe | current | newest | action | checksum |")
     print("|---|---|---|---|---|")
