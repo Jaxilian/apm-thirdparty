@@ -34,14 +34,14 @@ recipe_version = 1
 name         = "claude"
 organization = "anthropic"
 version      = "3.6556.2"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Claude Desktop: chat, Cowork and Claude Code from Anthropic (Linux beta)"
 license      = "LicenseRef-Anthropic-Consumer-Terms"
 homepage     = "https://claude.ai/download"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.13"
 
 [[source]]
 url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_3.6556.2_amd64.deb"
@@ -62,7 +62,11 @@ command = ["claude-desktop"]
 # the beta).
 [sandbox]
 home = "private"
-share = ["Projects", ".gitconfig:ro"]
+# ~/.claude and ~/.claude.json: Claude Code's sign-in and settings, the
+# same ones the Terminal's claude uses (without them VS Code's Claude
+# signed out, 2026-10-23). A hidden folder may be shared read-write since
+# AOS 0.4.13 / apm v0.1.27, hence min_aos.
+share = ["Projects", ".gitconfig:ro", ".claude", ".claude.json"]
 tools = true
 
 [launcher]

@@ -19,14 +19,14 @@ recipe_version = 1
 name         = "vscodium"
 organization = "vscodium"
 version      = "1.140.6880"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "VSCodium, VS Code without Microsoft's telemetry"
 license      = "MIT"
 homepage     = "https://vscodium.com/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.13"
 
 [[source]]
 url    = "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/VSCodium-linux-x64-1.140.06880.tar.gz"
@@ -47,7 +47,11 @@ command = ["codium"]
 # and the installed tools, as for VS Code.
 [sandbox]
 home = "private"
-share = ["Projects", ".gitconfig:ro"]
+# ~/.claude and ~/.claude.json: Claude Code's sign-in and settings, the
+# same ones the Terminal's claude uses (without them VS Code's Claude
+# signed out, 2026-10-23). A hidden folder may be shared read-write since
+# AOS 0.4.13 / apm v0.1.27, hence min_aos.
+share = ["Projects", ".gitconfig:ro", ".claude", ".claude.json"]
 tools = true
 ssh   = true
 
