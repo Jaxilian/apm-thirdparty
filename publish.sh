@@ -39,11 +39,19 @@ done
 # before 0.1.25 took the first release listed, not the highest
 # (aos/perl 5.42.3-2 over -5, 2026-10-23), and machines on AOS 0.4.6 and
 # older still run one. The release is the number before ".<arch>.apkg".
+# Before the older one goes, the soname gate (the OS tree's
+# board/aos/soname-gate.sh): a new release of the same version must keep
+# every library the old one had, or installed apps stop starting at the
+# next Update. This machine publishes (it holds the key) and has the OS
+# tree beside this repository; a missing gate stops the publish.
+GATE=${SONAME_GATE:-../aos/br2ext/board/aos/soname-gate.sh}
 for f in index/*.apkg; do
 	[ -f "$f" ] || continue
 	base=${f%-*.*.apkg}
 	newest=$(ls "$base"-*.apkg | sed 's/.*-\([0-9]*\)\.[^.]*\.apkg$/\1 &/' | sort -n | tail -1 | cut -d' ' -f2)
-	[ "$f" = "$newest" ] || { echo "superseded: $f"; rm -f "$f"; }
+	[ "$f" = "$newest" ] && continue
+	"$GATE" "$f" "$newest"
+	echo "superseded: $f"; rm -f "$f"
 done
 
 "$APM" index index --sign

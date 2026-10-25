@@ -16,12 +16,23 @@
 #
 # Games run on Wine or Proton builds that Lutris downloads into its own
 # home (~/AppData/lutris.lutris); those are X11 programs, hence runtime/xwayland.
-# Known limit: Lutris unpacks parts of its own runtime with 7z, and also
-# wants cabextract, unzip, glxinfo and vulkaninfo for some installers;
-# AOS has none of them, so "Runtime update failed: 7z" is logged at start
-# and those installers fail until a runtime/gametools package carries
-# them (p7zip, unzip, mesa3d-demos and vulkan-tools are Buildroot
-# packages; cabextract is not).
+#
+# The tools it runs come with it (release 4, 2026-10-25; docs/apps.md in
+# the OS tree): aos/p7zip (7z unpacks its runtime: "Runtime update
+# failed: 7z" at every start without it), aos/xrandr (the display list)
+# and aos/glxinfo (the installers' GL check), each a package of its own
+# whose bin/ aos-sandbox puts on PATH after the session's. vulkaninfo is
+# the core's from AOS 0.4.14. Still missing: cabextract (no Buildroot
+# package) and unzip; the installers that want them fail.
+#
+# runtime/compat32 at /lib (lib32 below), as Steam has it: the Wine and
+# Proton builds Lutris downloads are multiarch, and a 32-bit prefix or a
+# 32-bit Windows game runs a 32-bit wine-preloader that names
+# /lib/ld-linux.so.2 and wants a 32-bit libGL and Vulkan ICD. Lutris's own
+# runtime brings 32-bit libraries but no 32-bit glibc or Mesa; without
+# compat32 such a game dies at exec with "No such file or directory" for
+# the loader. 64-bit programs resolve through /lib64 and /usr/lib and
+# notice nothing.
 #
 # GPL-3.0-or-later. Fetched from GitHub, never mirrored.
 
@@ -31,14 +42,16 @@ recipe_version = 1
 name         = "lutris"
 organization = "lutris"
 version      = "0.5.22"
-release      = 3
+release      = 4
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
 homepage     = "https://lutris.net/"
-# Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
-# --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+# Needs AOS 0.4.14: its apm (v0.1.29) installs the manifest_version 2
+# tool packages below and the sandbox puts their bin/ on PATH; 0.4.12's
+# aos-sandbox (the home in ~/AppData, `:ro` shares, --ssh,
+# --no-flatpak-info) is older still.
+min_aos      = "0.4.14"
 
 [[source]]
 url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
@@ -59,6 +72,30 @@ name         = "xwayland"
 organization = "runtime"
 track        = "*"
 
+# The 32-bit glibc and GLX Mesa for its Wine runners (above).
+[[dependencies]]
+name         = "compat32"
+organization = "runtime"
+track        = "*"
+
+# The tools it runs (above). "*" until the closures (docs/apps.md) pin
+# builds; manifest_version 2 payloads, which apm v0.1.29 (AOS 0.4.14,
+# min_aos above) installs.
+[[dependencies]]
+name         = "p7zip"
+organization = "aos"
+track        = "*"
+
+[[dependencies]]
+name         = "xrandr"
+organization = "aos"
+track        = "*"
+
+[[dependencies]]
+name         = "glxinfo"
+organization = "aos"
+track        = "*"
+
 [provides]
 command = ["lutris"]
 
@@ -70,6 +107,8 @@ command = ["lutris"]
 [sandbox]
 home = "private"
 flatpak_info = false
+# The 32-bit glibc at /lib for the Wine runners (above).
+lib32 = "runtime/compat32"
 microphone = true
 # A game: the discrete GPU where the laptop has one.
 gpu = true
