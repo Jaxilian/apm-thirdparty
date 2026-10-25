@@ -14,9 +14,9 @@
 #      interpreter and every store path a script names must be in the
 #      build, in its dependencies or in the OS baseline (the OS tree's
 #      board/aos/abi-baseline.txt, BASELINE=). The dependencies' builds
-#      come from the user store (~/.apm/packages/<org>/<name>/current)
-#      when installed there, else from the newest .apkg of that package in
-#      either repo's index/ (what the publish ships); a dependency found
+#      come from the newest .apkg of that package in either repo's index/
+#      (what the publish ships), else from the user store
+#      (~/.apm/packages/<org>/<name>/current); a dependency found
 #      in neither (a recipe-only one, aos/fonts) is noted and the check
 #      runs without it. A failed check is put back like a failed build.
 #   5. with BUMP_QEMU=1 (the default when AOS_OUT names a build),
@@ -64,14 +64,15 @@ deps() {
 }
 
 # The build of a dependency to check against: --closure org/name=PATH for
-# the user store's current build, else the newest .apkg in an index/;
+# the newest .apkg in either index/ (what the publish ships; the user
+# store may hold an older runtime), else the user store's current build;
 # nothing, and a note, when there is neither.
 closure_of() {
-	cur=$HOME/.apm/packages/$1/current
-	if [ -d "$cur" ]; then echo "--closure $1=$cur"; return; fi
 	pkg=$(echo "$1" | tr / -)
 	newest=$(ls "$OS"/apm-thirdparty/index/"$pkg"-[0-9]*.apkg "$OS"/apm-recipes/index/"$pkg"-[0-9]*.apkg 2>/dev/null | sort -V | tail -1)
 	if [ -n "$newest" ]; then echo "--closure $1=$newest"; return; fi
+	cur=$HOME/.apm/packages/$1/current
+	if [ -d "$cur" ]; then echo "--closure $1=$cur"; return; fi
 	echo "note: no build of $1 at hand; apm check runs without it" >&2
 }
 
@@ -99,8 +100,9 @@ for repo in $REPOS; do
 		new=$(ver <"$repo/$f")
 		dir=$(mktemp -d "$WORK/build.XXXXXX")
 		echo "-- build $pkg $new"
-		# apm build prints the .apkg's path last on stdout.
-		if apkg=$(cd "$dir" && "$APM" --user build "$repo/$f" </dev/null | tail -1) && [ -f "$apkg" ]; then
+		# apm build prints the .apkg's path last on stdout; its status is
+		# tested on its own (a pipe would hide it).
+		if (cd "$dir" && "$APM" --user build "$repo/$f" </dev/null >"$dir/built") && apkg=$(tail -1 "$dir/built") && [ -f "$apkg" ]; then
 			closures=$(for d in $(deps "$repo/$f"); do closure_of "$d"; done)
 			echo "-- check $pkg $new${closures:+ ($closures)}"
 			# shellcheck disable=SC2086

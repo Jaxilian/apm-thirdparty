@@ -175,7 +175,9 @@ def main(apkgs):
         # The disk is shared with other drivers: leave it as it was.
         for pkg in reversed(installed):
             ser.run("%s remove %s --force --quiet --yes 2>&1 | tail -1" % (GUEST_APM, pkg), timeout=300)
-        ser.run("%s repo remove bump >/dev/null 2>&1; rm -rf /aos/t" % GUEST_APM)
+        # The closure "bad" marks too: a crash in this gate would otherwise
+        # stay on the shared disk, and the same closure text hashes the same.
+        ser.run("%s repo remove bump >/dev/null 2>&1; rm -rf /aos/t %s/.local/state/aos/apps" % (GUEST_APM, vm.home))
     finally:
         if vm is not None:
             drv.stop(vm)
