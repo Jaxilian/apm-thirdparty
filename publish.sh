@@ -35,22 +35,34 @@ for i in icons/*; do
 	[ -f "$i" ] && cp "$i" index/
 done
 
-# Only the newest release of each org-name-version stays in index/: an apm
-# before 0.1.25 took the first release listed, not the highest
-# (aos/perl 5.42.3-2 over -5, 2026-10-23), and machines on AOS 0.4.6 and
-# older still run one. The release is the number before ".<arch>.apkg".
+# Only the newest release of each org-name-version stays in index/, unless
+# keep.txt (tracked, beside this script) or index/keep.txt (what a
+# generator may write) lists the build as <org>-<name>-<version>-<release>,
+# one per line, # comments allowed: an app's closure names the exact build
+# it runs on, and that build must stay fetchable. The list is kept by hand
+# for now; P5 (closures in Software) will generate it from every published
+# app's newest closure plus the one before. An apm before 0.1.25 took the
+# first release listed, not the highest (aos/perl 5.42.3-2 over -5,
+# 2026-10-23), and machines on AOS 0.4.6 and older still run one, so the
+# kept builds are listed after the newest by `apm index` (v0.1.25+ sorts).
+# The release is the number before ".<arch>.apkg".
 # Before the older one goes, the soname gate (the OS tree's
 # board/aos/soname-gate.sh): a new release of the same version must keep
 # every library the old one had, or installed apps stop starting at the
 # next Update. This machine publishes (it holds the key) and has the OS
 # tree beside this repository; a missing gate stops the publish.
 GATE=${SONAME_GATE:-../aos/br2ext/board/aos/soname-gate.sh}
+keep=$(cat keep.txt index/keep.txt 2>/dev/null | sed 's/#.*//; s/ //g' | grep -v '^$' || true)
 for f in index/*.apkg; do
 	[ -f "$f" ] || continue
 	base=${f%-*.*.apkg}
 	newest=$(ls "$base"-*.apkg | sed 's/.*-\([0-9]*\)\.[^.]*\.apkg$/\1 &/' | sort -n | tail -1 | cut -d' ' -f2)
 	[ "$f" = "$newest" ] && continue
 	"$GATE" "$f" "$newest"
+	b=$(basename "$f"); b=${b%.*.apkg}
+	if echo "$keep" | grep -qx "$b"; then
+		echo "kept: $f (keep.txt)"; continue
+	fi
 	echo "superseded: $f"; rm -f "$f"
 done
 

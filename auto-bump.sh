@@ -10,7 +10,21 @@
 #   3. every changed recipe is built with apm, which downloads the source
 #      again and verifies the new sha256; a recipe that fails is put back
 #      with git checkout and listed as skipped, so it is never published
-#   4. the built ones are committed, pushed, and the index published
+#   4. `apm check` on each build: every library an ELF of it needs, every
+#      interpreter and every store path a script names must be in the
+#      build, in its dependencies or in the OS baseline (the OS tree's
+#      board/aos/abi-baseline.txt, BASELINE=). The dependencies' builds
+#      come from the user store (~/.apm/packages/<org>/<name>/current)
+#      when installed there, else from the newest .apkg of that package in
+#      either repo's index/ (what the publish ships); a dependency found
+#      in neither (a recipe-only one, aos/fonts) is noted and the check
+#      runs without it. A failed check is put back like a failed build.
+#   5. with BUMP_QEMU=1 (the default when AOS_OUT names a build),
+#      bump-check.py installs the builds that passed on the installed AOS
+#      disk in QEMU, with every recipe depending on them, and starts each
+#      app in its sandbox (aos-launch-check); a build that fails there is
+#      put back too, with the reason
+#   6. the rest are committed, pushed, and the index published
 #
 # The log is ~/Projects/OS/tmp-build/auto-bump/<date>.log, the summary its
 # last paragraph. Nothing moved = exit 0 and nothing on stdout.
@@ -19,7 +33,10 @@ set -eu
 OS=$HOME/Projects/OS
 APM=${APM:-$OS/apm/target/release/apm}
 BUMP=$OS/apm-thirdparty/bump.py
+QEMU_CHECK=$OS/apm-thirdparty/bump-check.py
 REPOS="$OS/apm-thirdparty $OS/apm-recipes"
+BASELINE=${BASELINE:-$OS/aos/br2ext/board/aos/abi-baseline.txt}
+BUMP_QEMU=${BUMP_QEMU:-$([ -d "${AOS_OUT:-/nonexistent}" ] && echo 1 || echo 0)}
 # On disk, not /tmp: /tmp is a 16 GB tmpfs shared with the image builds,
 # and a Blender or Claude Desktop unpack is several hundred MB.
 WORK=$OS/tmp-build/auto-bump
@@ -36,6 +53,27 @@ GITHUB_TOKEN=$(gh auth token) || { echo "abort: no token from gh auth token"; ex
 export GITHUB_TOKEN
 
 ver() { sed -n 's/^version *= *"\(.*\)"/\1/p' | head -1; }
+
+# The org/name of each [[dependencies]] table of a recipe, one per line.
+deps() {
+	awk '/^\[\[dependencies\]\]/ {d=1; n=""; o=""; next}
+	     /^\[/ {d=0}
+	     d && /^name *=/ {gsub(/.*= *"|".*/, ""); n=$0}
+	     d && /^organization *=/ {gsub(/.*= *"|".*/, ""); o=$0}
+	     d && n != "" && o != "" {print o "/" n; n=""; o=""}' "$1"
+}
+
+# The build of a dependency to check against: --closure org/name=PATH for
+# the user store's current build, else the newest .apkg in an index/;
+# nothing, and a note, when there is neither.
+closure_of() {
+	cur=$HOME/.apm/packages/$1/current
+	if [ -d "$cur" ]; then echo "--closure $1=$cur"; return; fi
+	pkg=$(echo "$1" | tr / -)
+	newest=$(ls "$OS"/apm-thirdparty/index/"$pkg"-[0-9]*.apkg "$OS"/apm-recipes/index/"$pkg"-[0-9]*.apkg 2>/dev/null | sort -V | tail -1)
+	if [ -n "$newest" ]; then echo "--closure $1=$newest"; return; fi
+	echo "note: no build of $1 at hand; apm check runs without it" >&2
+}
 
 for repo in $REPOS; do
 	if [ -n "$(git -C "$repo" status --porcelain)" ]; then
@@ -55,23 +93,63 @@ for repo in $REPOS; do
 	# bump.py's own skips: an upstream down, a checksum that did not match.
 	skipped="$skipped$(sed -n 's/^| \([^ ]*\) | .* | skip: \(.*\) | *|$/\1 (\2); /p' "$WORK/table")"
 	built=""
+	rm -rf "$WORK/apkgs"
 	for f in $(git -C "$repo" diff --name-only -- recipes/); do
 		pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
-		old=$(git -C "$repo" show "HEAD:$f" | ver)
 		new=$(ver <"$repo/$f")
 		dir=$(mktemp -d "$WORK/build.XXXXXX")
 		echo "-- build $pkg $new"
-		if (cd "$dir" && "$APM" --user build "$repo/$f" </dev/null); then
-			built="$built $f"
-			moved="$moved$pkg $old -> $new; "
-			msg="${msg:-}$pkg $old -> $new
-"
-			title="${title:+$title, }$pkg $new"
+		# apm build prints the .apkg's path last on stdout.
+		if apkg=$(cd "$dir" && "$APM" --user build "$repo/$f" </dev/null | tail -1) && [ -f "$apkg" ]; then
+			closures=$(for d in $(deps "$repo/$f"); do closure_of "$d"; done)
+			echo "-- check $pkg $new${closures:+ ($closures)}"
+			# shellcheck disable=SC2086
+			if "$APM" check "$apkg" --baseline "$BASELINE" $closures; then
+				mkdir -p "$WORK/apkgs"
+				mv "$apkg" "$WORK/apkgs/"
+				built="$built $f"
+			else
+				git -C "$repo" checkout -- "$f"
+				skipped="$skipped$pkg $new (apm check: a library, interpreter or package path it needs is not in the build, its dependencies or the OS); "
+			fi
 		else
 			git -C "$repo" checkout -- "$f"
 			skipped="$skipped$pkg $new (the build failed); "
 		fi
 		rm -rf "$dir"
+	done
+	# The QEMU gate: the builds that passed so far, installed and started
+	# on the real disk; what fails there is put back with the reason.
+	if [ -n "$built" ] && [ "$BUMP_QEMU" = 1 ]; then
+		echo "-- bump-check (QEMU)"
+		results=$WORK/bump-check.txt
+		BUMP_RESULTS=$results python3 -I "$QEMU_CHECK" "$WORK"/apkgs/*.apkg || true
+		for f in $built; do
+			pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
+			verdict=$(grep -m1 " $pkg\( \|$\)" "$results" 2>/dev/null || echo "fail $pkg no verdict from bump-check.py")
+			case "$verdict" in
+			ok*) ;;
+			*)
+				new=$(ver <"$repo/$f")
+				git -C "$repo" checkout -- "$f"
+				skipped="$skipped$pkg $new (QEMU: ${verdict#fail $pkg }); "
+				built=$(echo "$built" | sed "s| $f||")
+				;;
+			esac
+		done
+		rm -rf "$WORK/apkgs" "$results"
+	elif [ -n "$built" ]; then
+		echo "-- bump-check skipped (BUMP_QEMU=$BUMP_QEMU; set AOS_OUT to a build to run it)"
+		rm -rf "$WORK/apkgs"
+	fi
+	for f in $built; do
+		pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
+		old=$(git -C "$repo" show "HEAD:$f" | ver)
+		new=$(ver <"$repo/$f")
+		moved="$moved$pkg $old -> $new; "
+		msg="${msg:-}$pkg $old -> $new
+"
+		title="${title:+$title, }$pkg $new"
 	done
 	if [ -n "$built" ]; then
 		# Only the files that built: anything else in the tree aborted above.
@@ -80,8 +158,9 @@ for repo in $REPOS; do
 Bumps of $(date +%F): $title
 
 $msg
-Built with apm build (the source downloaded and its sha256 verified)
-by auto-bump.sh; the apps were not run.
+Built with apm build (the source downloaded and its sha256 verified),
+checked with apm check against the OS baseline and the dependencies'
+builds$([ "$BUMP_QEMU" = 1 ] && echo ", installed and started on the AOS disk in QEMU (bump-check.py)" || echo "; the apps were not run"), by auto-bump.sh.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 EOF
