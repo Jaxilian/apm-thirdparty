@@ -28,11 +28,14 @@ recipe_version = 1
 name         = "telegram"
 organization = "telegram"
 version      = "7.3.3"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Telegram Desktop messenger"
 license      = "GPL-3.0-or-later WITH openvpn-openssl-exception"
 homepage     = "https://desktop.telegram.org/"
+# The icon is a PNG source: apm v0.1.33 (AOS 0.4.17) copies it; an older
+# apm hands it to tar and the build fails (the Zenbook, 2026-10-25).
+min_aos      = "0.4.17"
 
 [[source]]
 url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.3.3.tar.xz"
