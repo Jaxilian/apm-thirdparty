@@ -34,14 +34,14 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 10
+release      = 11
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
 homepage     = "https://store.steampowered.com/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.15"
 
 [[source]]
 url    = "https://repo.steampowered.com/steam/archive/stable/steam_1.0.0.87.tar.gz"
@@ -71,6 +71,11 @@ track        = "*"
 [sandbox]
 home = "private"
 flatpak_info = false
+# The launcher-service claims com.steampowered.PressureVessel.Launch-
+# AlongsideSteam.<n> on the session bus and exits 69 without it (the
+# Zenbook, 2026-10-25); the desktop entry says nothing of com.steampowered,
+# so the name is declared (apm v0.1.32, AOS 0.4.15).
+own = ["com.steampowered", "com.valvesoftware"]
 lib32 = "runtime/compat32"
 # Voice chat: the microphone from the start; Software's Permissions
 # switch it off.
