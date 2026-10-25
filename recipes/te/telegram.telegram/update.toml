@@ -2,3 +2,11 @@
 kind  = "redirect"
 page  = "https://telegram.org/dl/desktop/linux"
 regex = '-(\d+\.\d+\.\d+)\.tar\.xz$'
+
+# The icon, at the tag of the version telegram.org serves: the same page
+# and regex, the url template puts the version into the tag.
+[[source]]
+kind  = "redirect"
+page  = "https://telegram.org/dl/desktop/linux"
+regex = '-(\d+\.\d+\.\d+)\.tar\.xz$'
+url   = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/v{version}/Telegram/Resources/art/icon256.png"

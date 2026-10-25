@@ -9,7 +9,9 @@
 # Updater is left out and the wrapper passes -noupdate (do not install a
 # downloaded update at start). Telegram may still fetch an update into
 # its own data directory; it is never applied. The tarball carries no
-# icon (Telegram writes its own at first start), so the launcher has none.
+# icon (Telegram writes its own at first start): the launcher's is
+# icon256.png from Telegram's repository at the release's tag, the
+# second source, which bump.py moves along with the version.
 #
 # telegram.org serves 7.2.9 while the GitHub release of tdesktop is
 # already at 7.3.0; this follows telegram.org. Telegram publishes no
@@ -26,7 +28,7 @@ recipe_version = 1
 name         = "telegram"
 organization = "telegram"
 version      = "7.3.3"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Telegram Desktop messenger"
 license      = "GPL-3.0-or-later WITH openvpn-openssl-exception"
@@ -36,6 +38,10 @@ homepage     = "https://desktop.telegram.org/"
 url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.3.3.tar.xz"
 sha256 = "7bcd524ea17f3eefda95b2ffdb3d5b355e7f727d44045a6ff2316cd077355df9"
 strip  = 1
+
+[[source]]
+url    = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/v7.3.3/Telegram/Resources/art/icon256.png"
+sha256 = "3fb1400c7dc9bbc3b5cb3ffedcbf4a9b09c53e28b57a7ff33a8a6b9048864090"
 
 [[dependencies]]
 name         = "gtk3"
@@ -58,6 +64,7 @@ camera     = true
 name       = "Telegram"
 comment    = "Fast and secure messaging"
 exec       = "bin/telegram-desktop"
+icon       = "telegram/telegram.png"
 categories = ["Network", "InstantMessaging", "Chat"]
 terminal   = false
 
@@ -66,6 +73,7 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/telegram $D/bin
 install -m 755 $APM_SRC/Telegram $D/telegram/Telegram
+install -m 644 $APM_SOURCE_2/icon256.png $D/telegram/telegram.png
 cat > $D/bin/telegram-desktop <<WRAP
 #!/bin/sh
 # Telegram Desktop with the GTK3 runtime's libraries; Wayland is its own.

@@ -61,7 +61,8 @@ The kinds:
               wins. dir_page and dir_regex first choose {dir} the same way
               (a release directory per line, as download.kde.org has them).
     redirect  page = URL that redirects to the versioned file; regex = one
-              group over the final URL, which becomes the source URL.
+              group over the final URL, which becomes the source URL, or
+              url = template of another file at that version (an icon).
     json      page = URL of a JSON document; version_key, url_key, sha256_key,
               sums_key = dotted paths into it (a number indexes a list);
               url = template instead of url_key.
@@ -306,6 +307,8 @@ def find_redirect(rule):
     m = re.search(rule["regex"], url)
     if not m:
         raise Skip(f"{rule['page']} led to {url}, which does not match {rule['regex']!r}")
+    if "url" in rule:
+        url = expand(rule["url"], m.group(1), {})
     return {"version": m.group(1), "url": url, "vars": {}}
 
 
