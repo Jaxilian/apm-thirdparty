@@ -1,0 +1,75 @@
+# Godot Engine, the official Linux x86_64 editor from the project's
+# GitHub release: one binary that loads what it needs at run time:
+# Wayland, xkbcommon and libdecor from the core (it is told to use its
+# Wayland driver; ade gives it server-side decorations), Vulkan or
+# OpenGL from Mesa or the NVIDIA driver, sound through the GTK3
+# runtime's libpulse (PipeWire's pulse socket), and the runtime's X
+# libraries should it fall back to X11 (gtk3-run). The zip has no icon:
+# the launcher's is misc/logo/icon.svg from Godot's repository at the
+# release's tag, the second source.
+#
+# The release carries SHA512-SUMS.txt (the bump checks against it); the
+# zip's sha256 here is of the file that matched. MIT, with the licences
+# of its third-party parts in COPYRIGHT.txt. Fetched from GitHub,
+# unmodified.
+
+recipe_version = 1
+
+[package]
+name         = "godot"
+organization = "godotengine"
+version      = "4.7.2"
+release      = 1
+kind         = "app"
+summary      = "Godot Engine, the 2D and 3D game engine and editor"
+license      = "MIT"
+homepage     = "https://godotengine.org/"
+# Needs AOS 0.4.17's apm (an SVG source copied as a file) and its
+# aos-sandbox (the home in ~/AppData, shares).
+min_aos      = "0.4.17"
+
+[[source]]
+url    = "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip"
+sha256 = "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4"
+
+[[source]]
+url    = "https://raw.githubusercontent.com/godotengine/godot/4.7.2-stable/misc/logo/icon.svg"
+sha256 = "1443ae974842b81765d5b50e6a729ebbf41eba2e9e515ab0919f2ea5c8b8f475"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["godot"]
+
+# Its own folder for the editor's settings, export templates and cache;
+# ~/Projects and ~/Documents read-write for the games. Godot has its own
+# file browser, so it sees nothing else of the home.
+[sandbox]
+home = "private"
+share = ["Projects", "Documents"]
+
+[launcher]
+name       = "Godot Engine"
+comment    = "Multi-platform 2D and 3D game engine with a feature-rich editor"
+exec       = "bin/godot"
+icon       = "godot/icon.svg"
+categories = ["Development", "IDE"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/godot $D/bin
+install -m 755 $APM_SRC/Godot_v4.7.2-stable_linux.x86_64 $D/godot/godot
+install -m 644 $APM_SOURCE_2/icon.svg $D/godot/icon.svg
+cat > $D/bin/godot <<WRAP
+#!/bin/sh
+# Godot on its Wayland driver; libpulse and the X libraries, should it
+# fall back to X11, come from the GTK3 runtime.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/godot/godot --display-driver wayland "\$@"
+WRAP
+chmod 755 $D/bin/godot
+'''

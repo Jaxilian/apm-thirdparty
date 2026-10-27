@@ -1,0 +1,12 @@
+[[source]]
+kind  = "github"
+repo  = "godotengine/godot"
+tag   = '^(\d+\.\d+\.\d+)-stable$'
+asset = '^Godot_v\d+\.\d+\.\d+-stable_linux\.x86_64\.zip$'
+sums  = "https://github.com/godotengine/godot/releases/download/{tag}/SHA512-SUMS.txt"
+
+[[source]]
+kind = "github"
+repo = "godotengine/godot"
+tag  = '^(\d+\.\d+\.\d+)-stable$'
+url  = "https://raw.githubusercontent.com/godotengine/godot/{tag}/misc/logo/icon.svg"
