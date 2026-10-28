@@ -25,9 +25,9 @@ kind         = "app"
 summary      = "Godot Engine with C# (.NET), the 2D and 3D game engine and editor"
 license      = "MIT"
 homepage     = "https://godotengine.org/"
-# Needs AOS 0.4.17's apm (an SVG source copied as a file) and its
+# Needs AOS 0.4.24's apm (a zip source, an SVG copied as a file) and its
 # aos-sandbox (the home in ~/AppData, shares).
-min_aos      = "0.4.17"
+min_aos      = "0.4.24"
 
 [[source]]
 url    = "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip"
