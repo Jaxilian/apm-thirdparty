@@ -11,11 +11,15 @@ A third-party package may depend on official ones; never the reverse.
 
 ## Use it
 
+In Software: the Third-party page's switch. From a terminal (since AOS
+0.4.31 there is no sudo: apm asks aos-rootd, which asks your password
+once per 15 minutes):
+
 ```sh
-sudo apm repo add thirdparty https://github.com/Jaxilian/apm-thirdparty/releases/download/index --third-party
-sudo apm update
+apm repo add thirdparty
+apm update
 apm find code          # marked [third-party]
-sudo apm install vscode
+apm install vscode
 ```
 
 The key is the same as the official repository's; trusting it once covers
