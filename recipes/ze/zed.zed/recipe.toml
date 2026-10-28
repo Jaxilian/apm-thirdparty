@@ -24,7 +24,7 @@ recipe_version = 1
 name         = "zed"
 organization = "zed"
 version      = "1.25.3"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Zed code editor"
 license      = "GPL-3.0-or-later"
@@ -74,9 +74,11 @@ install -d $D/zed $D/bin
 cp -a $APM_SRC/. $D/zed/
 cat > $D/bin/zed <<WRAP
 #!/bin/sh
-# Zed as Zed ships it; updates come from apm.
+# Zed as Zed ships it; updates come from apm. The editor itself, not
+# bin/zed: that CLI starts the editor detached and exits, and the
+# sandbox's PID namespace ends with it, taking the window along.
 export ZED_UPDATE_EXPLANATION="Zed is updated by apm (Software)."
-exec $APM_PREFIX/zed/bin/zed "\$@"
+exec $APM_PREFIX/zed/libexec/zed-editor "\$@"
 WRAP
 chmod 755 $D/bin/zed
 '''
