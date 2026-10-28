@@ -1,0 +1,67 @@
+# Unity Hub, from Unity's own apt repository: the .deb Unity publishes,
+# unpacked, with one wrapper that runs unityhub-bin (Electron) through
+# the GTK3 runtime on Wayland. The Hub installs the Unity editors itself,
+# into its home (~/AppData/unity.unityhub/Unity/Hub/Editor), and needs a
+# Unity account to do so. Bump from
+# https://hub.unity3d.com/linux/repos/deb/dists/stable/main/binary-amd64/Packages
+# (Filename and SHA256 of the newest unityhub).
+#
+# The .deb's own launcher only adds --no-sandbox where it cannot read
+# kernel.unprivileged_userns_clone, a Debian sysctl AOS's kernel does not
+# have; the wrapper skips it: Chromium's sandbox works through user
+# namespaces here, as for Chrome. The postinst adds an apt source and an
+# AppArmor profile, neither of which applies.
+#
+# Proprietary: Unity Terms of Service. Fetched from Unity, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "unityhub"
+organization = "unity"
+version      = "3.22.5"
+release      = 1
+kind         = "app"
+summary      = "Unity Hub: installs and opens the Unity game engine"
+license      = "LicenseRef-Unity-Terms-of-Service"
+homepage     = "https://unity.com/"
+
+[[source]]
+url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-3.22.5-amd64.deb"
+sha256 = "fbf711fb7f3caff1015c507c1eb5f71d1c79606522942f21e716314655321d43"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["unityhub"]
+
+# As Godot: a home of its own (the Hub, the editors it installs, their
+# caches) and ~/Projects, where the games are.
+[sandbox]
+home  = "private"
+share = ["Projects"]
+
+[launcher]
+name       = "Unity Hub"
+comment    = "Install Unity and open your games"
+exec       = "bin/unityhub %U"
+icon       = "unityhub/unityhub.png"
+categories = ["Development", "IDE"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/unityhub $D/bin
+cp -a $APM_SRC/usr/lib/unityhub/. $D/unityhub/
+install -m 644 $APM_SRC/usr/share/icons/hicolor/512x512/apps/unityhub.png $D/unityhub/unityhub.png
+cat > $D/bin/unityhub <<WRAP
+#!/bin/sh
+# Unity Hub on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/unityhub/unityhub-bin --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/unityhub
+'''

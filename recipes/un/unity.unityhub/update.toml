@@ -1,0 +1,4 @@
+[[source]]
+kind     = "apt"
+packages = "https://hub.unity3d.com/linux/repos/deb/dists/stable/main/binary-amd64/Packages"
+package  = "unityhub"
