@@ -15,8 +15,8 @@ recipe_version = 1
 [package]
 name         = "libreoffice"
 organization = "libreoffice"
-version      = "26.8.1"
-release      = 3
+version      = "26.8.2"
+release      = 1
 kind         = "app"
 summary      = "LibreOffice office suite"
 license      = "MPL-2.0"
@@ -26,13 +26,13 @@ homepage     = "https://www.libreoffice.org/"
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/x86_64/LibreOffice_26.8.1_Linux_x86-64_deb.tar.gz"
-sha256 = "30903df3b9f61360d9660cd707de48cd2831469114492a5008ed58a0ac77d044"
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.2/deb/x86_64/LibreOffice_26.8.2_Linux_x86-64_deb.tar.gz"
+sha256 = "8290c8f46cb33d6df8f681cb796e0697461ea070f86ec55b63c94d7eb9d9a476"
 strip  = 1
 
 [[source]]
-url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/x86_64/LibreOffice_26.8.1_Linux_x86-64_deb_langpack_sv.tar.gz"
-sha256 = "d3f551b20c7db86b50a841477f5f4fb83523513805161d42358bad000cb0ab5f"
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.2/deb/x86_64/LibreOffice_26.8.2_Linux_x86-64_deb_langpack_sv.tar.gz"
+sha256 = "b575e21cc78d14a0ef73f5f4eab96defc2567c88c014b2d83b51aaf0d586888a"
 strip  = 1
 
 [[dependencies]]

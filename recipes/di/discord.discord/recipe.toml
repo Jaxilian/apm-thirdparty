@@ -17,7 +17,7 @@ recipe_version = 1
 [package]
 name         = "discord"
 organization = "discord"
-version      = "1.0.166"
+version      = "1.0.168"
 release      = 1
 kind         = "app"
 summary      = "Discord voice and text chat"
@@ -25,8 +25,8 @@ license      = "LicenseRef-Discord-Terms-of-Service"
 homepage     = "https://discord.com/"
 
 [[source]]
-url    = "https://stable.dl2.discordapp.net/apps/linux/1.0.166/discord-1.0.166.tar.gz"
-sha256 = "ed3695be64182ce80911168c1c3e342b80d9c5eb0c512a8d62516c10d8a86ffb"
+url    = "https://stable.dl2.discordapp.net/apps/linux/1.0.168/discord-1.0.168.tar.gz"
+sha256 = "f25a97173c895a3f64d49261609f9c91309b20c1d4eb7670a2cb4caf808041c0"
 strip  = 1
 
 [[dependencies]]

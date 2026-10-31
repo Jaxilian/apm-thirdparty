@@ -20,7 +20,7 @@ recipe_version = 1
 [package]
 name         = "python"
 organization = "astral"
-version      = "3.13.17"
+version      = "3.13.18"
 release      = 1
 kind         = "bin"
 summary      = "Python 3.13"
@@ -28,8 +28,8 @@ license      = "PSF-2.0"
 homepage     = "https://github.com/astral-sh/python-build-standalone"
 
 [[source]]
-url    = "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.13.17%2B20261021-x86_64-unknown-linux-gnu-install_only.tar.gz"
-sha256 = "cbda6f7767884fc456860b11fd184391a9320cae00a86c0f49a1c7ac6e236f7a"
+url    = "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.13.18%2B20261026-x86_64-unknown-linux-gnu-install_only.tar.gz"
+sha256 = "126343c54daff4068efc1ac269518d0cc202d57857794948103dd1454e8881be"
 strip  = 1
 
 [provides]
