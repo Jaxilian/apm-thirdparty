@@ -200,7 +200,7 @@ def main(apkgs):
         http.terminate()
         # A dependent that fails is reported under the bumped build: that
         # build is what auto-bump.sh can put back.
-        for pkg, _ in extra:
+        for pkg, _, _ in extra:
             if results.get(pkg, "fail no result") != "ok":
                 for b in ids:
                     if results.get(b) == "ok":
