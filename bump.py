@@ -492,6 +492,10 @@ def main():
         org_name = os.path.basename(d).replace(".", "/", 1)
         if args.only and org_name not in args.only:
             continue
+        # A line per recipe as it is checked, on stderr: the table comes
+        # row by row, but a download's check is a silent minute or more
+        # (the owner, 2026-11-02: "no progress").
+        print(f"bump: {org_name} ...", file=sys.stderr, flush=True)
         print("| " + " | ".join(process(d, args.write, args.dl)) + " |", flush=True)
     if without:
         print(f"\n{len(without)} recipe(s) without an update.toml, left alone: "
