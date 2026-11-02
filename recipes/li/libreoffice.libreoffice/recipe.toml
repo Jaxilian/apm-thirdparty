@@ -114,6 +114,7 @@ cat > $D/bin/libreoffice <<WRAP
 # LibreOffice on the GTK3 runtime, on Wayland (SAL_USE_VCLPLUGIN picks
 # the GTK3 interface; GDK_BACKEND keeps GTK off X11).
 export SAL_USE_VCLPLUGIN=gtk3 GDK_BACKEND=wayland
+export LD_LIBRARY_PATH="$APM_PREFIX/lo/opt/libreoffice26.8/program\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/lo/opt/libreoffice26.8/program/soffice "\$@"
 WRAP
 chmod 755 $D/bin/libreoffice

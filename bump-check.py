@@ -125,7 +125,7 @@ def main(apkgs):
     to_install = ids + [i for i, _, _ in extra]
     apps = [i for i, has in list(bumped.items()) + [(i, has) for i, has, _ in extra] if has]
 
-    www = local_index(work, apkgs, [path for _, _, path in extra])
+    www = local_index(work, apkgs, [])
     http = subprocess.Popen([sys.executable, "-m", "http.server", str(HTTP_PORT), "--bind", "127.0.0.1"],
                             cwd=www, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     results = {}
