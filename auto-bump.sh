@@ -27,7 +27,8 @@
 #   6. the rest are committed, pushed, and the index published
 #
 # The log is ~/Projects/OS/tmp-build/auto-bump/<date>.log, the summary its
-# last paragraph. Nothing moved = exit 0 and nothing on stdout.
+# last paragraph. Nothing moved = exit 0 and nothing on stdout. BUMP_JOBS
+# builds run at once (4).
 
 set -eu
 OS=$HOME/Projects/OS
@@ -94,15 +95,30 @@ for repo in $REPOS; do
 	# bump.py's own skips: an upstream down, a checksum that did not match.
 	skipped="$skipped$(sed -n 's/^| \([^ ]*\) | .* | skip: \(.*\) | *|$/\1 (\2); /p' "$WORK/table")"
 	built=""
-	rm -rf "$WORK/apkgs"
+	rm -rf "$WORK/apkgs" "$WORK/jobs"
+	mkdir -p "$WORK/jobs"
+	# The builds BUMP_JOBS (4) at a time, each in its own directory with
+	# its output in log, its status in rc and the .apkg's path last in
+	# built; apm builds without the store lock. One after the other,
+	# LibreOffice, Chrome, Node and Thunderbird took the hour (the owner,
+	# 2026-11-02: "can we speed it up").
+	n=0
+	for f in $(git -C "$repo" diff --name-only -- recipes/); do
+		dir=$WORK/jobs/$(basename "$(dirname "$f")")
+		mkdir -p "$dir"
+		echo "-- build $(basename "$(dirname "$f")" | sed 's/\./\//') $(ver <"$repo/$f")"
+		( cd "$dir" && "$APM" --user build "$repo/$f" </dev/null >"$dir/built" 2>"$dir/log"; echo $? >"$dir/rc" ) &
+		n=$((n + 1))
+		if [ "$n" -ge "${BUMP_JOBS:-4}" ]; then wait; n=0; fi
+	done
+	wait
 	for f in $(git -C "$repo" diff --name-only -- recipes/); do
 		pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
 		new=$(ver <"$repo/$f")
-		dir=$(mktemp -d "$WORK/build.XXXXXX")
-		echo "-- build $pkg $new"
-		# apm build prints the .apkg's path last on stdout; its status is
-		# tested on its own (a pipe would hide it).
-		if (cd "$dir" && "$APM" --user build "$repo/$f" </dev/null >"$dir/built") && apkg=$(tail -1 "$dir/built") && [ -f "$apkg" ]; then
+		dir=$WORK/jobs/$(basename "$(dirname "$f")")
+		echo "-- built $pkg $new"
+		cat "$dir/log" 2>/dev/null
+		if [ "$(cat "$dir/rc" 2>/dev/null)" = 0 ] && apkg=$(tail -1 "$dir/built") && [ -f "$apkg" ]; then
 			closures=$(for d in $(deps "$repo/$f"); do closure_of "$d"; done)
 			echo "-- check $pkg $new${closures:+ ($closures)}"
 			# shellcheck disable=SC2086
