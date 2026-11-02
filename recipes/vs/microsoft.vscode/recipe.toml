@@ -70,7 +70,7 @@ cp -a $APM_SRC/. $D/vscode/
 # The Microsoft-authentication extension's native MSAL runtime wants
 # WebKitGTK and libsoup, which AOS has not; the extension works without
 # it (apm check refused VSCodium's bump on it, 2026-11-02).
-rm -f $D/vscode/resources/app/extensions/microsoft-authentication/dist/libmsalruntime.so
+rm -f $D/vscode/resources/app/extensions/microsoft-authentication/dist/libmsalruntime.so $D/vscode/resources/app/extensions/microsoft-authentication/dist/msal-node-runtime.node
 # --password-store=gnome-libsecret: Chromium picks its keyring by the
 # desktop's name and knows none of ours, so without it stored logins are
 # kept in the clear; AOS 0.3.3 has the Secret Service (oo7) and libsecret

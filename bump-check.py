@@ -41,6 +41,8 @@ APM = os.environ.get("APM", os.path.join(OS_DIR, "apm", "target", "release", "ap
 REPOS = [os.path.join(OS_DIR, "apm-thirdparty"), os.path.join(OS_DIR, "apm-recipes")]
 HTTP_PORT = int(os.environ.get("BUMP_HTTP_PORT", "8732"))
 GUEST_APM = "/aos/t/apm"
+SANDBOX = os.environ.get("AOS_SANDBOX", os.path.join(OS_DIR, "aos", "br2ext", "board", "aos", "rootfs-overlay", "usr", "bin", "aos-sandbox"))
+GUEST_SANDBOX = "/aos/t/aos-sandbox"
 
 
 def manifest_of(apkg):
@@ -91,6 +93,7 @@ def local_index(work, apkgs):
     pub = os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub")
     shutil.copy(pub, os.path.join(idx, "apm.pub"))
     shutil.copy(APM, os.path.join(www, "apm"))
+    shutil.copy(SANDBOX, os.path.join(www, "aos-sandbox"))
     return www
 
 
@@ -130,6 +133,7 @@ def main(apkgs):
         setup = ser.run(
             "systemctl stop aos-update-check.timer aos-update-check.service 2>/dev/null; "
             "mkdir -p /aos/t/index && curl -sf -o /aos/t/apm.bin http://10.0.2.2:%d/apm && chmod 755 /aos/t/apm.bin && "
+            "curl -sf -o %s http://10.0.2.2:%d/aos-sandbox && chmod 755 %s && "
             "sed 's/^VERSION_ID=.*/VERSION_ID=9.9.9/' /usr/lib/os-release > /aos/t/os-release && "
             "printf '#!/bin/sh\\nexport APM_OS_RELEASE=/aos/t/os-release\\nexec /aos/t/apm.bin \"$@\"\\n' > %s && chmod 755 %s && %s --version; "
             "cd /aos/t/index && for f in $(curl -sf http://10.0.2.2:%d/index/ | sed -n 's/.*href=\"\\([^\"]*\\)\".*/\\1/p'); do curl -sf -O http://10.0.2.2:%d/index/$f; done; cd /; "
@@ -137,7 +141,7 @@ def main(apkgs):
             "%s repo add bump file:///aos/t/index 2>&1 | tail -1; "
             "for i in $(seq 30); do getent hosts github.com >/dev/null 2>&1 && break; sleep 1; done; "
             "%s update --force 2>&1 | tail -4"
-            % (HTTP_PORT, GUEST_APM, GUEST_APM, GUEST_APM, HTTP_PORT, HTTP_PORT, GUEST_APM, GUEST_APM, GUEST_APM), timeout=300)
+            % (HTTP_PORT, GUEST_SANDBOX, HTTP_PORT, GUEST_SANDBOX, GUEST_APM, GUEST_APM, GUEST_APM, HTTP_PORT, HTTP_PORT, GUEST_APM, GUEST_APM, GUEST_APM), timeout=300)
         # apm's grammar since the no-root rounds: `repo add thirdparty` is
         # the shortcut, `repo add NAME URL` pins the key at URL/apm.pub;
         # the old `--third-party` made both print the usage and the gate
@@ -165,7 +169,7 @@ def main(apkgs):
         to_check = [a for a in apps if a in installed]
         if to_check:
             wait = os.environ.get("AOS_CHECK_WAIT", "20")
-            cmd = "AOS_CHECK_WAIT=%s aos-launch-check %s 2>&1" % (wait, " ".join(to_check))
+            cmd = "AOS_SANDBOX=%s AOS_CHECK_WAIT=%s aos-launch-check %s 2>&1" % (GUEST_SANDBOX, wait, " ".join(to_check))
             out = ser.run(drv.as_user(cmd, vm), timeout=120 + (int(wait) + 30) * len(to_check))
             print("$ aos-launch-check\n%s" % out)
             drv.shot("bump-launched")

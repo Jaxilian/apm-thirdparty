@@ -20,7 +20,7 @@ recipe_version = 1
 name         = "kconfiglib"
 organization = "pypi"
 version      = "14.1.0"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "kconfiglib: the Kconfig library for Python, with menuconfig and genconfig"
 license      = "ISC"
@@ -44,9 +44,7 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 SP=$D/lib/python3/site-packages
 install -d $SP $D/bin
-# A wheel is a zip; bsdtar reads it. The *.dist-info stays: Python's
-# importlib.metadata reads the version from it.
-bsdtar -xf $APM_SRC/kconfiglib-14.1.0-py2.py3-none-any.whl -C $SP
+cp -a $APM_SRC/. $SP/
 for tool in menuconfig genconfig oldconfig olddefconfig savedefconfig defconfig alldefconfig allnoconfig allyesconfig setconfig listnewconfig guiconfig; do
 	printf '#!/bin/sh\n# %s from pypi/kconfiglib (the wheel'"'"'s console script).\nexec python3 -m %s "$@"\n' "$tool" "$tool" > $D/bin/$tool
 	chmod 755 $D/bin/$tool
