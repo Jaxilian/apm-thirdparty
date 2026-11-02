@@ -107,7 +107,7 @@ for repo in $REPOS; do
 		dir=$WORK/jobs/$(basename "$(dirname "$f")")
 		mkdir -p "$dir"
 		echo "-- build $(basename "$(dirname "$f")" | sed 's/\./\//') $(ver <"$repo/$f")"
-		( cd "$dir" && "$APM" --user build "$repo/$f" </dev/null >"$dir/built" 2>"$dir/log"; echo $? >"$dir/rc" ) &
+		( cd "$dir" && "$APM" build "$repo/$f" </dev/null >"$dir/built" 2>"$dir/log"; echo $? >"$dir/rc" ) &
 		n=$((n + 1))
 		if [ "$n" -ge "${BUMP_JOBS:-4}" ]; then wait; n=0; fi
 	done

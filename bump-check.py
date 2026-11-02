@@ -74,18 +74,21 @@ def dependents(ids):
                 if any(d in ids for d in deps):
                     rid = package_id(r)
                     if rid not in ids:
-                        found.append((rid, "launcher" in r))
+                        found.append((rid, "launcher" in r, path))
     return found
 
 
-def local_index(work, apkgs):
-    """The bumped builds signed into work/www/index with the host's key."""
+def local_index(work, apkgs, recipes):
+    """The bumped builds and the dependents' recipes, as the tree has them,
+    signed into work/www/index with the host's key."""
     www = os.path.join(work, "www")
     idx = os.path.join(www, "index")
     shutil.rmtree(www, ignore_errors=True)
     os.makedirs(idx)
     for a in apkgs:
         shutil.copy(a, idx)
+    for path in recipes:
+        shutil.copy(path, os.path.join(idx, os.path.basename(os.path.dirname(path)) + ".recipe.toml"))
     subprocess.run([APM, "index", idx, "--sign"], check=True, stdout=subprocess.DEVNULL)
     # `apm repo add bump URL` pins the key at URL/apm.pub: the host key's
     # public half, from where `apm index --sign` took the secret one
@@ -118,11 +121,11 @@ def main(apkgs):
     ids = list(bumped)
     extra = dependents(ids) if os.environ.get("BUMP_DEPENDENTS", "1") != "0" else []
     print("== bumped: %s" % " ".join(ids))
-    print("== dependents: %s" % (" ".join(i for i, _ in extra) or "none"))
-    to_install = ids + [i for i, _ in extra]
-    apps = [i for i, has in list(bumped.items()) + extra if has]
+    print("== dependents: %s" % (" ".join(i for i, _, _ in extra) or "none"))
+    to_install = ids + [i for i, _, _ in extra]
+    apps = [i for i, has in list(bumped.items()) + [(i, has) for i, has, _ in extra] if has]
 
-    www = local_index(work, apkgs)
+    www = local_index(work, apkgs, [path for _, _, path in extra])
     http = subprocess.Popen([sys.executable, "-m", "http.server", str(HTTP_PORT), "--bind", "127.0.0.1"],
                             cwd=www, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     results = {}
