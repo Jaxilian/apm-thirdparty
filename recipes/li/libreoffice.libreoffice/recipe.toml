@@ -61,8 +61,11 @@ terminal   = false
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/lo $D/bin
+# bsdtar reads the .deb (an ar archive) itself: `ar` is aos/devel's, a
+# link the build's sandbox does not see ("ar: not found" stopped the
+# bump to 26.8.2, 2026-11-02).
 for deb in $APM_SOURCE_1/DEBS/*.deb $APM_SOURCE_2/DEBS/*.deb; do
-	(cd $D/lo && ar p "$deb" data.tar.xz | tar xJ)
+	(cd $D/lo && bsdtar -xOf "$deb" data.tar.xz | tar xJ)
 done
 # The .debs carry symlinks with absolute targets (usr/local/bin/libreoffice26.8
 # -> /opt/libreoffice26.8/program/soffice, the icons of the .desktop files):

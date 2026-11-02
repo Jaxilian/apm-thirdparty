@@ -43,6 +43,10 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/dotnet $D/bin
 cp -a $APM_SRC/. $D/dotnet/
+# The LTTng trace provider wants liblttng-ust, which AOS has not; the
+# runtime loads it only with tracing switched on (apm check refused the
+# bump to 10.0.403 on it, 2026-11-02).
+rm -f $D/dotnet/shared/Microsoft.NETCore.App/*/libcoreclrtraceptprovider.so
 cat > $D/bin/dotnet <<WRAP
 #!/bin/sh
 export DOTNET_ROOT=$APM_PREFIX/dotnet

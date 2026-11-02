@@ -60,6 +60,10 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/chrome $D/bin
 cp -a $APM_SRC/opt/google/chrome/. $D/chrome/
+# Chrome's Qt integration shims want Qt 5 and 6, which AOS has not; it
+# loads them only when told to draw with Qt, so they go (apm check
+# refused the bump to 156.8078.79 on them, 2026-11-02).
+rm -f $D/chrome/libqt5_shim.so $D/chrome/libqt6_shim.so
 # --password-store=gnome-libsecret: Chromium picks its keyring by the
 # desktop's name and knows none of ours, so without it stored logins are
 # kept in the clear; AOS 0.3.3 has the Secret Service (oo7) and libsecret
