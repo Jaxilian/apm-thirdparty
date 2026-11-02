@@ -18,8 +18,8 @@ recipe_version = 1
 [package]
 name         = "vscodium"
 organization = "vscodium"
-version      = "1.140.6880"
-release      = 3
+version      = "1.143.17232"
+release      = 1
 kind         = "app"
 summary      = "VSCodium, VS Code without Microsoft's telemetry"
 license      = "MIT"
@@ -29,8 +29,8 @@ homepage     = "https://vscodium.com/"
 min_aos      = "0.4.13"
 
 [[source]]
-url    = "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/VSCodium-linux-x64-1.140.06880.tar.gz"
-sha256 = "61223b74f9e40834117311ec4177cb386d09b84c1aae4f9e674c96580569cef3"
+url    = "https://github.com/VSCodium/vscodium/releases/download/1.143.17232/VSCodium-linux-x64-1.143.17232.tar.gz"
+sha256 = "ca1895aa040bd91a09c709d79eac7862d8c1aa0237fdc25b503deeb8bcd87efd"
 
 [[dependencies]]
 name         = "gtk3"
