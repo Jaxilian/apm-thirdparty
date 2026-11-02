@@ -128,11 +128,15 @@ def main(apkgs):
             "sed 's/^VERSION_ID=.*/VERSION_ID=9.9.9/' /usr/lib/os-release > /aos/t/os-release && "
             "printf '#!/bin/sh\\nexport APM_OS_RELEASE=/aos/t/os-release\\nexec /aos/t/apm.bin \"$@\"\\n' > %s && chmod 755 %s && %s --version; "
             "cd /aos/t/index && for f in $(curl -sf http://10.0.2.2:%d/index/ | sed -n 's/.*href=\"\\([^\"]*\\)\".*/\\1/p'); do curl -sf -O http://10.0.2.2:%d/index/$f; done; cd /; "
-            "%s repo add thirdparty https://github.com/Jaxilian/apm-thirdparty/releases/download/index --third-party 2>&1 | tail -1; "
-            "%s repo add bump file:///aos/t/index --third-party 2>&1 | tail -1; "
+            "%s repo add thirdparty 2>&1 | tail -1; "
+            "%s repo add bump file:///aos/t/index 2>&1 | tail -1; "
             "for i in $(seq 30); do getent hosts github.com >/dev/null 2>&1 && break; sleep 1; done; "
             "%s update --force 2>&1 | tail -4"
             % (HTTP_PORT, GUEST_APM, GUEST_APM, GUEST_APM, HTTP_PORT, HTTP_PORT, GUEST_APM, GUEST_APM, GUEST_APM), timeout=300)
+        # apm's grammar since the no-root rounds: `repo add thirdparty` is
+        # the shortcut, `repo add NAME URL` pins the key at URL/apm.pub;
+        # the old `--third-party` made both print the usage and the gate
+        # fail every bump (2026-11-02).
         print("$ setup\n%s" % setup)
         if "bump" not in setup or "updated" not in setup:
             print("!! the local index was not taken; see the setup output")

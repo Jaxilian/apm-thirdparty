@@ -138,6 +138,13 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/zoom $D/lib $D/bin
 cp -a $APM_SRC/opt/zoom/. $D/zoom/
+# Qt plugins and QML modules whose Qt libraries Zoom does not carry
+# (eglfs, Qt.labs, QtQuick Particles and the like): they cannot load
+# and apm check refused the bump to 7.2.5 on them (2026-11-02).
+rm -rf $D/zoom/Qt/plugins/egldeviceintegrations $D/zoom/Qt/plugins/platforms/libqeglfs.so \
+	$D/zoom/Qt/qml/Qt/labs $D/zoom/Qt/qml/Qt/test $D/zoom/Qt/qml/QtNetwork \
+	$D/zoom/Qt/qml/QtQml/XmlListModel $D/zoom/Qt/qml/QtQuick/LocalStorage \
+	$D/zoom/Qt/qml/QtQuick/Particles $D/zoom/Qt/qml/QtQuick/VectorImage
 for n in $(seq 2 15); do
 	eval s=\$APM_SOURCE_$n
 	find $s -name '*.so*' -exec cp -a {} $D/lib/ \;

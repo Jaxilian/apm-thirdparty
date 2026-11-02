@@ -68,6 +68,10 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/vscodium $D/bin
 cp -a $APM_SRC/. $D/vscodium/
+# The Microsoft-authentication extension's native MSAL runtime wants
+# WebKitGTK and libsoup, which AOS has not; the extension works without
+# it (apm check refused VSCodium's bump on it, 2026-11-02).
+rm -f $D/vscodium/resources/app/extensions/microsoft-authentication/dist/libmsalruntime.so
 # --password-store=gnome-libsecret: as for VS Code and Chrome.
 # The Electron binary itself, not the tarball's bin/codium: that is the
 # command-line client, which starts the editor detached and exits at

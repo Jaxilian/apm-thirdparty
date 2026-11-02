@@ -35,6 +35,29 @@ url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/deb/
 sha256 = "d3f551b20c7db86b50a841477f5f4fb83523513805161d42358bad000cb0ab5f"
 strip  = 1
 
+# Debian trixie's krb5 and keyutils, for the libcurl LibreOffice ships
+# (it needs libgssapi_krb5; AOS has no Kerberos). The same five Zoom
+# carries, into program/, which is on its loader path.
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "30847c1fde4240567d7ed3aeab4f655dd591203758b857e85e824045aae70299"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "47d71d6a7f2e59b9bae5f89602397594805113b95889ad18fa703cd53abafc97"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "7da07ee674b47f1f0be7cc89317c25310086a1f1761217d0f72e6ae2c5a69b84"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "3a0acd8b37955c0e102c756b52c97df2a31f67b96453c35dab70df218d309117"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/keyutils/libkeyutils1_1.6.3-6_amd64.deb"
+sha256 = "0b11ad17be0300b63ad4eeb4c6450fed24d34b7b740f23e5363dcb29ee6d5eba"
+
 [[dependencies]]
 name         = "gtk3"
 organization = "runtime"
@@ -73,6 +96,19 @@ done
 # 2026-10-11), and nothing here reads them -- the wrapper names the program
 # by its path.
 find $D/lo -type l -lname '/*' -delete
+P=$D/lo/opt/libreoffice26.8/program
+for n in 3 4 5 6 7; do
+	eval s=\$APM_SOURCE_$n
+	find $s -name '*.so*' -exec cp -a {} $P/ \;
+done
+# The interface plugins for toolkits AOS has not (Qt 5 and 6, KDE
+# Frameworks, GTK 4), the KDE file picker, the MySQL and PostgreSQL
+# drivers (their client libraries are not here) and the Java bean: none
+# can load, and apm check refused the bump to 26.8.2 on them (2026-11-02).
+# SAL_USE_VCLPLUGIN=gtk3 in the wrapper names the one that stays.
+rm -f $P/libvclplug_qt5lo.so $P/libvclplug_qt6lo.so $P/libvclplug_kf5lo.so $P/libvclplug_gtk3_kde5lo.so \
+	$P/libvclplug_gtk4lo.so $P/lo_kde5filepicker $P/libkf5be1lo.so $P/libavmediaqt6.so $P/libavmediagtk.so \
+	$P/libmysqlclo.so $P/libpostgresql-sdbc-impllo.so $P/libofficebean.so
 cat > $D/bin/libreoffice <<WRAP
 #!/bin/sh
 # LibreOffice on the GTK3 runtime, on Wayland (SAL_USE_VCLPLUGIN picks

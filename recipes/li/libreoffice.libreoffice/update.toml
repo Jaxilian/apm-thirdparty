@@ -15,3 +15,33 @@ page      = "https://download.documentfoundation.org/libreoffice/stable/{dir}/de
 regex     = 'href="LibreOffice_(\d+\.\d+\.\d+)_Linux_x86-64_deb_langpack_sv\.tar\.gz"'
 url       = "https://download.documentfoundation.org/libreoffice/stable/{version}/deb/x86_64/LibreOffice_{version}_Linux_x86-64_deb_langpack_sv.tar.gz"
 sums      = "{url}.mirrorlist"
+
+[[source]]
+source   = 3
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libgssapi-krb5-2"
+
+[[source]]
+source   = 4
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5-3"
+
+[[source]]
+source   = 5
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libk5crypto3"
+
+[[source]]
+source   = 6
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5support0"
+
+[[source]]
+source   = 7
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkeyutils1"
