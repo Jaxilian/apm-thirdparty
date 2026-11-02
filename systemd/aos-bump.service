@@ -1,0 +1,10 @@
+# The weekly bump (README.md, "The weekly bump"): auto-bump.sh bumps,
+# builds, checks and publishes both indexes. Install as a user unit:
+#   sh systemd/install.sh
+[Unit]
+Description=Bump the AOS package indexes to their upstreams
+
+[Service]
+Type=oneshot
+Environment=AOS_OUT=%h/Projects/OS/aos/output3
+ExecStart=%h/Projects/OS/apm-thirdparty/auto-bump.sh

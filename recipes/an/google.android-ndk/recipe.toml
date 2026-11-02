@@ -1,0 +1,45 @@
+# The Android NDK r30 (30.0.16248370): clang, the sysroots and the build
+# scripts for native code in an Android app (Godot's and Unity's export
+# templates, Rust's android targets). Google's own zip, unpacked into
+# ndk/30.0.16248370 as sdkmanager lays it out; google/android-sdk links
+# every ndk/<version> here into the person's SDK root
+# (~/AppData/google.android-sdk/ndk), so Gradle's ndkVersion finds it.
+# A project pinning another NDK gets it from sdkmanager into that root.
+#
+# Separate from the SDK: 2.2 GB unpacked, and only native code needs it.
+# The zip holds 39 symlinks (clang++ -> clang, libc++.so), kept since
+# apm v0.1.40; an older apm wrote them as files, hence min_aos.
+#
+# The sha256 is of the file as downloaded on 2026-10-30; its sha1 matched
+# the one in Google's repository2-3.xml. Android Software Development Kit
+# License; fetched from Google, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "android-ndk"
+organization = "google"
+version      = "30.0.16248370"
+release      = 1
+kind         = "bin"
+summary      = "Android NDK: native C and C++ for Android apps"
+license      = "LicenseRef-Android-SDK-License"
+homepage     = "https://developer.android.com/ndk"
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://dl.google.com/android/repository/android-ndk-r30-linux.zip"
+sha256 = "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2"
+strip  = 1
+
+[[dependencies]]
+name         = "android-sdk"
+organization = "google"
+track        = "*"
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/ndk/30.0.16248370
+cp -a $APM_SRC/. $D/ndk/30.0.16248370/
+'''

@@ -20,7 +20,7 @@ recipe_version = 1
 name         = "unityhub"
 organization = "unity"
 version      = "3.22.5"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Unity Hub: installs and opens the Unity game engine"
 license      = "LicenseRef-Unity-Terms-of-Service"
@@ -43,6 +43,10 @@ command = ["unityhub"]
 [sandbox]
 home  = "private"
 share = ["Projects"]
+# The installed tools (Java, google/android-sdk with its per-person SDK
+# root in ~/AppData/google.android-sdk, Gradle): Android export finds the
+# one SDK the Terminal and Android Studio use (2026-10-30).
+tools = true
 
 [launcher]
 name       = "Unity Hub"

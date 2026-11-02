@@ -20,7 +20,7 @@ recipe_version = 1
 name         = "godot-dotnet"
 organization = "godotengine"
 version      = "4.7.2"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Godot Engine with C# (.NET), the 2D and 3D game engine and editor"
 license      = "MIT"
@@ -58,6 +58,10 @@ command = ["godot-dotnet"]
 [sandbox]
 home = "private"
 share = ["Projects", "Documents"]
+# The installed tools (Java, google/android-sdk with its per-person SDK
+# root in ~/AppData/google.android-sdk, Gradle): Android export finds the
+# one SDK the Terminal and Android Studio use (2026-10-30).
+tools = true
 
 [launcher]
 name       = "Godot Engine (.NET)"

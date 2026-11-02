@@ -1,0 +1,56 @@
+# Gradle 9.8.2, the build tool of Android projects, from Gradle's own
+# distribution server (the -bin zip, without the docs). One wrapper,
+# bin/gradle, runs the distribution's launcher; it finds Java on PATH
+# (adoptium/java).
+#
+# Gradle keeps its caches, daemons and the distributions a project's
+# ./gradlew downloads in GRADLE_USER_HOME: ~/AppData/gradle.gradle, set by
+# [provides] env, never ~/.gradle (the user, 2026-10-30: a package's data
+# stays in its own folder). A project's ./gradlew reads the same variable,
+# so it lands there too.
+#
+# The sha256 is the one services.gradle.org publishes beside the zip
+# (versions/current), checked against the file on 2026-10-30. Apache-2.0;
+# fetched from Gradle, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "gradle"
+organization = "gradle"
+version      = "9.8.2"
+release      = 1
+kind         = "bin"
+summary      = "Gradle, the build tool of Java and Android projects"
+license      = "Apache-2.0"
+homepage     = "https://gradle.org/"
+# [provides] env (apm v0.1.40) and a zip source.
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://services.gradle.org/distributions/gradle-9.8.2-bin.zip"
+sha256 = "21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607"
+strip  = 1
+
+[[dependencies]]
+name         = "java"
+organization = "adoptium"
+track        = "*"
+
+[provides]
+command = ["gradle"]
+env     = ["GRADLE_USER_HOME=AppData/gradle.gradle"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/gradle $D/bin
+cp -a $APM_SRC/. $D/gradle/
+cat > $D/bin/gradle <<WRAP
+#!/bin/sh
+# Gradle, its user home in ~/AppData/gradle.gradle when the login did not set one.
+export GRADLE_USER_HOME="\${GRADLE_USER_HOME:-\$HOME/AppData/gradle.gradle}"
+exec $APM_PREFIX/gradle/bin/gradle "\$@"
+WRAP
+chmod 755 $D/bin/gradle
+'''

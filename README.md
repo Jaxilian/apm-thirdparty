@@ -88,7 +88,9 @@ commits and pushes only the recipes that built, and runs each repo's
 `publish.sh`. A repo with uncommitted changes, or one that cannot
 fast-forward to origin, stops the run before anything is written.
 
-- **When:** the systemd user timer `aos-bump.timer`, Mondays 06:00;
+- **When:** the systemd user timer `aos-bump.timer` (systemd/ here;
+  `sh systemd/install.sh` on a reinstalled machine, 2026-11-02),
+  Mondays 06:00;
   `Persistent=true` runs a missed Monday at the next boot. Linger is on
   for jax, so it runs logged out too -- but `gh auth token` reads the
   login keyring, and with it locked the run stops at the start.

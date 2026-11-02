@@ -1,0 +1,123 @@
+# The Android SDK: the base every account shares, read-only in the store,
+# and a per-person SDK root in ~/AppData/google.android-sdk (ANDROID_HOME)
+# whose base components are links into this package. sdkmanager, Gradle
+# and Android Studio add what a project pins (another build-tools, the
+# emulator, system images) into that root, beside the links, so Software
+# says "installed" truthfully for every account and an uninstall plus the
+# AppData folder leaves nothing (the user, 2026-10-30).
+#
+# The base: cmdline-tools 23.0 (sdkmanager, avdmanager), platform-tools
+# 37.0.1 (adb, fastboot), build-tools 37.0.0 and platform android-37.2,
+# Google's own zips from dl.google.com/android/repository, unpacked as
+# sdkmanager would lay them out. sdkmanager and Gradle take a component
+# that has only its source.properties (no package.xml), linked or not
+# (checked with sdkmanager --list_installed, 2026-10-30). The NDK is
+# google/android-ndk, linked in the same way when installed.
+#
+# bin/android-sdk makes the root and the links on every run (a link into
+# a build an upgrade removed goes and is made again), then runs the tool
+# it was called as. adb and the Java tools write ~/.android and ~/.java
+# with no variable for it, so they run with HOME at the root; Gradle and
+# Android Studio honour ANDROID_USER_HOME. sdkmanager gets --sdk_root:
+# cmdline-tools/latest is a link, and it would take the store for the root.
+#
+# No sandbox, like the Rust toolchain: a developer tool. Programs with
+# `tools` in their sandbox (Android Studio, Godot, Unity Hub, VS Code) get
+# the AppData folder and the variables from aos-sandbox.
+#
+# The sha256 sums are of the files as downloaded on 2026-10-30; each
+# file's sha1 matched the one in Google's repository2-3.xml. Android
+# Software Development Kit License; fetched from Google, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "android-sdk"
+organization = "google"
+version      = "37.0.1"
+release      = 1
+kind         = "bin"
+summary      = "Android SDK: adb, fastboot, sdkmanager, build-tools and the platform"
+license      = "LicenseRef-Android-SDK-License"
+homepage     = "https://developer.android.com/tools"
+# [provides] env (apm v0.1.40) and zip sources.
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip"
+sha256 = "0877a1d048fe4a24efe2eff536ca4223f7adeb58648bb81909d33c446918cfa8"
+strip  = 1
+
+[[source]]
+url    = "https://dl.google.com/android/repository/platform-tools_r37.0.1-linux.zip"
+sha256 = "d230f13842f60f782a8645f9c813f8f845bf36089ea7289f28c48f17979313f1"
+strip  = 1
+
+[[source]]
+url    = "https://dl.google.com/android/repository/build-tools_r37_linux.zip"
+sha256 = "01af179347cbcd9c208b7f8171f7b21f6dd1d2f85bcd15e88caa51d5d7b86060"
+strip  = 1
+
+[[source]]
+url    = "https://dl.google.com/android/repository/platform-37.2_r02.zip"
+sha256 = "17af98ec1427a1fed9ea278184aba71e53b87eca103655602f9fc64ef11ea4d3"
+strip  = 1
+
+# sdkmanager and avdmanager are Java programs.
+[[dependencies]]
+name         = "java"
+organization = "adoptium"
+track        = "*"
+
+[provides]
+command = ["android-sdk", "adb", "fastboot", "sdkmanager", "avdmanager", "emulator"]
+env     = ["ANDROID_HOME=AppData/google.android-sdk", "ANDROID_USER_HOME=AppData/google.android-sdk/.android"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/sdk/cmdline-tools/latest $D/sdk/platform-tools $D/sdk/build-tools/37.0.0 $D/sdk/platforms/android-37.2 $D/bin
+cp -a $APM_SOURCE_1/. $D/sdk/cmdline-tools/latest/
+cp -a $APM_SOURCE_2/. $D/sdk/platform-tools/
+cp -a $APM_SOURCE_3/. $D/sdk/build-tools/37.0.0/
+cp -a $APM_SOURCE_4/. $D/sdk/platforms/android-37.2/
+chmod -R a+rX $D/sdk
+cat > $D/bin/android-sdk <<'WRAP'
+#!/bin/sh
+# The Android SDK of the person running this (google/android-sdk's recipe
+# says why): ~/AppData/google.android-sdk, made and linked to the shared
+# base, then the tool this was called as. As android-sdk it prints the root.
+set -e
+n=$(basename "$0")
+SDK=${ANDROID_HOME:-$HOME/AppData/google.android-sdk}
+export ANDROID_HOME="$SDK" ANDROID_USER_HOME="${ANDROID_USER_HOME:-$SDK/.android}"
+BASE=$(dirname "$(dirname "$(readlink -f "$0")")")/sdk
+NDK=$(dirname "$(dirname "$(dirname "$BASE")")")/android-ndk/current/ndk
+mkdir -p "$SDK/cmdline-tools" "$SDK/build-tools" "$SDK/platforms" "$SDK/ndk" "$ANDROID_USER_HOME"
+for l in "$SDK/platform-tools" "$SDK"/cmdline-tools/* "$SDK"/build-tools/* "$SDK"/platforms/* "$SDK"/ndk/*; do
+	if [ -L "$l" ] && [ ! -e "$l" ]; then rm -f "$l"; fi
+done
+for c in "$BASE/platform-tools" "$BASE/cmdline-tools/latest" "$BASE"/build-tools/* "$BASE"/platforms/* "$NDK"/*; do
+	[ -d "$c" ] || continue
+	t=$SDK/${c#"$BASE"/}
+	case $c in "$NDK"/*) t=$SDK/ndk/${c#"$NDK"/} ;; esac
+	if [ ! -e "$t" ] && [ ! -L "$t" ]; then ln -s "$c" "$t"; fi
+done
+case $n in
+	adb|fastboot) t=platform-tools/$n ;;
+	sdkmanager) exec env HOME="$SDK" "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" "$@" ;;
+	avdmanager) t=cmdline-tools/latest/bin/$n ;;
+	emulator) t=emulator/emulator ;;
+	*) echo "$SDK"; exit 0 ;;
+esac
+if [ ! -x "$SDK/$t" ]; then
+	echo "$n: no $t in $SDK (sdkmanager --install emulator adds the emulator)" >&2
+	exit 1
+fi
+HOME=$SDK exec "$SDK/$t" "$@"
+WRAP
+chmod 755 $D/bin/android-sdk
+for c in adb fastboot sdkmanager avdmanager emulator; do
+	ln -s android-sdk $D/bin/$c
+done
+'''

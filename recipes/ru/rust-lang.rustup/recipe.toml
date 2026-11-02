@@ -1,0 +1,70 @@
+# rustup 1.29.2, the Rust toolchain installer, from static.rust-lang.org:
+# the one rustup-init binary (rustup is a multi-call binary; called as
+# rustup it is rustup). Each person's toolchains live in their own
+# ~/AppData/rust-lang.rustup: RUSTUP_HOME=.../rustup, CARGO_HOME=.../cargo
+# and its bin on PATH (last, after the system's), all from [provides] env,
+# so nothing goes to ~/.rustup, ~/.cargo or ~/.profile (the user,
+# 2026-10-30). Remove the package and that folder and nothing is left.
+#
+# `rustup default stable` installs the first toolchain; after that cargo,
+# rustc and every `cargo install`ed tool are on PATH in new terminals.
+# aos/rust (the system-wide toolchain) may stay installed: its cargo is in
+# /opt/apm/bin, before the rustup proxies, so remove aos/rust to let
+# rustup choose. Without the proxies in /opt/apm/bin the two never clash
+# in Software.
+#
+# The sha256 is the one static.rust-lang.org publishes beside the binary
+# (rustup-init.sha256), checked on 2026-10-30. MIT OR Apache-2.0; fetched
+# from the Rust project, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "rustup"
+organization = "rust-lang"
+version      = "1.29.2"
+release      = 2
+kind         = "bin"
+summary      = "rustup: installs and updates Rust toolchains, per person"
+license      = "MIT OR Apache-2.0"
+homepage     = "https://rustup.rs/"
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-unknown-linux-gnu/rustup-init"
+sha256 = "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+
+# rustc links with cc, as aos/rust does.
+[[dependencies]]
+name         = "devel"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["rustup"]
+env     = ["RUSTUP_HOME=AppData/rust-lang.rustup/rustup", "CARGO_HOME=AppData/rust-lang.rustup/cargo"]
+path    = ["AppData/rust-lang.rustup/cargo/bin"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec
+# Installed under its own name: the multi-call binary looks at argv[0],
+# and as libexec/rustup it was rustup, which has no -y ("unexpected
+# argument '-y'" on every first run, the owner, 2026-11-02; release 2).
+install -m 755 $APM_SRC/rustup-init $D/libexec/rustup-init
+# The binary as rustup, its homes in AppData when the login set none. A
+# first run makes the proxies (cargo, rustc) in CARGO_HOME/bin; --no-modify-path:
+# the PATH comes from [provides] path, never from ~/.profile.
+cat > $D/bin/rustup <<WRAP
+#!/bin/sh
+# rustup, its toolchains in ~/AppData/rust-lang.rustup.
+export RUSTUP_HOME="\${RUSTUP_HOME:-\$HOME/AppData/rust-lang.rustup/rustup}"
+export CARGO_HOME="\${CARGO_HOME:-\$HOME/AppData/rust-lang.rustup/cargo}"
+if [ ! -x "\$CARGO_HOME/bin/rustup" ]; then
+	$APM_PREFIX/libexec/rustup-init -y --no-modify-path --default-toolchain none >&2 || exit 1
+fi
+exec "\$CARGO_HOME/bin/rustup" "\$@"
+WRAP
+chmod 755 $D/bin/rustup
+'''

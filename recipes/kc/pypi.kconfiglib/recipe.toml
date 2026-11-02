@@ -1,0 +1,54 @@
+# kconfiglib 14.1.0, the Kconfig library and its menuconfig/genconfig
+# tools, from PyPI as the pure-Python wheel: the first Python library in
+# Software, and the shape for the next ones (the owner, 2026-11-01).
+#
+# How a Python library package works on AOS: the wheel (a zip) is
+# unpacked into lib/python3/site-packages of the package, and
+# astral/python's sitecustomize.py (release 2) puts every installed
+# package's lib/python3/site-packages on sys.path, the system store's and
+# ~/.apm's. Nothing goes to ~/.local: `pip install --user` is what this
+# replaces. The wheel's console scripts (menuconfig, genconfig, ...) are
+# one-line wrappers written here, since nothing runs pip at install.
+#
+# The sha256 is PyPI's for the wheel (pypi.org/pypi/kconfiglib/14.1.0/json),
+# read on 2026-11-01. ISC. Fetched from files.pythonhosted.org, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "kconfiglib"
+organization = "pypi"
+version      = "14.1.0"
+release      = 1
+kind         = "bin"
+summary      = "kconfiglib: the Kconfig library for Python, with menuconfig and genconfig"
+license      = "ISC"
+homepage     = "https://github.com/ulfalizer/Kconfiglib"
+min_aos      = "0.4.39"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/8a/f1/d98a89231e779b079b977590efcc31249d959c8f1d4b5858cad69695ff9c/kconfiglib-14.1.0-py2.py3-none-any.whl"
+sha256 = "edcd35a20e7e138a9a9e96149027f805f785e818d2eae400b6fa8b0c8845114a"
+
+[[dependencies]]
+name         = "python"
+organization = "astral"
+track        = "3.*"
+
+[provides]
+command = ["menuconfig", "genconfig", "oldconfig", "olddefconfig", "savedefconfig", "defconfig", "alldefconfig", "allnoconfig", "allyesconfig", "setconfig", "listnewconfig", "guiconfig"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+SP=$D/lib/python3/site-packages
+install -d $SP $D/bin
+# A wheel is a zip; bsdtar reads it. The *.dist-info stays: Python's
+# importlib.metadata reads the version from it.
+bsdtar -xf $APM_SRC/kconfiglib-14.1.0-py2.py3-none-any.whl -C $SP
+for tool in menuconfig genconfig oldconfig olddefconfig savedefconfig defconfig alldefconfig allnoconfig allyesconfig setconfig listnewconfig guiconfig; do
+	printf '#!/bin/sh\n# %s from pypi/kconfiglib (the wheel'"'"'s console script).\nexec python3 -m %s "$@"\n' "$tool" "$tool" > $D/bin/$tool
+	chmod 755 $D/bin/$tool
+done
+'''

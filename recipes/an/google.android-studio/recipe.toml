@@ -1,0 +1,94 @@
+# Android Studio Rabbit 2 (2026.2.2.8), from Google's own download (the
+# linux tarball that jb.gg/android-studio-releases-list.xml names), with
+# one wrapper. Studio is a JetBrains IDE with its own runtime (jbr/) and
+# draws through X11, so it runs on XWayland with the GTK3 runtime's X
+# libraries, as JetBrains Toolbox does.
+#
+# The SDK is google/android-sdk's, never one of Studio's own: with `tools`
+# aos-sandbox binds ~/AppData/google.android-sdk (ANDROID_HOME) and
+# ~/AppData/gradle.gradle (GRADLE_USER_HOME) at their paths and sets the
+# variables, so Studio, Gradle in the Terminal, Godot and Unity use one
+# SDK; what Studio's SDK Manager adds lands there too. The wrapper runs
+# android-sdk first so the person's SDK root and its links exist before
+# Studio's first-run wizard looks. `tools` also brings /dev/kvm, for the
+# emulator. Studio's settings and caches stay in its own folder,
+# ~/AppData/google.android-studio.
+#
+# USB devices: the sandbox has no /dev/bus/usb, so start adb from the
+# Terminal (`adb devices`); Studio talks to that server on port 5037.
+#
+# The version is Google's 2026.2.2.8 without the build part, since a
+# version here has three. The sha256 is the one in Google's releases list
+# for the file, 2026-10-30. Proprietary: Android Studio terms. Fetched from
+# Google, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "android-studio"
+organization = "google"
+version      = "2026.2.2"
+release      = 1
+kind         = "app"
+summary      = "Android Studio, the IDE for Android apps"
+license      = "LicenseRef-Android-Studio-Terms"
+homepage     = "https://developer.android.com/studio"
+# The SDK's [provides] env and aos-sandbox's toolchain folders (0.4.37).
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.2.2.8/android-studio-rabbit2-linux.tar.gz"
+sha256 = "b47fdcc0703019618a7afd5ad1822cafc5de66bed984640be2977a0fdb538304"
+strip  = 1
+
+[[dependencies]]
+name         = "android-sdk"
+organization = "google"
+track        = "*"
+
+[[dependencies]]
+name         = "gradle"
+organization = "gradle"
+track        = "*"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["android-studio"]
+
+[sandbox]
+home  = "private"
+share = ["Projects", ".gitconfig:ro"]
+tools = true
+ssh   = true
+
+[launcher]
+name       = "Android Studio"
+comment    = "Build apps for Android"
+exec       = "bin/android-studio"
+icon       = "android-studio/bin/studio.svg"
+categories = ["Development", "IDE"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/android-studio $D/bin
+cp -a $APM_SRC/. $D/android-studio/
+cat > $D/bin/android-studio <<WRAP
+#!/bin/sh
+# Android Studio with the GTK3 runtime's X libraries, on XWayland, after
+# the person's SDK root is made (google/android-sdk).
+/opt/apm/bin/android-sdk >/dev/null 2>&1 || :
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/android-studio/bin/studio "\$@"
+WRAP
+chmod 755 $D/bin/android-studio
+'''
