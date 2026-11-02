@@ -1,0 +1,13 @@
+# Google's releases list (XML): every channel's downloads with sha256.
+# The stable Linux tarball is android-studio-<codename>-linux.tar.gz
+# (an rc is -rcN-linux, a canary -canaryN-linux), and the codename is
+# not in the version, so the match is the whole link: version_from
+# takes 2026.2.2 out of it and url is the link itself. The XML holds
+# the checksum, so it is the sums text too.
+[[source]]
+kind         = "regex"
+page         = "https://jb.gg/android-studio-releases-list.xml"
+regex        = '(https://edgedl\.me\.gvt1\.com/android/studio/ide-zips/\d+\.\d+\.\d+\.\d+/android-studio-[a-z]+\d*-linux\.tar\.gz)'
+version_from = '/ide-zips/(\d+)\.(\d+)\.(\d+)\.\d+/'
+url          = "{version}"
+sums         = "https://jb.gg/android-studio-releases-list.xml"

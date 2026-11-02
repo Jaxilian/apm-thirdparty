@@ -1,0 +1,8 @@
+# services.gradle.org's current-version document: the version, the
+# binary zip's URL and its sha256.
+[[source]]
+kind        = "json"
+page        = "https://services.gradle.org/versions/current"
+version_key = "version"
+url_key     = "downloadUrl"
+sha256_key  = "checksum"

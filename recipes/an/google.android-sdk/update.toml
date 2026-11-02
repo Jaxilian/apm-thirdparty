@@ -1,0 +1,9 @@
+# The package's version is platform-tools' (the second source), from the
+# SDK repository's XML, which names the zip. The command-line tools (the
+# first source) are a build id, not a version: left as they are.
+[[source]]
+source = 2
+kind   = "regex"
+page   = "https://dl.google.com/android/repository/repository2-3.xml"
+regex  = 'platform-tools_r(\d+\.\d+\.\d+)-linux\.zip'
+url    = "https://dl.google.com/android/repository/platform-tools_r{version}-linux.zip"

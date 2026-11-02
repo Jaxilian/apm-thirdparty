@@ -1,0 +1,8 @@
+# The NDK downloads page names each release's full revision
+# (30.0.16248370); the zip is named by the major (r30). No sha256 on
+# the page (SHA-1 only): the download's is recorded.
+[[source]]
+kind  = "regex"
+page  = "https://developer.android.com/ndk/downloads"
+regex = '(\d+\.\d+\.\d{6,})'
+url   = "https://dl.google.com/android/repository/android-ndk-r{v1}-linux.zip"

@@ -1,0 +1,8 @@
+# PyPI's JSON: urls[0] is the wheel (then the sdist) for this project; a
+# build from the wrong file fails in apm build and is put back.
+[[source]]
+kind        = "json"
+page        = "https://pypi.org/pypi/kconfiglib/json"
+version_key = "info.version"
+url_key     = "urls.0.url"
+sha256_key  = "urls.0.digests.sha256"

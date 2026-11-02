@@ -1,0 +1,8 @@
+# rustup's stable channel file names the version; the binary sits beside
+# its .sha256 under archive/<version>/.
+[[source]]
+kind  = "regex"
+page  = "https://static.rust-lang.org/rustup/release-stable.toml"
+regex = "version = '(\\d+\\.\\d+\\.\\d+)'"
+url   = "https://static.rust-lang.org/rustup/archive/{version}/x86_64-unknown-linux-gnu/rustup-init"
+sums  = "{url}.sha256"
