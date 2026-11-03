@@ -25,7 +25,7 @@ license      = "LicenseRef-Discord-Terms-of-Service"
 homepage     = "https://discord.com/"
 
 [[source]]
-url    = "https://stable.dl2.discordapp.net/apps/linux/1.0.168/discord-1.0.168.tar.gz"
+url    = "https://stable.dl2.discordapp.net/distro/app/stable/linux/x64/1.0.168/Discord.tar.gz"
 sha256 = "f25a97173c895a3f64d49261609f9c91309b20c1d4eb7670a2cb4caf808041c0"
 strip  = 1
 
