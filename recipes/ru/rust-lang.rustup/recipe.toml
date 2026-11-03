@@ -22,8 +22,8 @@ recipe_version = 1
 [package]
 name         = "rustup"
 organization = "rust-lang"
-version      = "1.29.2"
-release      = 2
+version      = "1.29.3"
+release      = 1
 kind         = "bin"
 summary      = "rustup: installs and updates Rust toolchains, per person"
 license      = "MIT OR Apache-2.0"
@@ -31,8 +31,8 @@ homepage     = "https://rustup.rs/"
 min_aos      = "0.4.37"
 
 [[source]]
-url    = "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-unknown-linux-gnu/rustup-init"
-sha256 = "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+url    = "https://static.rust-lang.org/rustup/archive/1.29.3/x86_64-unknown-linux-gnu/rustup-init"
+sha256 = "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
 
 # rustc links with cc, as aos/rust does.
 [[dependencies]]
