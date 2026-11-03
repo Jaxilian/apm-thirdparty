@@ -24,7 +24,7 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "159.0.0"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -44,7 +44,7 @@ track        = "*"
 command = ["firefox"]
 
 # What Firefox sees of the person's files: a home of its own and
-# Downloads. Its profile lives in ~/.var/app/mozilla.firefox from this
+# Downloads. Its profile lives in ~/AppData/mozilla.firefox from this
 # release; a profile made by an earlier release stays in ~/.mozilla.
 [sandbox]
 home  = "private"
@@ -85,12 +85,18 @@ cat > $D/firefox/distribution/policies.json <<POL
     "OverridePostUpdatePage": ""
 } }
 POL
-cat > $D/bin/firefox <<WRAP
+sed "s|@P@|$APM_PREFIX|" > $D/bin/firefox <<'WRAP'
 #!/bin/sh
-# Firefox on the GTK3 runtime, on Wayland. MOZ_ENABLE_WAYLAND is the
-# switch; without it GDK would look for an X display and find none.
 export MOZ_ENABLE_WAYLAND=1
-exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/firefox/firefox "\$@"
+export MOZ_LEGACY_PROFILES=1
+for F in $HOME/.mozilla/firefox $HOME/.config/mozilla/firefox; do
+	[ -f "$F/installs.ini" ] || continue
+	d=$(sed -n 's/^Default=//p' "$F/installs.ini" | while read -r p; do [ -d "$F/$p" ] && du -s "$F/$p"; done | sort -n | tail -1 | cut -f2)
+	d=${d##*/}
+	[ -n "$d" ] && sed -i "/^Default=1\$/d; /^Path=$d\$/a Default=1" "$F/profiles.ini"
+	rm "$F/installs.ini"
+done
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run @P@/firefox/firefox "$@"
 WRAP
 chmod 755 $D/bin/firefox
 '''
