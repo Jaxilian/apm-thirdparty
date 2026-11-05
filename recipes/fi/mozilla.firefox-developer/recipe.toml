@@ -1,0 +1,98 @@
+# Firefox Developer Edition, from Mozilla's own release directory: the
+# Firefox recipe over again for the devedition channel (the beta builds
+# with the developer tools' settings, a profile of its own and the
+# RemotingName firefox-dev, so it runs beside Firefox). The same wrapper
+# through the GTK3 runtime with Wayland on, the same content-sandbox
+# preference (fonts under /opt/apm) and the same policies (no telemetry,
+# no studies, no self-update: apm brings each beta).
+#
+# Mozilla writes the version 160.0b5; a version here is X.Y.Z, so it is
+# 160.0.5 (the beta number third: the next beta is 160.0.6, the next
+# cycle 161.0.1). The sha256 is the one in Mozilla's SHA256SUMS for this
+# release, checked against the file as downloaded on 2026-11-05. Mozilla
+# Public License 2.0, with Mozilla's trademarks on the name and logo; the
+# unmodified official build. Fetched from Mozilla, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "firefox-developer"
+organization = "mozilla"
+version      = "160.0.5"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Firefox Developer Edition web browser"
+license      = "MPL-2.0"
+homepage     = "https://www.mozilla.org/firefox/developer/"
+
+[[source]]
+url    = "https://download-installer.cdn.mozilla.net/pub/devedition/releases/160.0b5/linux-x86_64/en-US/firefox-160.0b5.tar.xz"
+sha256 = "a23e1047c69ed06e92f2803597f5b5d1bd64a456dd942df76ba3b4f8a4abf137"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["firefox-developer"]
+
+# What Firefox sees of the person's files: a home of its own and
+# Downloads. Its profile lives in ~/AppData/mozilla.firefox-developer,
+# apart from Firefox's.
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+# Voice and video calls: the microphone from the start; Software's
+# Permissions switch it off.
+microphone = true
+
+[launcher]
+name       = "Firefox Developer Edition"
+comment    = "Browse the web"
+exec       = "bin/firefox-developer"
+icon       = "firefox/browser/chrome/icons/default/default128.png"
+categories = ["Network", "WebBrowser"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/firefox $D/bin
+cp -a $APM_SRC/. $D/firefox/
+cat > $D/firefox/defaults/pref/aos.js <<PREF
+// AOS: the content sandbox may read the package store (fonts, runtime).
+pref("security.sandbox.content.read_path_whitelist", "/opt/apm/");
+PREF
+# Enterprise policies, read from the install directory: no telemetry, no
+# studies, no first-run or terms page (AOS sends nothing anywhere, and
+# apm updates the package, not Firefox itself).
+install -d $D/firefox/distribution
+cat > $D/firefox/distribution/policies.json <<POL
+{ "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisableAppUpdate": true,
+    "DontCheckDefaultBrowser": true,
+    "SkipTermsOfUse": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": ""
+} }
+POL
+sed "s|@P@|$APM_PREFIX|" > $D/bin/firefox-developer <<'WRAP'
+#!/bin/sh
+export MOZ_ENABLE_WAYLAND=1
+export MOZ_LEGACY_PROFILES=1
+for F in $HOME/.mozilla/firefox $HOME/.config/mozilla/firefox; do
+	[ -f "$F/installs.ini" ] || continue
+	d=$(sed -n 's/^Default=//p' "$F/installs.ini" | while read -r p; do [ -d "$F/$p" ] && du -s "$F/$p"; done | sort -n | tail -1 | cut -f2)
+	d=${d##*/}
+	[ -n "$d" ] && sed -i "/^Default=1\$/d; /^Path=$d\$/a Default=1" "$F/profiles.ini"
+	rm "$F/installs.ini"
+done
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run @P@/firefox/firefox "$@"
+WRAP
+chmod 755 $D/bin/firefox-developer
+'''

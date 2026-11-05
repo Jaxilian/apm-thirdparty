@@ -1,0 +1,7 @@
+[[source]]
+kind         = "regex"
+page         = "https://product-details.mozilla.org/1.0/firefox_versions.json"
+regex        = '"FIREFOX_DEVEDITION":\s*"(\d+\.\d+b\d+)"'
+version_from = '^(\d+)\.(\d+)b(\d+)$'
+url          = "https://download-installer.cdn.mozilla.net/pub/devedition/releases/{version}/linux-x86_64/en-US/firefox-{version}.tar.xz"
+sums         = "https://download-installer.cdn.mozilla.net/pub/devedition/releases/{version}/SHA256SUMS"

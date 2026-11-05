@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "dbeaver/dbeaver"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^dbeaver-ce-\d+\.\d+\.\d+-linux-x86_64\.tar\.gz$'

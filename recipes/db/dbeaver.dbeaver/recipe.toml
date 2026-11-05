@@ -1,0 +1,65 @@
+# DBeaver Community, the database tool, from the project's own GitHub
+# release: the linux x86_64 tarball, unpacked as it is, with one
+# wrapper. DBeaver is an Eclipse/SWT program with its own Java runtime
+# (jre/, which the Eclipse launcher finds beside itself), and SWT draws
+# through GTK3, so it runs through the GTK3 runtime's gtk3-run on
+# Wayland as Firefox does. NO_AT_BRIDGE=1 is what DBeaver's own desktop
+# entry sets (no accessibility bus for the JVM's GTK).
+#
+# The sha256 is the digest GitHub records for the release asset, checked
+# against the file as downloaded on 2026-11-05. Apache-2.0. Fetched from
+# GitHub, never mirrored. Its workspace, drivers and connections live in
+# its own folder, ~/AppData/dbeaver.dbeaver; it sees Projects (SQL
+# scripts, SQLite files) and Downloads (imports and exports).
+
+recipe_version = 1
+
+[package]
+name         = "dbeaver"
+organization = "dbeaver"
+version      = "26.2.4"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "DBeaver Community database tool"
+license      = "Apache-2.0"
+homepage     = "https://dbeaver.io/"
+
+[[source]]
+url    = "https://github.com/dbeaver/dbeaver/releases/download/26.2.4/dbeaver-ce-26.2.4-linux-x86_64.tar.gz"
+sha256 = "a0dce46bb01cd2447c2d51388a39d3cda7ac58930fc558ebf3945aca5b859360"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["dbeaver"]
+
+[sandbox]
+home  = "private"
+share = ["Projects", "Downloads"]
+
+[launcher]
+name       = "DBeaver"
+comment    = "Manage databases and run SQL"
+exec       = "bin/dbeaver"
+icon       = "dbeaver/dbeaver.png"
+categories = ["Development", "Database"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/dbeaver $D/bin
+cp -a $APM_SRC/. $D/dbeaver/
+cat > $D/bin/dbeaver <<WRAP
+#!/bin/sh
+# DBeaver with its bundled JRE on the GTK3 runtime, on Wayland.
+export NO_AT_BRIDGE=1
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/dbeaver/dbeaver "\$@"
+WRAP
+chmod 755 $D/bin/dbeaver
+'''

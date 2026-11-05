@@ -1,0 +1,66 @@
+# Bruno, the open-source API client, from the project's own GitHub
+# release: the amd64 .deb (apm reads a .deb since v0.1.13), unpacked,
+# with one wrapper that runs the Electron binary through the GTK3
+# runtime on Wayland, as VS Code's does. The deb puts the application in
+# /opt/Bruno; its icons and desktop entry under usr/share are not used,
+# the 256 px icon is copied beside the binary for the launcher.
+#
+# The sha256 is the digest GitHub records for the release asset, checked
+# against the file as downloaded on 2026-11-05. MIT. Fetched from GitHub,
+# never mirrored. Collections are plain files in a folder of the
+# person's choosing, hence Projects; Downloads for imports and exports.
+
+recipe_version = 1
+
+[package]
+name         = "bruno"
+organization = "usebruno"
+version      = "4.3.0"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Bruno API client"
+license      = "MIT"
+homepage     = "https://www.usebruno.com/"
+
+[[source]]
+url    = "https://github.com/usebruno/bruno/releases/download/v4.3.0/bruno_4.3.0_amd64_linux.deb"
+sha256 = "45117e3cc3c221801d10c8984c8e796f11bdf16d28e3a51b35e976603d3c3a02"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["bruno"]
+
+[sandbox]
+home  = "private"
+share = ["Projects", "Downloads"]
+
+[launcher]
+name       = "Bruno"
+comment    = "Explore and test APIs"
+exec       = "bin/bruno"
+icon       = "bruno/bruno.png"
+categories = ["Development", "Network"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bruno $D/bin
+cp -a $APM_SRC/opt/Bruno/. $D/bruno/
+install -m 644 $APM_SRC/usr/share/icons/hicolor/256x256/apps/bruno.png $D/bruno/bruno.png
+# --password-store=gnome-libsecret: Chromium picks its keyring by the
+# desktop's name and knows none of ours; AOS has the Secret Service (oo7)
+# and libsecret in the core, reachable from the sandbox through the
+# session bus.
+cat > $D/bin/bruno <<WRAP
+#!/bin/sh
+# Bruno on the GTK3 runtime, on Wayland.
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/bruno/bruno --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/bruno
+'''

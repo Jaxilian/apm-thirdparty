@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "usebruno/bruno"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^bruno_\d+\.\d+\.\d+_amd64_linux\.deb$'
