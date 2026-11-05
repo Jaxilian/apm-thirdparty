@@ -47,6 +47,9 @@ APPS = {
     "claude":   ("claude-desktop", "claude/claude-desktop"),
     "godot":    ("godot", "godot"),
     "godot-dotnet": ("godot-dotnet", "godot"),
+    "bruno":    ("bruno", "bruno"),
+    "dbeaver":  ("dbeaver", "dbeaver"),
+    "firefox-developer": ("firefox-developer", "firefox-developer"),
 }
 ENV = ("WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000 HOME=/home/admin "
        "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus")
@@ -98,6 +101,9 @@ def local_index():
         for icon in os.listdir(icons):
             shutil.copy(os.path.join(icons, icon), idx)
     subprocess.run([APM, "index", idx, "--sign"], check=True, stdout=subprocess.DEVNULL)
+    # `apm repo add newapps URL` pins the key at URL/apm.pub: the host's,
+    # which signed the stamp above (as bump-check.py does).
+    shutil.copy(os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub"), os.path.join(idx, "apm.pub"))
     shutil.copy(APM, os.path.join(www, "apm"))
     return www
 
@@ -150,17 +156,28 @@ def main():
             "printf '#!/bin/sh\\nexport APM_OS_RELEASE=/aos/t/os-release\\nexec /aos/t/apm.bin \"$@\"\\n' > /aos/t/apm && chmod 755 /aos/t/apm && /aos/t/apm help | head -1; "
             "mkdir -p /aos/t/index && cd /aos/t/index && "
             "for f in $(curl -sf http://10.0.2.2:%d/index/ | sed -n 's/.*href=\"\\([^\"]*\\)\".*/\\1/p'); do curl -sf -O http://10.0.2.2:%d/index/$f; done; cd /; "
-            "/aos/t/apm repo add thirdparty https://github.com/Jaxilian/apm-thirdparty/releases/download/index --third-party 2>&1 | tail -1; "
-            "/aos/t/apm repo add newapps file:///aos/t/index --third-party 2>&1 | tail -1; "
+            # apm's grammar since the no-root rounds: `repo add thirdparty` is
+            # the shortcut, `repo add NAME URL` pins the key at URL/apm.pub;
+            # the old --third-party made both print the usage (2026-11-05).
+            "/aos/t/apm repo add thirdparty 2>&1 | tail -1; "
+            "/aos/t/apm repo add newapps file:///aos/t/index 2>&1 | tail -1; "
+            # A pinned repository's recipes may not compile on the system
+            # store (docs/no-root.md, Design C); this one stands in for the
+            # public third-party index, so its pin goes and the trusted
+            # keyring (the same key) verifies it, as for `thirdparty`.
+            "sed -i '/^name = \"newapps\"/,$ { /^key = /d }' /opt/apm/etc/config.toml; "
             "/aos/t/apm update --force 2>&1; df -h /aos | tail -1"
             % (HTTP_PORT, HTTP_PORT, HTTP_PORT), timeout=300)
         print("$ setup\n%s" % setup)
         updated = lambda text, repo: any(line.startswith(repo) and "updated" in line for line in text.split("\n"))
-        if not all(updated(setup, r) for r in ("main", "thirdparty", "newapps")):
-            setup = ser.run("/aos/t/apm update --force 2>&1", timeout=300)
-            print("$ update again\n%s" % setup)
-        for repo in ("main", "thirdparty", "newapps"):
-            if not updated(setup, repo):
+        repos = ("main", "thirdparty", "newapps")
+        fresh = {r for r in repos if updated(setup, r)}
+        if fresh != set(repos):
+            again = ser.run("/aos/t/apm update --force 2>&1", timeout=300)
+            print("$ update again\n%s" % again)
+            fresh |= {r for r in repos if updated(again, r)}
+        for repo in repos:
+            if repo not in fresh:
                 print("!! repository %s was not updated; aborting" % repo)
                 return False
         before = bt.shot("apps-before")
@@ -178,7 +195,9 @@ def main():
             # 45 s in nine steps, the log's tail each time: when the VM
             # dies with the app, the serial transcript still has the last
             # thing it said.
-            for _ in range(9):
+            # APPS_WAIT=N steps of 5 s for a slow starter (Bruno under
+            # software rendering: 2026-11-05).
+            for _ in range(int(os.environ.get("APPS_WAIT", "9"))):
                 time.sleep(5)
                 print(ser.run("tail -2 /tmp/%s.log | cut -c1-160; dmesg | tail -1 | cut -c1-160" % name).replace("virtio_gpu: driver missing", "").strip())
             alive = ser.run("pgrep -f '%s' >/dev/null && echo ALIVE || echo DEAD" % proc)
