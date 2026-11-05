@@ -24,7 +24,8 @@ recipe_version = 1
 name         = "firefox"
 organization = "mozilla"
 version      = "159.0.1"
-release      = 1
+release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Firefox web browser"
 license      = "MPL-2.0"
@@ -59,6 +60,7 @@ comment    = "Browse the web"
 exec       = "bin/firefox"
 icon       = "firefox/browser/chrome/icons/default/default128.png"
 categories = ["Network", "WebBrowser"]
+mime       = ["x-scheme-handler/http", "x-scheme-handler/https", "text/html"]
 terminal   = false
 
 [build]

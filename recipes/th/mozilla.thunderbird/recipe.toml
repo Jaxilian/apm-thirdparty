@@ -19,7 +19,8 @@ recipe_version = 1
 name         = "thunderbird"
 organization = "mozilla"
 version      = "159.0.0"
-release      = 2
+release      = 3
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Thunderbird mail and calendar"
 license      = "MPL-2.0"
@@ -52,6 +53,7 @@ comment    = "Read and write mail"
 exec       = "bin/thunderbird"
 icon       = "thunderbird/chrome/icons/default/default128.png"
 categories = ["Network", "Email"]
+mime       = ["x-scheme-handler/mailto"]
 terminal   = false
 
 [build]

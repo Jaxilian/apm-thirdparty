@@ -22,7 +22,8 @@ recipe_version = 1
 name         = "chrome"
 organization = "google"
 version      = "157.8103.38"
-release      = 1
+release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Google Chrome web browser"
 license      = "LicenseRef-Google-Chrome-Terms-of-Service"
@@ -53,6 +54,7 @@ comment    = "Browse the web"
 exec       = "bin/google-chrome"
 icon       = "chrome/product_logo_256.png"
 categories = ["Network", "WebBrowser"]
+mime       = ["x-scheme-handler/http", "x-scheme-handler/https", "text/html"]
 terminal   = false
 
 [build]
