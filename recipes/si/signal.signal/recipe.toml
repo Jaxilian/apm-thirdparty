@@ -25,8 +25,8 @@ recipe_version = 1
 [package]
 name         = "signal"
 organization = "signal"
-version      = "8.33.0"
-release      = 2
+version      = "8.34.0"
+release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Signal private messenger"
@@ -34,8 +34,8 @@ license      = "AGPL-3.0-only"
 homepage     = "https://signal.org/"
 
 [[source]]
-url    = "https://updates.signal.org/desktop/apt/pool/s/signal-desktop/signal-desktop_8.33.0_amd64.deb"
-sha256 = "94444da46abccca1b5832580e9bb6f659581878b7663716ae940591510d97a33"
+url    = "https://updates.signal.org/desktop/apt/pool/s/signal-desktop/signal-desktop_8.34.0_amd64.deb"
+sha256 = "522aaa1bad9eefcc111ec8f52a8c6cd8bdad9b35343e673cff8c3b2121d29731"
 
 [[dependencies]]
 name         = "gtk3"
