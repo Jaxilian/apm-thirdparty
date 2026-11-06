@@ -19,14 +19,14 @@ recipe_version = 1
 name         = "heroic"
 organization = "heroic"
 version      = "2.22.4"
-release      = 3
+release      = 4
 kind         = "app"
 summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
 license      = "GPL-3.0-only"
 homepage     = "https://heroicgameslauncher.com/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.57"
 
 [[source]]
 url    = "https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v2.22.4/Heroic-2.22.4-linux-x64.tar.xz"
@@ -53,6 +53,7 @@ command = ["heroic"]
 # (not checked against this payload). The microphone for voice chat in
 # games, which Software's Permissions switch off.
 [sandbox]
+x11 = true
 home = "private"
 microphone = true
 # A game: the discrete GPU where the laptop has one.

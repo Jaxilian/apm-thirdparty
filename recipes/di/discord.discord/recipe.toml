@@ -19,6 +19,7 @@ name         = "discord"
 organization = "discord"
 version      = "1.0.168"
 release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Discord voice and text chat"
 license      = "LicenseRef-Discord-Terms-of-Service"

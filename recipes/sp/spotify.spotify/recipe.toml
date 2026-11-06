@@ -24,6 +24,7 @@ name         = "spotify"
 organization = "spotify"
 version      = "1.3.4"
 release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Spotify music streaming"
 license      = "LicenseRef-Spotify-Terms-of-Use AND LGPL-3.0-only"

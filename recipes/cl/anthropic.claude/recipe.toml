@@ -41,7 +41,7 @@ license      = "LicenseRef-Anthropic-Consumer-Terms"
 homepage     = "https://claude.ai/download"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.13"
+min_aos      = "0.4.52"
 
 [[source]]
 url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_4.16336.0_amd64.deb"

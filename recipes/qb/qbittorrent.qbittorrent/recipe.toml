@@ -26,6 +26,7 @@ name         = "qbittorrent"
 organization = "qbittorrent"
 version      = "5.3.0"
 release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "qBittorrent BitTorrent client"
 license      = "GPL-2.0-or-later"

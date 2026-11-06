@@ -21,6 +21,7 @@ name         = "unityhub"
 organization = "unity"
 version      = "3.22.5"
 release      = 3
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Unity Hub: installs and opens the Unity game engine"
 license      = "LicenseRef-Unity-Terms-of-Service"

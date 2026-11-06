@@ -22,8 +22,10 @@ apm find code          # marked [third-party]
 apm install vscode
 ```
 
-The key is the same as the official repository's; trusting it once covers
-both.
+The index is signed with a key of its own (since 0.4.57; before that the
+OS key signed it), pinned on every machine as `/opt/apm/etc/keys/thirdparty.pub`
+and never trusted for the OS or the official repository: publish.sh signs
+with `APM_ROOT=~/.apm-thirdparty` (`apm key new` there, once).
 
 ## What goes here
 

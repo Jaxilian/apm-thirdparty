@@ -42,7 +42,7 @@ recipe_version = 1
 name         = "lutris"
 organization = "lutris"
 version      = "0.5.22"
-release      = 5
+release      = 6
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
@@ -51,7 +51,7 @@ homepage     = "https://lutris.net/"
 # tool packages below and the sandbox puts their bin/ on PATH; 0.4.12's
 # aos-sandbox (the home in ~/AppData, `:ro` shares, --ssh,
 # --no-flatpak-info) is older still.
-min_aos      = "0.4.14"
+min_aos      = "0.4.57"
 
 [[source]]
 url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
@@ -105,6 +105,7 @@ command = ["lutris"]
 # (util/linux.py is_flatpak) and then reaches for flatpak-spawn and the
 # Flatpak Steam's paths.
 [sandbox]
+x11 = true
 home = "private"
 flatpak_info = false
 # The 32-bit glibc at /lib for the Wine runners (above).

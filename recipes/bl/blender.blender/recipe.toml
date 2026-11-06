@@ -29,7 +29,7 @@ license      = "GPL-2.0-or-later AND MIT"
 homepage     = "https://www.blender.org/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.52"
 
 [[source]]
 url    = "https://download.blender.org/release/Blender5.2/blender-5.2.3-linux-x64.tar.xz"

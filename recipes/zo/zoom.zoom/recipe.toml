@@ -35,7 +35,8 @@ recipe_version = 1
 name         = "zoom"
 organization = "zoom"
 version      = "7.2.1"
-release      = 2
+release      = 3
+min_aos      = "0.4.57"
 kind         = "app"
 summary      = "Zoom video meetings"
 license      = "LicenseRef-Zoom-Terms-of-Service AND MIT AND X11 AND GPL-3.0-or-later WITH GCC-exception-3.1 AND LGPL-2.0-or-later"
@@ -121,6 +122,7 @@ command = ["zoom"]
 # and which Software's Permissions switch off.
 [sandbox]
 home       = "private"
+x11 = true
 share      = ["Downloads"]
 microphone = true
 camera     = true

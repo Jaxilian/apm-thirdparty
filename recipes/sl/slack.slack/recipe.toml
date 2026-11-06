@@ -25,6 +25,7 @@ name         = "slack"
 organization = "slack"
 version      = "4.53.276"
 release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Slack team messaging"
 license      = "LicenseRef-Slack-Terms-of-Service"

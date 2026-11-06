@@ -27,6 +27,7 @@ name         = "signal"
 organization = "signal"
 version      = "8.33.0"
 release      = 2
+min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Signal private messenger"
 license      = "AGPL-3.0-only"
