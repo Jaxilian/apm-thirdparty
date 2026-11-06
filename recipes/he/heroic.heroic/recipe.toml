@@ -19,7 +19,7 @@ recipe_version = 1
 name         = "heroic"
 organization = "heroic"
 version      = "2.22.4"
-release      = 4
+release      = 5
 kind         = "app"
 summary      = "Heroic Games Launcher for Epic, GOG and Amazon games"
 license      = "GPL-3.0-only"
@@ -76,6 +76,7 @@ cp -a $APM_SRC/. $D/heroic/
 cat > $D/bin/heroic <<WRAP
 #!/bin/sh
 # Heroic on the GTK3 runtime, on Wayland.
+export PROTON_USE_WOW64=1
 exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/heroic/heroic --ozone-platform=wayland "\$@"
 WRAP
 chmod 755 $D/bin/heroic
