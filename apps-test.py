@@ -156,10 +156,8 @@ def main():
             "printf '#!/bin/sh\\nexport APM_OS_RELEASE=/aos/t/os-release\\nexec /aos/t/apm.bin \"$@\"\\n' > /aos/t/apm && chmod 755 /aos/t/apm && /aos/t/apm help | head -1; "
             "mkdir -p /aos/t/index && cd /aos/t/index && "
             "for f in $(curl -sf http://10.0.2.2:%d/index/ | sed -n 's/.*href=\"\\([^\"]*\\)\".*/\\1/p'); do curl -sf -O http://10.0.2.2:%d/index/$f; done; cd /; "
-            # apm's grammar since the no-root rounds: `repo add thirdparty` is
-            # the shortcut, `repo add NAME URL` pins the key at URL/apm.pub;
-            # the old --third-party made both print the usage (2026-11-05).
-            "/aos/t/apm repo add thirdparty 2>&1 | tail -1; "
+            "for i in $(seq 30); do getent hosts github.com >/dev/null 2>&1 && break; sleep 1; done; "
+            "/aos/t/apm repo add thirdparty https://github.com/Jaxilian/apm-thirdparty/releases/download/index 2>&1 | tail -1; "
             "/aos/t/apm repo add newapps file:///aos/t/index 2>&1 | tail -1; "
             # A pinned repository's recipes may not compile on the system
             # store (docs/no-root.md, Design C); this one stands in for the

@@ -66,7 +66,7 @@ for f in index/*.apkg; do
 	echo "superseded: $f"; rm -f "$f"
 done
 
-APM_ROOT=${APM_THIRDPARTY_ROOT:-$HOME/.apm-thirdparty} "$APM" index index --sign
+APM_ROOT=${APM_THIRDPARTY_ROOT:-$HOME/.apm} "$APM" index index --sign
 [ "$1" = --local ] && exit 0
 
 # One release, created once; every publish replaces its assets. Old index

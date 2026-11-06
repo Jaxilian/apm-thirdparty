@@ -81,6 +81,8 @@ import argparse
 import functools
 import gzip
 import hashlib
+import http.client
+import io
 import itertools
 import json
 import lzma
@@ -88,7 +90,9 @@ import os
 import re
 import sys
 import tempfile
+import time
 import tomllib
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -112,6 +116,23 @@ def request(url, method="GET"):
     return urllib.request.urlopen(req, timeout=120)
 
 
+def retried(fn):
+    @functools.wraps(fn)
+    def run(*args, **kw):
+        for wait in (10, 30, None):
+            try:
+                return fn(*args, **kw)
+            except urllib.error.HTTPError as e:
+                if wait is None or (e.code < 500 and e.code != 429):
+                    raise
+            except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
+                if wait is None:
+                    raise
+            time.sleep(wait)
+    return run
+
+
+@retried
 def page(url):
     """The text at url, decompressed when it is .xz or .gz; cached per run."""
     if url not in _pages:
@@ -125,23 +146,27 @@ def page(url):
     return _pages[url]
 
 
+@retried
 def final_url(url):
     """Where url redirects to (HEAD, redirects followed)."""
     with request(url, method="HEAD") as r:
         return r.geturl()
 
 
+@retried
 def download(url, directory):
     """Fetch url into directory; (path, sha256, sha512)."""
     os.makedirs(directory, exist_ok=True)
     name = urllib.parse.unquote(url.rsplit("/", 1)[-1])
     path = os.path.join(directory, name)
     h256, h512 = hashlib.sha256(), hashlib.sha512()
-    with request(url) as r, open(path, "wb") as f:
+    part = path + ".part"
+    with request(url) as r, open(part, "wb") as f:
         while chunk := r.read(1 << 20):
             f.write(chunk)
             h256.update(chunk)
             h512.update(chunk)
+    os.replace(part, path)
     return path, h256.hexdigest(), h512.hexdigest()
 
 
@@ -467,6 +492,49 @@ def selftest():
     assert 'version      = "4.1.0"' in out and "release      = 1" in out
     assert 'url    = "https://x/A-4.1.0/a-4.1.0.AppImage"' in out and 'sha256 = "ff"' in out
     assert "./a-4.1.0.AppImage --appimage-extract" in out and "4.0.1" not in out
+
+    class Cut(io.BytesIO):
+        def read(self, n=-1):
+            raise ConnectionResetError("cut")
+
+    def fake(replies):
+        def urlopen(req, timeout=None):
+            reply = replies.pop(0)
+            if isinstance(reply, Exception):
+                raise reply
+            return reply
+        return urlopen
+
+    def gone(code):
+        return urllib.error.HTTPError("https://x/f", code, "x", {}, None)
+
+    real_urlopen, real_sleep = urllib.request.urlopen, time.sleep
+    slept = []
+    time.sleep = slept.append
+    try:
+        urllib.request.urlopen = fake([urllib.error.URLError("dns"), gone(502), io.BytesIO(b"ok")])
+        assert page("https://x/retry") == "ok" and slept == [10, 30]
+        slept.clear()
+        urllib.request.urlopen = fake([gone(404), io.BytesIO(b"no")])
+        try:
+            page("https://x/missing")
+            raise AssertionError("a 404 was retried")
+        except urllib.error.HTTPError as e:
+            assert e.code == 404 and slept == []
+        urllib.request.urlopen = fake([gone(503), gone(504), gone(429)])
+        try:
+            page("https://x/down")
+            raise AssertionError("the last failure was swallowed")
+        except urllib.error.HTTPError as e:
+            assert e.code == 429 and slept == [10, 30]
+        slept.clear()
+        with tempfile.TemporaryDirectory() as d:
+            urllib.request.urlopen = fake([Cut(b""), io.BytesIO(b"whole")])
+            path, s256, _ = download("https://x/f.bin", d)
+            assert open(path, "rb").read() == b"whole" and s256 == hashlib.sha256(b"whole").hexdigest()
+            assert os.listdir(d) == ["f.bin"] and slept == [10]
+    finally:
+        urllib.request.urlopen, time.sleep = real_urlopen, real_sleep
     print("selftest ok")
 
 
