@@ -34,6 +34,17 @@
 # the loader. 64-bit programs resolve through /lib64 and /usr/lib and
 # notice nothing.
 #
+# PROTON_USE_WOW64=1 for every game (release 7, 2026-11-06): Proton then
+# runs a 32-bit Windows program in a 64-bit process on the image's own
+# Vulkan, and compat32's 32-bit drivers are not needed. They were the
+# wrong ones on the G14: compat32 r7 carries RADV and virtio only, the
+# G14 is Intel and NVIDIA, so 32-bit DXVK found no GPU and Battle.net
+# (a 32-bit program) died with "Failed to create Vulkan instance". On
+# NVIDIA this is the only way, as no 32-bit NVIDIA library is ever in
+# the image (DECISIONS.md); compat32 r8 adds ANV and iris for Intel.
+# Lutris passes its environment to every game; a game that needs the
+# old mode sets PROTON_USE_WOW64=0 in its own environment.
+#
 # GPL-3.0-or-later. Fetched from GitHub, never mirrored.
 
 recipe_version = 1
@@ -42,7 +53,7 @@ recipe_version = 1
 name         = "lutris"
 organization = "lutris"
 version      = "0.5.22"
-release      = 6
+release      = 7
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
@@ -158,6 +169,7 @@ PY=/opt/apm/packages/runtime/python/current
 export PATH="\$PY/bin:\$PATH"
 export LD_LIBRARY_PATH="\$PY/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 export GI_TYPELIB_PATH="\$PY/lib/girepository-1.0"
+export PROTON_USE_WOW64=1
 exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run \$PY/bin/python3 $APM_PREFIX/lutris/bin/lutris "\$@"
 WRAP
 chmod 755 $D/bin/lutris
