@@ -35,7 +35,7 @@ recipe_version = 1
 name         = "android-sdk"
 organization = "google"
 version      = "37.0.1"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Android SDK: adb, fastboot, sdkmanager, build-tools and the platform"
 license      = "LicenseRef-Android-SDK-License"
@@ -49,8 +49,8 @@ sha256 = "0877a1d048fe4a24efe2eff536ca4223f7adeb58648bb81909d33c446918cfa8"
 strip  = 1
 
 [[source]]
-url    = "https://dl.google.com/android/repository/platform-tools_r37.0.1-linux.zip"
-sha256 = "d230f13842f60f782a8645f9c813f8f845bf36089ea7289f28c48f17979313f1"
+url    = "https://dl.google.com/android/repository/platform-tools_r37.0.2-linux.zip"
+sha256 = "dfc80a84a6710e5674415d4b55ae599c01aa4961822f53097d747472f410f157"
 strip  = 1
 
 [[source]]

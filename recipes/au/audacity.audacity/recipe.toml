@@ -17,8 +17,8 @@ recipe_version = 1
 [package]
 name         = "audacity"
 organization = "audacity"
-version      = "4.0.1"
-release      = 2
+version      = "4.0.2"
+release      = 1
 kind         = "app"
 summary      = "Audacity audio editor and recorder"
 license      = "GPL-3.0-only"
@@ -28,8 +28,8 @@ homepage     = "https://www.audacityteam.org/"
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://github.com/audacity/audacity/releases/download/Audacity-4.0.1/audacity-linux-4.0.1-x86_64.AppImage"
-sha256 = "ca2f04f172124d1f18ac608749854c5d31f04ab266a758c348190c05d9b2087c"
+url    = "https://github.com/audacity/audacity/releases/download/Audacity-4.0.2/audacity-linux-4.0.2-x86_64.AppImage"
+sha256 = "a5f8787aa13cdb500a60fc013403b986776876b960cca962bc6e7fff066172f3"
 
 # The AppImage brings its own toolkit but reads the machine's fonts
 # through /usr/share/fonts, which on AOS is the aos/fonts package.
@@ -58,7 +58,7 @@ terminal   = false
 
 [build]
 prepare = '''
-./audacity-linux-4.0.1-x86_64.AppImage --appimage-extract >/dev/null
+./audacity-linux-4.0.2-x86_64.AppImage --appimage-extract >/dev/null
 '''
 install = '''
 D=$APM_DESTDIR$APM_PREFIX

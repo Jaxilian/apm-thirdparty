@@ -23,8 +23,8 @@ recipe_version = 1
 [package]
 name         = "kdenlive"
 organization = "kde"
-version      = "26.8.2"
-release      = 2
+version      = "26.8.3"
+release      = 1
 kind         = "app"
 summary      = "Kdenlive video editor"
 license      = "GPL-3.0-or-later"
@@ -34,8 +34,8 @@ homepage     = "https://kdenlive.org/"
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://download.kde.org/stable/kdenlive/26.08/linux/kdenlive-26.08.2-x86_64.AppImage"
-sha256 = "3194c0979bcfb7ec4a0b33ebc05178a51cffdf5b180c3a89bcf4da94e025bc78"
+url    = "https://download.kde.org/stable/kdenlive/26.08/linux/kdenlive-26.08.3-x86_64.AppImage"
+sha256 = "2c8322edfc86605e4c98a78a019310d9b4fc46bb8e94e6fe313dc7dd987e7671"
 
 # The AppImage brings its own toolkit but reads the machine's fonts
 # through /usr/share/fonts, which on AOS is the aos/fonts package.
@@ -63,7 +63,7 @@ terminal   = false
 
 [build]
 prepare = '''
-./kdenlive-26.08.2-x86_64.AppImage --appimage-extract >/dev/null
+./kdenlive-26.08.3-x86_64.AppImage --appimage-extract >/dev/null
 '''
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
