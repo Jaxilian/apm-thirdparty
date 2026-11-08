@@ -1,0 +1,6 @@
+[[source]]
+kind  = "regex"
+page  = "https://codeberg.org/api/v1/repos/librewolf/bsys6/releases?limit=10"
+regex = '"tag_name":"(\d+\.\d+(?:\.\d+)?-\d+)"'
+url   = "https://dl.librewolf.net/librewolf/{version}/librewolf-{version}-linux-x86_64-package.tar.xz"
+sums  = "{url}.sha256sum"

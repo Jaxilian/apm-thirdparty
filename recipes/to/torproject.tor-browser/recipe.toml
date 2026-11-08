@@ -1,0 +1,58 @@
+# Tor Browser, from the Tor Project's dist.torproject.org.
+# sha256 as listed in the release's sha256sums-signed-build.txt, 2026-11-08.
+
+recipe_version = 1
+
+[package]
+name         = "tor-browser"
+organization = "torproject"
+version      = "16.0.0"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Tor Browser, browse through the Tor network"
+license      = "MPL-2.0 AND BSD-3-Clause"
+homepage     = "https://www.torproject.org/"
+
+[[source]]
+url    = "https://dist.torproject.org/torbrowser/16.0/tor-browser-linux-x86_64-16.0.tar.xz"
+sha256 = "de3370b67389c2848738cdd515bb2e3b232a4ae93290eae74185c4c43a291a24"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["tor-browser"]
+
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "Tor Browser"
+comment    = "Browse the web privately"
+exec       = "bin/tor-browser"
+icon       = "tor-browser/Browser/browser/chrome/icons/default/default128.png"
+categories = ["Network", "WebBrowser"]
+terminal   = false
+app_id     = "Tor Browser"
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/tor-browser $D/bin
+cp -a $APM_SRC/. $D/tor-browser/
+touch $D/tor-browser/Browser/is-packaged-app
+install -d $D/tor-browser/Browser/distribution
+printf '{ "policies": { "DisableAppUpdate": true } }\n' > $D/tor-browser/Browser/distribution/policies.json
+cat > $D/bin/tor-browser <<WRAP
+#!/bin/sh
+mkdir -p "\$HOME/.tor-browser"
+[ -e "\$HOME/.tor-browser/Downloads" ] || ln -s "\$HOME/Downloads" "\$HOME/.tor-browser/Downloads"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/tor-browser/Browser/start-tor-browser "\$@"
+WRAP
+chmod 755 $D/bin/tor-browser
+'''

@@ -1,0 +1,58 @@
+# Mullvad Browser, from Mullvad's own CDN, cdn.mullvad.net.
+# sha256 as listed in the release's sha256sums-signed-build.txt, 2026-11-08.
+
+recipe_version = 1
+
+[package]
+name         = "mullvad-browser"
+organization = "mullvad"
+version      = "16.0.0"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Mullvad Browser, a private browser without Tor"
+license      = "MPL-2.0"
+homepage     = "https://mullvad.net/browser"
+
+[[source]]
+url    = "https://cdn.mullvad.net/browser/16.0/mullvad-browser-linux-x86_64-16.0.tar.xz"
+sha256 = "aa571c6dc00aad214af9a92e414f3a6bd9e12139b4819f5af2f3aaaa3d9f4aa3"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["mullvad-browser"]
+
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "Mullvad Browser"
+comment    = "Browse the web privately"
+exec       = "bin/mullvad-browser"
+icon       = "mullvad-browser/Browser/browser/chrome/icons/default/default128.png"
+categories = ["Network", "WebBrowser"]
+terminal   = false
+app_id     = "Mullvad Browser"
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/mullvad-browser $D/bin
+cp -a $APM_SRC/. $D/mullvad-browser/
+touch $D/mullvad-browser/Browser/is-packaged-app
+install -d $D/mullvad-browser/Browser/distribution
+printf '{ "policies": { "DisableAppUpdate": true } }\n' > $D/mullvad-browser/Browser/distribution/policies.json
+cat > $D/bin/mullvad-browser <<WRAP
+#!/bin/sh
+mkdir -p "\$HOME/.mullvad-browser"
+[ -e "\$HOME/.mullvad-browser/Downloads" ] || ln -s "\$HOME/Downloads" "\$HOME/.mullvad-browser/Downloads"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/mullvad-browser/Browser/start-mullvad-browser "\$@"
+WRAP
+chmod 755 $D/bin/mullvad-browser
+'''

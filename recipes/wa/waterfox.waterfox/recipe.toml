@@ -1,0 +1,58 @@
+# Waterfox, from BrowserWorks' own CDN, cdn.waterfox.com.
+# sha256 of the download (Waterfox publishes none), 2026-11-08.
+
+recipe_version = 1
+
+[package]
+name         = "waterfox"
+organization = "waterfox"
+version      = "6.7.8"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Waterfox web browser, built on Firefox"
+license      = "MPL-2.0"
+homepage     = "https://www.waterfox.com/"
+
+[[source]]
+url    = "https://cdn.waterfox.com/waterfox/releases/6.7.8/Linux_x86_64/waterfox-6.7.8.tar.bz2"
+sha256 = "29b8bcc0265fdea7dcf0471c6ef8e296f48ca6973e039b9d181a93e7b654ef15"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["waterfox"]
+
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+
+[launcher]
+name       = "Waterfox"
+comment    = "Browse the web"
+exec       = "bin/waterfox"
+icon       = "waterfox/browser/chrome/icons/default/default128.png"
+categories = ["Network", "WebBrowser"]
+mime       = ["x-scheme-handler/http", "x-scheme-handler/https", "text/html"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/waterfox $D/bin
+cp -a $APM_SRC/. $D/waterfox/
+printf 'pref("security.sandbox.content.read_path_whitelist", "/opt/apm/");\n' > $D/waterfox/defaults/pref/aos.js
+install -d $D/waterfox/distribution
+printf '{ "policies": { "DisableAppUpdate": true, "DisableTelemetry": true, "DontCheckDefaultBrowser": true } }\n' > $D/waterfox/distribution/policies.json
+cat > $D/bin/waterfox <<WRAP
+#!/bin/sh
+export MOZ_ENABLE_WAYLAND=1
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/waterfox/waterfox "\$@"
+WRAP
+chmod 755 $D/bin/waterfox
+'''

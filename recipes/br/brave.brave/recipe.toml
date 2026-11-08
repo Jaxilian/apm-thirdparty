@@ -1,0 +1,57 @@
+# Brave, from Brave's GitHub releases (brave/brave-browser)
+# sha256 as in the .sha256 file beside the zip, 2026-11-08.
+
+recipe_version = 1
+
+[package]
+name         = "brave"
+organization = "brave"
+version      = "1.99.55"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Brave web browser"
+license      = "MPL-2.0"
+homepage     = "https://brave.com/"
+
+[[source]]
+url    = "https://github.com/brave/brave-browser/releases/download/v1.99.55/brave-browser-1.99.55-linux-amd64.zip"
+sha256 = "ace5409dfb5a6238e3c09576fab56ef76d31e00ed6d62f10d0b41685ab3fe200"
+strip  = 0
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["brave"]
+
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+
+[launcher]
+name       = "Brave"
+comment    = "Browse the web"
+exec       = "bin/brave"
+icon       = "brave/product_logo_256.png"
+categories = ["Network", "WebBrowser"]
+mime       = ["x-scheme-handler/http", "x-scheme-handler/https", "text/html"]
+terminal   = false
+app_id     = "brave-browser"
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/brave $D/bin
+cp -a $APM_SRC/. $D/brave/
+rm -f $D/brave/libqt5_shim.so $D/brave/libqt6_shim.so
+cat > $D/bin/brave <<WRAP
+#!/bin/sh
+export CHROME_VERSION_EXTRA=stable
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/brave/brave --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/brave
+'''
