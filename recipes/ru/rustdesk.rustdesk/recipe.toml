@@ -1,0 +1,79 @@
+# RustDesk, from the RustDesk project's own GitHub release
+# (rustdesk/rustdesk): the official x86_64 AppImage, extracted with its own
+# --appimage-extract. Only the application (usr/share/rustdesk: the
+# Flutter binary and its libraries) is kept; the AppImage's Debian 11
+# libraries, its glibc and its AppRun are not, the GTK3 runtime gives
+# what the application links. appimage-builder rewrote the binary's
+# program interpreter to a path relative to the AppDir (its AppRun runs
+# it from there); the recipe sets it back to /lib64/ld-linux-x86-64.so.2,
+# the same length. It draws through X11, as the AppImage sets it to.
+# The client only: the root service that being controlled and unattended
+# access need (rustdesk --service, a system unit in the .deb) is not
+# installed, so this machine connects to others. The sha256 is the one GitHub
+# records for the asset in the 1.5.1 release, checked against the file
+# as downloaded on 2026-11-08.
+#
+# AGPL-3.0-only. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "rustdesk"
+organization = "rustdesk"
+version      = "1.5.1"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "RustDesk remote desktop, connecting to other machines"
+license      = "AGPL-3.0-only"
+homepage     = "https://rustdesk.com/"
+
+[[source]]
+url    = "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-x86_64.AppImage"
+sha256 = "bb8b7ccb3f50a201dccdc89b46385cff90f33e60b4730faeda9fa5504ac4dce6"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["rustdesk"]
+
+[sandbox]
+x11   = true
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "RustDesk"
+comment    = "Connect to other machines"
+exec       = "bin/rustdesk"
+mime       = ["x-scheme-handler/rustdesk"]
+icon       = "rustdesk/rustdesk.svg"
+categories = ["Network", "RemoteAccess"]
+terminal   = false
+
+[build]
+prepare = '''
+./rustdesk-1.5.1-x86_64.AppImage --appimage-extract >/dev/null
+python3 -I -c 'import sys; p = sys.argv[1]; d = open(p, "rb").read(); a = b"lib64/ld-linux-x86-64.so.2\0\0"; assert d.count(a) == 1; open(p, "wb").write(d.replace(a, b"/lib64/ld-linux-x86-64.so.2\0"))' squashfs-root/usr/share/rustdesk/rustdesk
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/rustdesk $D/bin
+cp -a $APM_SRC/squashfs-root/usr/share/rustdesk/. $D/rustdesk/
+install -m 644 $APM_SRC/squashfs-root/rustdesk.svg $D/rustdesk/rustdesk.svg
+cat > $D/bin/rustdesk <<WRAP
+#!/bin/sh
+export GDK_BACKEND=x11
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/rustdesk/rustdesk "\$@"
+WRAP
+chmod 755 $D/bin/rustdesk
+'''

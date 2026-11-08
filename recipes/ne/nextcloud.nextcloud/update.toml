@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "nextcloud-releases/desktop"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^Nextcloud-\d+\.\d+\.\d+-x86_64\.AppImage$'

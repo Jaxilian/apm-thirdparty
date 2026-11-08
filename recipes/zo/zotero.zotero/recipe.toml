@@ -1,0 +1,66 @@
+# Zotero, from the Zotero project's own download (zotero.org/download,
+# whose linux-x86_64 link redirects to download.zotero.org): the tarball,
+# Zotero on Mozilla's platform, copied as it is, without its updater and
+# with app.update.enabled and app.update.auto off in defaults/pref (apm
+# updates the package). Zotero publishes no checksum; the sha256 is
+# of the file as downloaded on 2026-11-08.
+#
+# AGPL-3.0-only. Fetched from Zotero; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "zotero"
+organization = "zotero"
+version      = "10.0.8"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Zotero reference manager"
+license      = "AGPL-3.0-only"
+homepage     = "https://www.zotero.org/"
+
+[[source]]
+url    = "https://download.zotero.org/client/release/10.0.8/Zotero-10.0.8_linux-x86_64.tar.xz"
+sha256 = "a704cfd49f5de65507910e0cada4acf72097572201b3576583f0a92a32c1032b"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["zotero"]
+
+[sandbox]
+home  = "private"
+share = ["Documents", "Downloads"]
+
+[launcher]
+name       = "Zotero"
+comment    = "Collect, organise and cite research"
+exec       = "bin/zotero"
+mime       = ["x-scheme-handler/zotero", "application/x-research-info-systems", "text/x-research-info-systems", "application/x-endnote-refer", "application/x-bibtex", "text/x-bibtex", "application/vnd.citationstyles.style+xml"]
+icon       = "zotero/icons/icon128.png"
+categories = ["Office", "Education"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/zotero $D/bin
+cp -a $APM_SRC/. $D/zotero/
+rm -f $D/zotero/updater $D/zotero/updater.ini
+install -d $D/zotero/defaults/pref
+cat > $D/zotero/defaults/pref/aos.js <<PREF
+pref("app.update.enabled", false);
+pref("app.update.auto", false);
+PREF
+cat > $D/bin/zotero <<WRAP
+#!/bin/sh
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/zotero/zotero "\$@"
+WRAP
+chmod 755 $D/bin/zotero
+'''

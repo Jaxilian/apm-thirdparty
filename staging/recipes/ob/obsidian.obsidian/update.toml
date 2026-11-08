@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "obsidianmd/obsidian-releases"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^obsidian-\d+\.\d+\.\d+\.tar\.gz$'

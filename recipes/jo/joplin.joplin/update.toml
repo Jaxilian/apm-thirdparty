@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "laurent22/joplin"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^Joplin-\d+\.\d+\.\d+\.AppImage$'

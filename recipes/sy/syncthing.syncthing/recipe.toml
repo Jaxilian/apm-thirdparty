@@ -1,0 +1,104 @@
+# Syncthing, from the Syncthing project's own GitHub release
+# (syncthing/syncthing): the linux-amd64 tarball, one static Go binary,
+# copied as it is. The tarball has no icon: the launcher's is
+# assets/logo-128.png from Syncthing's repository at the release tag.
+# The sha256 of the tarball is the one GitHub records for the asset in the
+# v2.1.7 release and the one in the release's signed sha256sum.txt.asc;
+# that of the icon is of the file; both checked as downloaded on
+# 2026-11-08.
+#
+# The web interface on 127.0.0.1 is reachable by every account of the
+# machine (the sandbox keeps the host's network), so the launcher gives it
+# a password at the first start: the account's name and 24 random
+# characters, kept in "Syncthing password.txt" (mode 0600) at the top of
+# its AppData folder, which a notification names each time the launcher
+# opens the interface (the password itself is never on a command line,
+# where other accounts could read it in /proc). The address and API key are read from config.xml (Syncthing
+# moves off 8384 when another account holds it); "running" is a ping with
+# this instance's API key, so another account's Syncthing never counts.
+#
+# MPL-2.0. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "syncthing"
+organization = "syncthing"
+version      = "2.1.7"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Syncthing continuous file synchronisation"
+license      = "MPL-2.0"
+homepage     = "https://syncthing.net/"
+
+[[source]]
+url    = "https://github.com/syncthing/syncthing/releases/download/v2.1.7/syncthing-linux-amd64-v2.1.7.tar.gz"
+sha256 = "2edc416e7ed136b7c858ed5f3f02a3b8316589605e54c380228ceea7acbf0142"
+strip  = 1
+
+[[source]]
+url    = "https://raw.githubusercontent.com/syncthing/syncthing/v2.1.7/assets/logo-128.png"
+sha256 = "5f87b5a2208458674e2eac57e16b14db23e75fbb23534f0ebc48737c35c0af59"
+
+[provides]
+command = ["syncthing"]
+
+[sandbox]
+home      = "private"
+share     = ["Sync"]
+autostart = true
+ports     = ["22000/tcp", "22000/udp", "21027/udp"]
+
+[launcher]
+name       = "Syncthing"
+comment    = "Keep folders in sync between devices"
+exec       = "bin/syncthing-app"
+icon       = "syncthing/logo-128.png"
+categories = ["Network", "FileTransfer"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/syncthing $D/bin
+install -m 755 $APM_SRC/syncthing $D/syncthing/syncthing
+install -m 644 $APM_SRC/LICENSE.txt $APM_SRC/AUTHORS.txt $D/syncthing/
+install -m 644 $APM_SOURCE_2/logo-128.png $D/syncthing/logo-128.png
+ln -s ../syncthing/syncthing $D/bin/syncthing
+sed "s|@P@|$APM_PREFIX|" > $D/bin/syncthing-app <<'WRAP'
+#!/bin/sh
+st=@P@/syncthing/syncthing
+dir=${XDG_STATE_HOME:-$HOME/.local/state}/syncthing
+pw="$HOME/Syncthing password.txt"
+user=${USER:-$(id -un)}
+if [ ! -s "$pw" ]; then
+	mkdir -p "$dir"
+	(umask 077; head -c 18 /dev/urandom | base64 | tr '+/' 'xy' > "$pw.new")
+	if ! "$st" generate --gui-user="$user" --gui-password=- < "$pw.new" >/dev/null 2>&1; then
+		rm -f "$pw.new"
+		echo "syncthing: could not set the password of the web interface" >&2
+		exit 1
+	fi
+	mv "$pw.new" "$pw"
+fi
+gui() { sed -n "/<gui /,/<\/gui>/s:.*<$1>\(.*\)</$1>.*:\1:p" "$dir/config.xml" | head -n 1; }
+addr=$(gui address)
+key=$(gui apikey)
+ours() { curl -sf -o /dev/null -H "X-API-Key: $key" "http://$addr/rest/system/ping"; }
+show() {
+	gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications \
+		--method org.freedesktop.Notifications.Notify Syncthing 0 "" Syncthing \
+		"Sign in as $user. The password is in Files, AppData > syncthing.syncthing > Syncthing password.txt" '[]' '{}' 0 >/dev/null 2>&1
+	xdg-open "http://$addr/"
+}
+if ours; then
+	show
+	exit 0
+fi
+(for i in $(seq 60); do sleep 1; ours && { show; exit 0; }; done) &
+exec "$st" serve --no-browser --no-upgrade "$@"
+WRAP
+chmod 755 $D/bin/syncthing-app
+'''

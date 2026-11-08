@@ -1,0 +1,75 @@
+# Element (Matrix), from Element's own apt repository (packages.element.io,
+# as element.io/download says): the .deb, unpacked, Electron in /opt/Element
+# as it is. Bump from
+# https://packages.element.io/debian/dists/default/main/binary-amd64/Packages
+# (Filename and SHA256 of element-desktop). The sha256 is the one in that
+# Packages file, whose own sha256 is in the repository's InRelease;
+# InRelease was checked with gpg against Element's key
+# (https://packages.element.io/debian/element-io-archive-keyring.gpg,
+# 12D4CD60 0C2240A9 F4A82071 D7B0B669 41D01538, signing subkey 75741890
+# 063E5E9A 46135D01 C2850B26 5AC085BD) and the .deb against the sha256, as
+# downloaded on 2026-11-08.
+#
+# Its Electron asks org.freedesktop.secrets directly, which the sandbox
+# does not pass, and never the Secret portal, so no keyring is reachable:
+# --storage-mode=allow-plaintext keeps its secrets in its own AppData
+# until encryption becomes available, then migrates (the owner's
+# decision, 2026-11-09).
+#
+# AGPL-3.0-only OR GPL-3.0-only (Element's choice of licences, beside its
+# commercial one), with Electron's and Chromium's licences in the package.
+# Fetched from Element; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "element"
+organization = "element"
+version      = "1.12.33"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Element secure messenger for Matrix"
+license      = "AGPL-3.0-only OR GPL-3.0-only"
+homepage     = "https://element.io/"
+
+[[source]]
+url    = "https://packages.element.io/debian/pool/main/e/element-desktop/element-desktop_1.12.33_amd64.deb"
+sha256 = "a5191fc44a205b1e96c32f9da21159a8c697af2d2fcaf1f2a9c4bd35e8207772"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["element-desktop"]
+
+[sandbox]
+home       = "private"
+share      = ["Downloads"]
+microphone = true
+camera     = true
+
+[launcher]
+name       = "Element"
+comment    = "Secure messaging on Matrix"
+exec       = "bin/element-desktop"
+mime       = ["x-scheme-handler/io.element.desktop", "x-scheme-handler/element"]
+icon       = "element/element-desktop.png"
+categories = ["Network", "InstantMessaging", "Chat"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/element $D/bin
+cp -a $APM_SRC/opt/Element/. $D/element/
+install -m 644 $APM_SRC/usr/share/icons/hicolor/512x512/apps/element-desktop.png $D/element/element-desktop.png
+cat > $D/bin/element-desktop <<WRAP
+#!/bin/sh
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/element/element-desktop --ozone-platform=wayland --password-store=gnome-libsecret --storage-mode=allow-plaintext "\$@"
+WRAP
+chmod 755 $D/bin/element-desktop
+'''

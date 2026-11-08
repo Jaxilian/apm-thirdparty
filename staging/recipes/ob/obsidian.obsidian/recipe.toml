@@ -1,0 +1,72 @@
+# Obsidian, from Obsidian's own GitHub release (obsidianmd/obsidian-releases,
+# where obsidian.md/download links): the linux x64 tarball, the unpacked
+# Electron application, copied as it is. Obsidian otherwise downloads newer
+# app code into its config folder and runs that, a build apm never saw:
+# the wrapper sets updateDisabled in obsidian.json, Obsidian's own
+# "Automatic updates" switch, and apm updates the package. The sha256 is the one GitHub
+# records for the asset in the v1.15.0 release, checked against the file
+# as downloaded on 2026-11-08.
+#
+# Proprietary: Obsidian's Terms of Service (https://obsidian.md/terms,
+# Software, Restrictions), which say you shall not "license, sub-license,
+# sell, transfer, distribute or share the Services or Software". The
+# index hosts the built .apkg, which is distributing it: staged, not
+# published, until the owner decides (2026-11-08).
+
+recipe_version = 1
+
+[package]
+name         = "obsidian"
+organization = "obsidian"
+version      = "1.15.0"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Obsidian, notes in Markdown files"
+license      = "LicenseRef-Obsidian-Terms-of-Service"
+homepage     = "https://obsidian.md/"
+
+[[source]]
+url    = "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.0/obsidian-1.15.0.tar.gz"
+sha256 = "75594ae09914ca0191dde13c0697dee653322287a3a806c15519332d9ada14d3"
+strip  = 1
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["obsidian"]
+
+[sandbox]
+home  = "private"
+share = ["Documents"]
+
+[launcher]
+name       = "Obsidian"
+comment    = "Notes in Markdown files"
+exec       = "bin/obsidian"
+mime       = ["x-scheme-handler/obsidian"]
+icon       = "obsidian/resources/icon.png"
+categories = ["Office", "TextEditor"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/obsidian $D/bin
+cp -a $APM_SRC/. $D/obsidian/
+cat > $D/bin/obsidian <<WRAP
+#!/bin/sh
+cfg=\${XDG_CONFIG_HOME:-\$HOME/.config}/obsidian
+mkdir -p "\$cfg"
+if [ ! -s "\$cfg/obsidian.json" ]; then
+	printf '{"updateDisabled":true}\\n' > "\$cfg/obsidian.json"
+elif ! grep -q '"updateDisabled":true' "\$cfg/obsidian.json"; then
+	python3 -I -c 'import json, sys; p = sys.argv[1]; d = json.load(open(p)); d["updateDisabled"] = True; json.dump(d, open(p, "w"), separators=(",", ":"))' "\$cfg/obsidian.json"
+fi
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/obsidian/obsidian --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/obsidian
+'''
