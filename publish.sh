@@ -78,12 +78,27 @@ gh release view "$TAG" >/dev/null 2>&1 || \
 for old in $(gh release view "$TAG" --json assets -q '.assets[].name' | grep '^index-.*\.zip$'); do
 	[ -f "index/$old" ] || gh release delete-asset "$TAG" "$old" -y
 done
-# The upload fails transiently now and then; the second attempt has always
-# gone through. --clobber makes a retry safe.
-n=0
-until gh release upload "$TAG" --clobber index/*; do
-	n=$((n + 1)); [ $n -lt 3 ] || exit 1
-	echo "upload failed, retrying ($n)" >&2; sleep 5
+have=$(gh release view "$TAG" --json assets -q '.assets[]|select(.state=="uploaded")|"\(.name) \(.size)"')
+pkgs="" meta=""
+for f in index/*; do
+	[ -f "$f" ] || continue
+	case "$f" in
+		*.apkg)
+			echo "$have" | grep -qx "$(basename "$f") $(stat -c %s "$f")" || pkgs="$pkgs $f"
+			;;
+		*) meta="$meta $f" ;;
+	esac
 done
+upload() {
+	[ -n "$1" ] || return 0
+	n=0
+	until gh release upload "$TAG" --clobber $1; do
+		n=$((n + 1)); [ $n -lt 3 ] || exit 1
+		echo "upload failed, retrying ($n)" >&2; sleep 5
+	done
+}
+echo "upload: $(echo $pkgs | wc -w) packages new or changed, $(echo $meta | wc -w) index files"
+upload "$pkgs"
+upload "$meta"
 echo "published: https://github.com/Jaxilian/apm-thirdparty/releases/download/$TAG/stamp.toml"
 echo "note: the edge cache serves the previous stamp.toml for a few minutes" >&2
