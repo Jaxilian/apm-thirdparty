@@ -1,0 +1,67 @@
+# MuseScore Studio, from the project's GitHub releases (the AppImage
+# musescore.org links to), extracted with its own --appimage-extract. The
+# sha256 is the one in checksums.sha256.txt beside the release (and
+# GitHub's digest of the asset), checked on 2026-11-08. GPL-3.0-only.
+# Fetched from the MuseScore project, never mirrored. Removed from the
+# AppImage: its man page, an absolute symlink out of the package, which
+# apm refuses; the nss and jack fallback libraries, whose own libraries
+# it does not carry.
+
+recipe_version = 1
+
+[package]
+name         = "musescore"
+organization = "musescore"
+version      = "4.7.6"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "MuseScore Studio music notation"
+license      = "GPL-3.0-only"
+homepage     = "https://musescore.org/"
+
+[[source]]
+url    = "https://github.com/musescore/MuseScore/releases/download/v4.7.6/MuseScore-Studio-4.7.6.261022093-x86_64.AppImage"
+sha256 = "5fcbd1f292270eca5c3867d56b767c31a173a155216a415f5caee22553f8e7a6"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["musescore"]
+
+[sandbox]
+home  = "private"
+share = ["Documents"]
+
+[launcher]
+name       = "MuseScore Studio"
+comment    = "Write and play sheet music"
+exec       = "bin/musescore"
+mime       = ["application/x-musescore", "application/x-musescore+xml", "application/vnd.recordare.musicxml", "application/vnd.recordare.musicxml+xml", "audio/midi"]
+icon       = "musescore/share/icons/hicolor/512x512/apps/mscore4portable.png"
+categories = ["AudioVideo", "Audio", "Music"]
+terminal   = false
+
+[build]
+prepare = '''
+./MuseScore-Studio-4.7.6.261022093-x86_64.AppImage --appimage-extract >/dev/null
+rm -f squashfs-root/share/man/man1/musescore4portable.1.gz
+rm -rf squashfs-root/fallback/libnss3.so squashfs-root/fallback/libjack.so.0
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/musescore $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/musescore/
+cat > $D/bin/musescore <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland;xcb}"
+export MU_QT_QPA_PLATFORM="\${MU_QT_QPA_PLATFORM:-wayland}"
+export APPDIR=$APM_PREFIX/musescore
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/musescore/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/musescore
+'''

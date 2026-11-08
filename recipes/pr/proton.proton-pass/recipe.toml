@@ -1,0 +1,58 @@
+# Proton Pass, from Proton's own download server: the .deb Proton
+# publishes, unpacked, run on the GTK3 runtime with Electron on Wayland.
+# The sha512 of the file is in Proton's version.json
+# (proton.me/download/PassDesktop/linux/x64/version.json), checked on
+# 2026-11-08; the sha256 here is of that file. GPL-3.0-only (Proton's
+# WebClients), with Electron's and Chromium's licences in the package.
+# Fetched from Proton, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "proton-pass"
+organization = "proton"
+version      = "1.43.0"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Proton Pass password manager"
+license      = "GPL-3.0-only"
+homepage     = "https://proton.me/pass"
+
+[[source]]
+url    = "https://proton.me/download/pass/linux/proton-pass_1.43.0_amd64.deb"
+sha256 = "9fb7c11b756421c02483056a3332f9a91c1bcb25fa547f39b328182379544d8e"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["proton-pass"]
+
+[sandbox]
+home = "private"
+
+[launcher]
+name       = "Proton Pass"
+comment    = "Password manager"
+exec       = "bin/proton-pass"
+mime       = ["x-scheme-handler/protonpass"]
+icon       = "proton-pass/proton-pass.png"
+categories = ["Utility", "Security"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/proton-pass $D/bin
+cp -a $APM_SRC/usr/lib/proton-pass/. $D/proton-pass/
+install -m 644 $APM_SRC/usr/share/pixmaps/proton-pass.png $D/proton-pass/proton-pass.png
+cat > $D/bin/proton-pass <<WRAP
+#!/bin/sh
+ulimit -c 0
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "$APM_PREFIX/proton-pass/Proton Pass" --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/proton-pass
+'''

@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "darktable-org/darktable"
+tag   = '^release-(\d+\.\d+\.\d+)$'
+asset = '^Darktable-\d+\.\d+\.\d+-x86_64\.AppImage$'

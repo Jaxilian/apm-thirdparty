@@ -1,0 +1,10 @@
+[[source]]
+kind        = "json"
+page        = "https://proton.me/download/PassDesktop/linux/x64/version.json"
+list_key    = "Releases"
+where       = { CategoryName = "Stable", RolloutPercentage = 1 }
+version_key = "Version"
+files_key   = "File"
+url_key     = "Url"
+file_regex  = '\.deb$'
+sums        = "https://proton.me/download/PassDesktop/linux/x64/version.json"

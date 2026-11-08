@@ -1,0 +1,63 @@
+# KeePassXC, from the project's GitHub releases (the AppImage
+# keepassxc.org links to; 2.8.0-1 is the project's respin of 2.8.0),
+# extracted with its own --appimage-extract. Its GPG signature (.sig) was
+# checked against the KeePassXC release key BF5A669F2272CF4324C1FDA8CFB4C2166397D0D2
+# and the sha256 against the .DIGEST beside it, on 2026-11-08.
+# GPL-2.0-only OR GPL-3.0-only. Fetched from KeePassXC, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "keepassxc"
+organization = "keepassxc"
+version      = "2.8.0"
+release      = 1
+min_aos      = "0.4.60"
+kind         = "app"
+summary      = "KeePassXC password manager (no browser integration or YubiKey in the sandbox)"
+license      = "GPL-2.0-only OR GPL-3.0-only"
+homepage     = "https://keepassxc.org/"
+
+[[source]]
+url    = "https://github.com/keepassxreboot/keepassxc/releases/download/2.8.0/KeePassXC-2.8.0-1-x86_64.AppImage"
+sha256 = "3ab1bfbb422272334b48057e6bfc984c839375d9a1cd9350c4ea62ca0b55ca5f"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["keepassxc"]
+
+[sandbox]
+home    = "private"
+share   = ["Documents"]
+network = false
+
+[launcher]
+name       = "KeePassXC"
+comment    = "Password manager"
+exec       = "bin/keepassxc"
+mime       = ["application/x-keepass2"]
+icon       = "keepassxc/usr/share/icons/hicolor/256x256/apps/keepassxc.png"
+categories = ["Utility", "Security"]
+terminal   = false
+
+[build]
+prepare = '''
+./KeePassXC-2.8.0-1-x86_64.AppImage --appimage-extract >/dev/null
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/keepassxc $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/keepassxc/
+cat > $D/bin/keepassxc <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland;xcb}"
+export APPDIR=$APM_PREFIX/keepassxc
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/keepassxc/usr/bin/keepassxc "\$@"
+WRAP
+chmod 755 $D/bin/keepassxc
+'''

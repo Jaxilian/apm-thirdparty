@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "bitwarden/clients"
+tag   = '^desktop-v(\d+\.\d+\.\d+)$'
+asset = '^Bitwarden-\d+\.\d+\.\d+-amd64\.deb$'

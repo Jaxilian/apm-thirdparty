@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "mltframework/shotcut"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^shotcut-linux-x86_64-\d+\.\d+\.\d+\.txz$'
