@@ -19,7 +19,7 @@ recipe_version = 1
 name         = "godot"
 organization = "godotengine"
 version      = "4.7.2"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Godot Engine, the 2D and 3D game engine and editor"
 license      = "MIT"
@@ -73,7 +73,8 @@ cat > $D/bin/godot <<WRAP
 #!/bin/sh
 # Godot on its Wayland driver; libpulse and the X libraries, should it
 # fall back to X11, come from the GTK3 runtime.
-exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/godot/godot --display-driver wayland "\$@"
+/opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/godot/godot --display-driver wayland "\$@" || exit \$?
+while pgrep -x godot >/dev/null; do sleep 2; done
 WRAP
 chmod 755 $D/bin/godot
 '''
