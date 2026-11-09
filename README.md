@@ -95,7 +95,9 @@ version and the reason, and held back without a build until upstream
 moves on or 14 days pass (`HOLD_DAYS`); each run lists what it held
 back once, on stdout and in the log. It is not part of the OS publish
 any more (2026-11-09): run it before the publish when the release
-should carry the upgraded packages. `publish.sh` uploads with the OS
+should carry the upgraded packages. It takes the publish lock
+(`tmp-build/publish.lock`) for its whole run, so a publish started
+while the weekly bump runs is refused until the bump ends. `publish.sh` uploads with the OS
 tree's `ghup.py` (progress, skips what GitHub already holds, never
 deletes before the new copy is up).
 

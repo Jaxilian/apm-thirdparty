@@ -42,8 +42,9 @@ BUMP_QEMU=${BUMP_QEMU:-$([ -d "${AOS_OUT:-/nonexistent}" ] && echo 1 || echo 0)}
 # and a Blender or Claude Desktop unpack is several hundred MB.
 WORK=$OS/tmp-build/auto-bump
 mkdir -p "$WORK/tmp"
-LOCK=${AOS_PUBLISH_LOCK:-$OS/tmp-build/publish.lock}
+LOCK=${AOS_PUBLISH_LOCK:-$(cd "$(dirname "$0")/.." && pwd)/tmp-build/publish.lock}
 if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
+	mkdir -p "$(dirname "$LOCK")"
 	exec 9>"$LOCK"
 	export AOS_PUBLISH_LOCKED=1
 fi
@@ -142,7 +143,7 @@ for repo in $REPOS; do
 		dir=$WORK/jobs/$(basename "$(dirname "$f")")
 		mkdir -p "$dir"
 		echo "-- build $(basename "$(dirname "$f")" | sed 's/\./\//') $(ver <"$repo/$f")"
-		( cd "$dir" && "$APM" build "$repo/$f" </dev/null >"$dir/built" 2>"$dir/log"; echo $? >"$dir/rc" ) &
+		( cd "$dir" && "$APM" build "$repo/$f" </dev/null >"$dir/built" 2>"$dir/log" 9>&-; echo $? >"$dir/rc" ) &
 		n=$((n + 1))
 		if [ "$n" -ge "${BUMP_JOBS:-4}" ]; then wait; n=0; fi
 	done
@@ -178,7 +179,7 @@ for repo in $REPOS; do
 	if [ -n "$built" ] && [ "$BUMP_QEMU" = 1 ]; then
 		echo "-- bump-check (QEMU)"
 		results=$WORK/bump-check.txt
-		BUMP_RESULTS=$results python3 -I "$QEMU_CHECK" "$WORK"/apkgs/*.apkg || true
+		BUMP_RESULTS=$results python3 -I "$QEMU_CHECK" "$WORK"/apkgs/*.apkg 9>&- || true
 		for f in $built; do
 			pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
 			verdict=$(grep -m1 " $pkg\( \|$\)" "$results" 2>/dev/null || echo "fail $pkg no verdict from bump-check.py")

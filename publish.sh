@@ -21,15 +21,13 @@ cd "$(dirname "$0")"
 APM=${APM:-apm}
 TAG=index
 REPO=Jaxilian/apm-thirdparty
-if [ "${1:-}" != --local ]; then
-	LOCK=${AOS_PUBLISH_LOCK:-$HOME/Projects/OS/tmp-build/publish.lock}
-	if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
-		mkdir -p "$(dirname "$LOCK")"
-		exec 9>"$LOCK"
-		export AOS_PUBLISH_LOCKED=1
-	fi
-	flock -n 9 || { echo "publish.sh: another publish is running ($LOCK)" >&2; exit 1; }
+LOCK=${AOS_PUBLISH_LOCK:-$(cd .. && pwd)/tmp-build/publish.lock}
+if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
+	mkdir -p "$(dirname "$LOCK")"
+	exec 9>"$LOCK"
+	export AOS_PUBLISH_LOCKED=1
 fi
+flock -n 9 || { echo "publish.sh: another publish is running ($LOCK)" >&2; exit 1; }
 
 # A recipe's source of truth is recipes/<xx>/<org>.<name>/recipe.toml; the
 # index directory gets a flat copy, named so `apm index` can list it.
