@@ -89,6 +89,15 @@ verified), puts back with `git checkout` any recipe that failed to build,
 commits and pushes only the recipes that built, and runs each repo's
 `publish.sh`. A repo with uncommitted changes, or one that cannot
 fast-forward to origin, stops the run before anything is written.
+A bump that fails (the build, `apm check` or QEMU) is remembered in
+`~/Projects/OS/tmp-build/auto-bump/failed.tsv` with its upstream
+version and the reason, and held back without a build until upstream
+moves on or 14 days pass (`HOLD_DAYS`); each run lists what it held
+back once, on stdout and in the log. It is not part of the OS publish
+any more (2026-11-09): run it before the publish when the release
+should carry the upgraded packages. `publish.sh` uploads with the OS
+tree's `ghup.py` (progress, skips what GitHub already holds, never
+deletes before the new copy is up).
 
 - **When:** the systemd user timer `aos-bump.timer` (systemd/ here;
   `sh systemd/install.sh` on a reinstalled machine, 2026-11-02),

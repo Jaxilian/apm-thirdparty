@@ -53,6 +53,27 @@ echo "== auto-bump $(date -Is)"
 GITHUB_TOKEN=$(gh auth token) || { echo "abort: no token from gh auth token"; exit 1; }
 export GITHUB_TOKEN
 
+HELD=$WORK/failed.tsv
+HOLD_DAYS=${HOLD_DAYS:-14}
+
+held() {
+	[ -f "$HELD" ] || return 0
+	awk -F '\t' -v p="$1" -v v="$2" -v now="$(date +%s)" -v age=$((HOLD_DAYS * 86400)) \
+		'$1 == p && $2 == v && now - $3 < age { print $5 ", " $4 }' "$HELD"
+}
+
+forget() {
+	[ -f "$HELD" ] || return 0
+	awk -F '\t' -v p="$1" '$1 != p' "$HELD" > "$HELD.t"
+	mv "$HELD.t" "$HELD"
+}
+
+remember() {
+	forget "$1"
+	why=$(printf '%s' "$3" | tr '\t\n' '  ')
+	printf '%s\t%s\t%s\t%s\t%s\n' "$1" "$2" "$(date +%s)" "$(date +%F)" "$why" >> "$HELD"
+}
+
 ver() { sed -n 's/^version *= *"\(.*\)"/\1/p' | head -1; }
 
 # The org/name of each [[dependencies]] table of a recipe, one per line.
@@ -86,7 +107,7 @@ for repo in $REPOS; do
 	git -C "$repo" pull --ff-only
 done
 
-moved="" skipped="" published="" msg="" title=""
+moved="" skipped="" heldback="" published="" msg="" title=""
 for repo in $REPOS; do
 	name=$(basename "$repo")
 	echo "-- $name"
@@ -94,6 +115,14 @@ for repo in $REPOS; do
 	cat "$WORK/table"
 	# bump.py's own skips: an upstream down, a checksum that did not match.
 	skipped="$skipped$(sed -n 's/^| \([^ ]*\) | .* | skip: \(.*\) | *|$/\1 (\2); /p' "$WORK/table")"
+	for f in $(git -C "$repo" diff --name-only -- recipes/); do
+		pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
+		new=$(ver <"$repo/$f")
+		why=$(held "$pkg" "$new")
+		[ -n "$why" ] || continue
+		git -C "$repo" checkout -- "$f"
+		heldback="$heldback$pkg $new ($why); "
+	done
 	built=""
 	rm -rf "$WORK/apkgs" "$WORK/jobs"
 	mkdir -p "$WORK/jobs"
@@ -128,10 +157,12 @@ for repo in $REPOS; do
 				built="$built $f"
 			else
 				git -C "$repo" checkout -- "$f"
+				remember "$pkg" "$new" "apm check failed"
 				skipped="$skipped$pkg $new (apm check: a library, interpreter or package path it needs is not in the build, its dependencies or the OS); "
 			fi
 		else
 			git -C "$repo" checkout -- "$f"
+			remember "$pkg" "$new" "the build failed"
 			skipped="$skipped$pkg $new (the build failed); "
 		fi
 		rm -rf "$dir"
@@ -150,6 +181,7 @@ for repo in $REPOS; do
 			*)
 				new=$(ver <"$repo/$f")
 				git -C "$repo" checkout -- "$f"
+				remember "$pkg" "$new" "QEMU: ${verdict#fail $pkg }"
 				skipped="$skipped$pkg $new (QEMU: ${verdict#fail $pkg }); "
 				built=$(echo "$built" | sed "s| $f||")
 				;;
@@ -164,6 +196,7 @@ for repo in $REPOS; do
 		pkg=$(basename "$(dirname "$f")" | sed 's/\./\//')
 		old=$(git -C "$repo" show "HEAD:$f" | ver)
 		new=$(ver <"$repo/$f")
+		forget "$pkg"
 		moved="$moved$pkg $old -> $new; "
 		msg="${msg:-}$pkg $old -> $new
 "
@@ -189,6 +222,12 @@ EOF
 	msg="" title=""
 done
 rm -rf "$WORK/dl" "$WORK/tmp" "$WORK/table"
+
+if [ -n "$heldback" ]; then
+	line="auto-bump $(date +%F): held back, failed before at the same upstream version (tried again after $HOLD_DAYS days or at a newer one; $HELD): ${heldback%; }"
+	echo "$line"
+	echo "$line" >&3
+fi
 
 if [ -z "$published" ]; then
 	echo "auto-bump $(date +%F): nothing moved.${skipped:+ Skipped: $skipped}"
