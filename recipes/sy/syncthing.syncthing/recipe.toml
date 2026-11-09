@@ -26,7 +26,7 @@ recipe_version = 1
 name         = "syncthing"
 organization = "syncthing"
 version      = "2.1.7"
-release      = 1
+release      = 2
 min_aos      = "0.4.57"
 kind         = "app"
 summary      = "Syncthing continuous file synchronisation"
@@ -93,11 +93,13 @@ show() {
 		"Sign in as $user. The password is in Files, AppData > syncthing.syncthing > Syncthing password.txt" '[]' '{}' 0 >/dev/null 2>&1
 	xdg-open "http://$addr/"
 }
+quiet=${AOS_AUTOSTART:-}
+unset AOS_AUTOSTART
 if ours; then
-	show
+	[ -n "$quiet" ] || show
 	exit 0
 fi
-(for i in $(seq 60); do sleep 1; ours && { show; exit 0; }; done) &
+[ -n "$quiet" ] || (for i in $(seq 60); do sleep 1; ours && { show; exit 0; }; done) &
 exec "$st" serve --no-browser --no-upgrade "$@"
 WRAP
 chmod 755 $D/bin/syncthing-app
