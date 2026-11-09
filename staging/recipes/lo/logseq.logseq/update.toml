@@ -1,0 +1,12 @@
+[[source]]
+kind  = "github"
+repo  = "logseq/logseq"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^Logseq-linux-x86_64-\d+\.\d+\.\d+\.zip$'
+sums  = "https://github.com/logseq/logseq/releases/download/{tag}/SHA256SUMS.txt"
+
+[[source]]
+kind = "github"
+repo = "logseq/logseq"
+tag  = '^(\d+\.\d+\.\d+)$'
+url  = "https://raw.githubusercontent.com/logseq/logseq/{tag}/resources/icons/logseq.png"

@@ -1,0 +1,4 @@
+[[source]]
+kind  = "redirect"
+page  = "https://www.zotero.org/download/client/dl?channel=release&platform=linux-x86_64"
+regex = '/release/(\d+\.\d+\.\d+)/Zotero-\d+\.\d+\.\d+_linux-x86_64\.tar\.xz$'

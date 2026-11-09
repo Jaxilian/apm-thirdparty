@@ -1,0 +1,129 @@
+# Anki, from Ankitects' own GitHub release (ankitects/anki, where
+# apps.ankiweb.net links): the linux x86_64 tar.zst, a self-contained
+# bundle (its own Python 3.13, PyQt6 and Qt 6 with the Wayland plugin),
+# copied as it is; its install.sh, which writes to /usr/local, is not run.
+# Its Qt Network links Kerberos and Brotli, which AOS does not have: they
+# come from Debian 13's archive as further sources, by the exact versions
+# and checksums of Debian's own index (Packages.xz, whose sha256 matches
+# trixie's InRelease; InRelease was checked with gpg against the Debian 13
+# stable release key, https://ftp-master.debian.org/keys/release-13.asc,
+# 4158 7F7D B8C7 74BC CF13 1416 762F 67A0 B2C3 9DE4, on 2026-11-08), their
+# lib*.so* into lib/ here. The Qt
+# plugins whose libraries the bundle does not carry (xcb, eglfs, the SQL
+# drivers, Qt 3D and some QML modules) cannot load and are left out.
+# The sha256 is the one GitHub records for the asset in the 26.09.4
+# release, checked against the file as downloaded on 2026-11-08.
+#
+# AGPL-3.0-or-later, with BSD-3-Clause contributions. Fetched from
+# GitHub; the built .apkg is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "anki"
+organization = "ankitects"
+version      = "26.9.4"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Anki flashcards with spaced repetition"
+license      = "AGPL-3.0-or-later AND BSD-3-Clause"
+homepage     = "https://apps.ankiweb.net/"
+
+[[source]]
+url    = "https://github.com/ankitects/anki/releases/download/26.09.4/anki-26.09.4-linux-x86_64.tar.zst"
+sha256 = "1f4a6bdffcfbfc75dc5ef632aa0e44b87bdf7615679d40be8bb8db44efc06e9a"
+strip  = 1
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/b/brotli/libbrotli1_1.1.0-2+b7_amd64.deb"
+sha256 = "0fb79f88db210afbd69282ab9649e525f393ec6950ca34da1a6b359250b8d7db"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "30847c1fde4240567d7ed3aeab4f655dd591203758b857e85e824045aae70299"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "47d71d6a7f2e59b9bae5f89602397594805113b95889ad18fa703cd53abafc97"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "7da07ee674b47f1f0be7cc89317c25310086a1f1761217d0f72e6ae2c5a69b84"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_amd64.deb"
+sha256 = "3a0acd8b37955c0e102c756b52c97df2a31f67b96453c35dab70df218d309117"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/k/keyutils/libkeyutils1_1.6.3-6_amd64.deb"
+sha256 = "0b11ad17be0300b63ad4eeb4c6450fed24d34b7b740f23e5363dcb29ee6d5eba"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["anki"]
+
+[sandbox]
+home  = "private"
+share = ["Downloads"]
+
+[launcher]
+name       = "Anki"
+comment    = "Flashcards with spaced repetition"
+exec       = "bin/anki"
+mime       = ["application/x-apkg", "application/x-anki-collection", "application/x-colpkg"]
+icon       = "anki/anki.png"
+categories = ["Education"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/anki $D/lib $D/bin
+cp -a $APM_SRC/. $D/anki/
+rm -f $D/anki/install.sh $D/anki/uninstall.sh
+rm -rf $D/anki/app_packages/PyQt6/Qt6/lib/libQt6XcbQpa.so.6 \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/platforms/libqxcb.so \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/xcbglintegrations \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/egldeviceintegrations \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/geometryloaders \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/help \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/qmllint \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/qmlls \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/renderers \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/renderplugins \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/sceneparsers \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/scxmldatamodel \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/sqldrivers \
+	$D/anki/app_packages/PyQt6/Qt6/plugins/webview \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtCore/libqtqmlcoreplugin.so \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtNetwork \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQml/XmlListModel \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick3D/ParticleEffects \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/Controls/FluentWinUI3 \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/LocalStorage \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/Scene2D \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/Scene3D \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/Shapes/DesignHelpers \
+	$D/anki/app_packages/PyQt6/Qt6/qml/QtQuick/VectorImage/Helpers
+for n in $(seq 2 7); do
+	eval s=\$APM_SOURCE_$n
+	find $s -name 'lib*.so*' -exec cp -a {} $D/lib/ \;
+done
+cat > $D/bin/anki <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM=wayland
+export LD_LIBRARY_PATH="$APM_PREFIX/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/anki/anki "\$@"
+WRAP
+chmod 755 $D/bin/anki
+'''

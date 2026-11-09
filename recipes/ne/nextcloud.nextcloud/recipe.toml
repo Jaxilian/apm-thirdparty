@@ -1,0 +1,92 @@
+# Nextcloud desktop sync client, from Nextcloud's own GitHub release
+# (nextcloud-releases/desktop, where nextcloud.com/install links): the
+# official x86_64 AppImage, extracted with its own --appimage-extract. Its
+# Qt 6 carries only the xcb platform plugin, so it draws through X11. Its
+# own libsecret and GLib are left out, so that qtkeychain loads the core's
+# libsecret, which reaches the Secret Service through the sandbox's portal
+# (the one AOS sets up for the Secret portal). The wrapper sets
+# skipUpdateCheck in nextcloud.cfg: apm updates the package. The
+# sha256 is the one GitHub records for the asset in the v35.0.3 release,
+# checked against the file as downloaded on 2026-11-08 (the release also
+# carries a detached GPG signature, .asc, not checked here).
+#
+# GPL-2.0-or-later. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "nextcloud"
+organization = "nextcloud"
+version      = "35.0.3"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Nextcloud desktop sync client"
+license      = "GPL-2.0-or-later"
+homepage     = "https://nextcloud.com/"
+
+[[source]]
+url    = "https://github.com/nextcloud-releases/desktop/releases/download/v35.0.3/Nextcloud-35.0.3-x86_64.AppImage"
+sha256 = "334e83b145c991ae80ec9db9483334066d2562335e2191362824ccd10aa16e54"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "xwayland"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["nextcloud"]
+
+[sandbox]
+x11       = true
+home      = "private"
+share     = ["Nextcloud"]
+autostart = true
+
+[launcher]
+name       = "Nextcloud"
+comment    = "Sync files with a Nextcloud server"
+exec       = "bin/nextcloud"
+mime       = ["application/vnd.nextcloud", "x-scheme-handler/nc"]
+icon       = "nextcloud/com.nextcloud.desktopclient.nextcloud.png"
+categories = ["Network", "FileTransfer"]
+terminal   = false
+
+[build]
+prepare = '''
+./Nextcloud-35.0.3-x86_64.AppImage --appimage-extract >/dev/null
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/nextcloud $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/nextcloud/
+rm -f $D/nextcloud/usr/lib/libsecret-1.so* $D/nextcloud/usr/lib/libglib-2.0.so* \
+	$D/nextcloud/usr/lib/libgio-2.0.so* $D/nextcloud/usr/lib/libgobject-2.0.so* \
+	$D/nextcloud/usr/lib/libgmodule-2.0.so* $D/nextcloud/usr/lib/libgthread-2.0.so* \
+	$D/nextcloud/usr/lib/libffi.so* $D/nextcloud/usr/lib/libpcre2-8.so* \
+	$D/nextcloud/usr/lib/libmount.so* $D/nextcloud/usr/lib/libblkid.so* \
+	$D/nextcloud/usr/lib/libselinux.so*
+cat > $D/bin/nextcloud <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM=xcb
+cfg=\${XDG_CONFIG_HOME:-\$HOME/.config}/Nextcloud/nextcloud.cfg
+if [ ! -s "\$cfg" ]; then
+	mkdir -p "\${cfg%/*}"
+	printf '[General]\\nskipUpdateCheck=true\\n' > "\$cfg"
+elif ! grep -q '^skipUpdateCheck=true' "\$cfg"; then
+	if grep -q '^\\[General\\]' "\$cfg"; then
+		sed -i '/^skipUpdateCheck=/d; /^\\[General\\]/a skipUpdateCheck=true' "\$cfg"
+	else
+		printf '[General]\\nskipUpdateCheck=true\\n' >> "\$cfg"
+	fi
+fi
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/nextcloud/usr/bin/nextcloud "\$@"
+WRAP
+chmod 755 $D/bin/nextcloud
+'''

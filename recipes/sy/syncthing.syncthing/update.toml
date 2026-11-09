@@ -1,0 +1,12 @@
+[[source]]
+kind  = "github"
+repo  = "syncthing/syncthing"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^syncthing-linux-amd64-v\d+\.\d+\.\d+\.tar\.gz$'
+sums  = "https://github.com/syncthing/syncthing/releases/download/{tag}/sha256sum.txt.asc"
+
+[[source]]
+kind = "github"
+repo = "syncthing/syncthing"
+tag  = '^v(\d+\.\d+\.\d+)$'
+url  = "https://raw.githubusercontent.com/syncthing/syncthing/{tag}/assets/logo-128.png"

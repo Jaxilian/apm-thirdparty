@@ -1,0 +1,35 @@
+[[source]]
+kind  = "github"
+repo  = "ankitects/anki"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^anki-\d+\.\d+\.\d+-linux-x86_64\.tar\.zst$'
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libbrotli1"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libgssapi-krb5-2"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5-3"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libk5crypto3"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkrb5support0"
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libkeyutils1"

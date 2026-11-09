@@ -1,0 +1,4 @@
+[[source]]
+kind     = "apt"
+packages = "https://packages.element.io/debian/dists/default/main/binary-amd64/Packages"
+package  = "element-desktop"

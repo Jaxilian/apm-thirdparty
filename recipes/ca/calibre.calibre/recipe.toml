@@ -1,0 +1,89 @@
+# calibre, from Kovid Goyal's own GitHub release (kovidgoyal/calibre, the
+# files calibre-ebook.com's linux installer fetches): the x86_64 .txz, a
+# self-contained bundle with its own Python and Qt 6 (Wayland plugin
+# included), copied as it is. The official installer script
+# (linux-installer.sh) is not used: it writes to /opt/calibre, /usr/bin
+# and the desktop's menus and MIME database; calibre_postinstall, which
+# does the same, is left out of the package, and so are the Qt plugins
+# and extensions whose libraries the bundle does not carry (xcb, eglfs,
+# linuxfb, Qt PDF, flite speech): they cannot load. calibre draws on
+# Wayland. The sha256 is the one GitHub
+# records for the asset in the v9.18.0 release, checked against the file
+# as downloaded on 2026-11-08.
+#
+# GPL-3.0-only. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "calibre"
+organization = "calibre"
+version      = "9.18.0"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "calibre e-book library, reader and converter"
+license      = "GPL-3.0-only"
+homepage     = "https://calibre-ebook.com/"
+
+[[source]]
+url    = "https://github.com/kovidgoyal/calibre/releases/download/v9.18.0/calibre-9.18.0-x86_64.txz"
+sha256 = "da638166fb3dd204be77cf0f871a40d803536b3e5948969c5233b8e4f1e1dbe6"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["calibre", "ebook-viewer", "ebook-convert", "ebook-edit"]
+
+[sandbox]
+home  = "private"
+share = ["Documents", "Downloads"]
+
+[launcher]
+name       = "calibre"
+comment    = "E-book library, reader and converter"
+exec       = "bin/calibre"
+mime       = ["application/epub+zip", "application/x-mobipocket-ebook", "application/vnd.amazon.ebook", "application/x-fictionbook+xml", "application/x-cbz", "application/x-cbr", "image/vnd.djvu"]
+icon       = "calibre/resources/images/lt.png"
+categories = ["Office", "Viewer"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/calibre $D/bin
+cp -a $APM_SRC/. $D/calibre/
+rm -rf $D/calibre/calibre_postinstall \
+	$D/calibre/lib/libQt6XcbQpa.so.6 \
+	$D/calibre/plugins/platforms/libqxcb.so \
+	$D/calibre/plugins/platforms/libqeglfs.so \
+	$D/calibre/plugins/platforms/libqlinuxfb.so \
+	$D/calibre/plugins/platforms/libqvkkhrdisplay.so \
+	$D/calibre/plugins/xcbglintegrations \
+	$D/calibre/plugins/egldeviceintegrations \
+	$D/calibre/plugins/imageformats/libqpdf.so \
+	$D/calibre/plugins/texttospeech/libqtexttospeech_flite.so \
+	$D/calibre/plugins/wayland-shell-integration/libwl-shell-plugin.so \
+	$D/calibre/lib/calibre-extensions/_curses_panel.so \
+	$D/calibre/lib/calibre-extensions/PyQt6.QtPdf.so \
+	$D/calibre/lib/calibre-extensions/PyQt6.QtPdfWidgets.so \
+	$D/calibre/lib/calibre-extensions/PyQt6.QtSvgWidgets.so \
+	$D/calibre/lib/calibre-extensions/PyQt6.QtTest.so
+for c in calibre ebook-viewer ebook-convert ebook-edit; do
+cat > $D/bin/$c <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM=wayland
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/calibre/$c "\$@"
+WRAP
+chmod 755 $D/bin/$c
+done
+'''

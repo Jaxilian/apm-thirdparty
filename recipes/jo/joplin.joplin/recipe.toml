@@ -1,0 +1,67 @@
+# Joplin, from the Joplin project's own GitHub release (laurent22/joplin,
+# where joplinapp.org links): the official AppImage, extracted with its own
+# --appimage-extract; the Electron application inside runs directly, not
+# through AppRun. Joplin refuses unknown command-line flags, so Electron
+# is told to use Wayland through ELECTRON_OZONE_PLATFORM_HINT. Two libraries electron-builder adds for older desktops,
+# libappindicator3 and libgconf, are left out: their own dependencies are
+# not on AOS and Electron does not need them. The sha256 is the one GitHub records for the asset in
+# the v3.7.22 release, checked against the file as downloaded on
+# 2026-11-08.
+#
+# AGPL-3.0-or-later. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "joplin"
+organization = "joplin"
+version      = "3.7.22"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Joplin notes and to-dos with sync"
+license      = "AGPL-3.0-or-later"
+homepage     = "https://joplinapp.org/"
+
+[[source]]
+url    = "https://github.com/laurent22/joplin/releases/download/v3.7.22/Joplin-3.7.22.AppImage"
+sha256 = "2b0b1ee82999f00883d21d950c2fb5dff28ccc3d2f570248b3abd40e5100dfdc"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["joplin"]
+
+[sandbox]
+home  = "private"
+share = ["Documents"]
+
+[launcher]
+name       = "Joplin"
+comment    = "Notes and to-dos"
+exec       = "bin/joplin"
+mime       = ["x-scheme-handler/joplin"]
+icon       = "joplin/joplin.png"
+categories = ["Office"]
+terminal   = false
+
+[build]
+prepare = '''
+./Joplin-3.7.22.AppImage --appimage-extract >/dev/null
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/joplin $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/joplin/
+rm -f $D/joplin/usr/lib/libappindicator3.so* $D/joplin/usr/lib/libgconf-2.so*
+cat > $D/bin/joplin <<WRAP
+#!/bin/sh
+export ELECTRON_OZONE_PLATFORM_HINT=wayland
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/joplin/joplin "\$@"
+WRAP
+chmod 755 $D/bin/joplin
+'''

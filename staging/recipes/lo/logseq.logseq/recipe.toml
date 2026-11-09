@@ -1,0 +1,70 @@
+# Logseq, from the Logseq project's own GitHub release (logseq/logseq): the
+# linux x86_64 zip, the unpacked Electron application, copied as it is.
+# The zip has no icon outside app.asar: the launcher's is
+# resources/icons/logseq.png from Logseq's repository at the release tag.
+# The sha256 of the zip is the one GitHub records for the asset in the
+# 2.0.2 release and the one in the release's SHA256SUMS.txt; that of the
+# icon is of the file; both checked as downloaded on 2026-11-08.
+#
+# Staged, not published (2026-11-09): in QEMU on AOS 0.4.62 it starts
+# (main, GPU, network and renderer processes, a Secret portal call that
+# is answered) but never maps a window within 120 s, with or without
+# --password-store; not yet understood.
+#
+# AGPL-3.0-only. Fetched from GitHub; the built .apkg
+# is hosted in this index's GitHub releases.
+
+recipe_version = 1
+
+[package]
+name         = "logseq"
+organization = "logseq"
+version      = "2.0.2"
+release      = 1
+min_aos      = "0.4.57"
+kind         = "app"
+summary      = "Logseq outliner and knowledge base"
+license      = "AGPL-3.0-only"
+homepage     = "https://logseq.com/"
+
+[[source]]
+url    = "https://github.com/logseq/logseq/releases/download/2.0.2/Logseq-linux-x86_64-2.0.2.zip"
+sha256 = "289eadd4dfcbdd2ab71aeb6cf02a53d0b5d7340865c528b1434bef8001900a9a"
+
+[[source]]
+url    = "https://raw.githubusercontent.com/logseq/logseq/2.0.2/resources/icons/logseq.png"
+sha256 = "e3801c054138a9cc5eb555c0cea985620716ddf621421369213da82b9fff557a"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["logseq"]
+
+[sandbox]
+home  = "private"
+share = ["Documents"]
+
+[launcher]
+name       = "Logseq"
+comment    = "Outliner and knowledge base"
+exec       = "bin/logseq"
+mime       = ["x-scheme-handler/logseq"]
+icon       = "logseq/logseq.png"
+categories = ["Office"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/logseq $D/bin
+cp -a $APM_SRC/. $D/logseq/
+install -m 644 $APM_SOURCE_2/logseq.png $D/logseq/logseq.png
+cat > $D/bin/logseq <<WRAP
+#!/bin/sh
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/logseq/logseq --ozone-platform=wayland "\$@"
+WRAP
+chmod 755 $D/bin/logseq
+'''

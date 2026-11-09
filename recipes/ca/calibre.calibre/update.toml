@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "kovidgoyal/calibre"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^calibre-\d+\.\d+\.\d+-x86_64\.txz$'
