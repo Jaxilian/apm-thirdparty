@@ -1,0 +1,5 @@
+[[source]]
+kind = "github"
+repo = "BrowserWorks/waterfox"
+tag  = '^(\d+\.\d+\.\d+)$'
+url  = "https://cdn.waterfox.com/waterfox/releases/{version}/Linux_x86_64/waterfox-{version}.tar.bz2"

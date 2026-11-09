@@ -1,0 +1,6 @@
+[[source]]
+kind         = "github"
+repo         = "ungoogled-software/ungoogled-chromium-portablelinux"
+tag          = '^(\d+\.\d+\.\d+\.\d+-\d+)$'
+asset        = 'x86_64_linux\.tar\.xz$'
+version_from = '^(\d+)\.0\.(\d+)\.(\d+)'
