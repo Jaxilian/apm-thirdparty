@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "keepassxreboot/keepassxc"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^KeePassXC-(\d+\.\d+\.\d+(?:-\d+)?)-x86_64\.AppImage$'

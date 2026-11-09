@@ -65,7 +65,11 @@ The kinds:
               url = template of another file at that version (an icon).
     json      page = URL of a JSON document; version_key, url_key, sha256_key,
               sums_key = dotted paths into it (a number indexes a list);
-              url = template instead of url_key.
+              url = template instead of url_key. list_key = a list of
+              releases: the newest whose fields equal every pair of the
+              table where = {CategoryName = "Stable", ...}; the other keys
+              are then paths into that release. files_key = its list of
+              files: the first whose url_key matches file_regex.
     node      nodejs.org/dist/index.json: the newest LTS release.
     dotnet    the .NET release metadata: the latest SDK of the active LTS
               channel (track = "10.0" names a channel instead).
@@ -343,11 +347,27 @@ def jget(doc, path):
     return doc
 
 
-def find_json(rule):
-    doc = json.loads(page(rule["page"]))
+def json_pick(doc, rule):
+    """The release and the file a json rule names in doc: (version, url, release)."""
+    if "list_key" in rule:
+        want = rule.get("where", {})
+        rels = [e for e in jget(doc, rule["list_key"]) if all(e.get(k) == v for k, v in want.items())]
+        if not rels:
+            raise Skip(f"no release in {rule['page']} matches {want}")
+        doc = max(rels, key=lambda e: nums(str(jget(e, rule["version_key"]))))
     ver = str(jget(doc, rule["version_key"]))
-    found = {"version": ver, "vars": {}}
-    found["url"] = jget(doc, rule["url_key"]) if "url_key" in rule else expand(rule["url"], ver, {})
+    if "files_key" in rule:
+        files = [f for f in jget(doc, rule["files_key"]) if re.search(rule["file_regex"], jget(f, rule["url_key"]))]
+        if not files:
+            raise Skip(f"release {ver} in {rule['page']} has no file matching {rule['file_regex']!r}")
+        return ver, jget(files[0], rule["url_key"]), doc
+    url = jget(doc, rule["url_key"]) if "url_key" in rule else expand(rule["url"], ver, {})
+    return ver, url, doc
+
+
+def find_json(rule):
+    ver, url, doc = json_pick(json.loads(page(rule["page"])), rule)
+    found = {"version": ver, "url": url, "vars": {}}
     if "sha256_key" in rule:
         found["sha256"] = jget(doc, rule["sha256_key"])
         found["where"] = "sha256 published by " + urllib.parse.urlsplit(rule["page"]).hostname
@@ -485,6 +505,20 @@ def selftest():
     assert deb_cmp("1.0~rc1", "1.0") < 0
     assert deb_cmp("8.30.0", "8.30.0") == 0 and deb_cmp("5.12.0-beta.2", "5.11.0") > 0
     assert expand("x/{v1}.{v2}/f-{version}-{dir}", "26.08.1", {"dir": "d"}) == "x/26.08/f-26.08.1-d"
+    doc = {"Releases": [
+        {"CategoryName": "Beta", "Version": "1.44.0", "RolloutPercentage": 1, "File": [{"Url": "https://x/p_1.44.0.deb"}]},
+        {"CategoryName": "Stable", "Version": "1.43.1", "RolloutPercentage": 0.2, "File": [{"Url": "https://x/p_1.43.1.deb"}]},
+        {"CategoryName": "Stable", "Version": "1.9.0", "RolloutPercentage": 1, "File": [{"Url": "https://x/p_1.9.0.deb"}]},
+        {"CategoryName": "Stable", "Version": "1.43.0", "RolloutPercentage": 1,
+         "File": [{"Url": "https://x/p-1.43.0.rpm"}, {"Url": "https://x/p_1.43.0.deb"}]}]}
+    pick = {"page": "p", "list_key": "Releases", "where": {"CategoryName": "Stable", "RolloutPercentage": 1},
+            "version_key": "Version", "files_key": "File", "url_key": "Url", "file_regex": r"\.deb$"}
+    assert json_pick(doc, pick)[:2] == ("1.43.0", "https://x/p_1.43.0.deb")
+    try:
+        json_pick(doc, {**pick, "file_regex": r"\.AppImage$"})
+        raise AssertionError("a release without the file was taken")
+    except Skip:
+        pass
     text = ('[package]\nversion      = "4.0.1"\nrelease      = 3\n\n[[source]]\n'
             'url    = "https://x/A-4.0.1/a-4.0.1.AppImage"\nsha256 = "00"\n\n[build]\n'
             "prepare = '''\n./a-4.0.1.AppImage --appimage-extract\n'''\n")

@@ -1,0 +1,62 @@
+# darktable, from the project's GitHub releases (the AppImage
+# darktable.org links to), extracted with its own --appimage-extract.
+# The sha256 is GitHub's digest of the asset; the project publishes no
+# checksum file for the AppImage. Checked on 2026-11-08. GPL-3.0-or-later.
+# Fetched from the darktable project, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "darktable"
+organization = "darktable"
+version      = "5.6.2"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "darktable photo workflow and raw developer"
+license      = "GPL-3.0-or-later"
+homepage     = "https://www.darktable.org/"
+
+[[source]]
+url    = "https://github.com/darktable-org/darktable/releases/download/release-5.6.2/Darktable-5.6.2-x86_64.AppImage"
+sha256 = "4b0d1c737a2a18c7d8afb81aa3daaf25930bbe541dda98e6354dabd5c2e4dc36"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["darktable"]
+
+[sandbox]
+home  = "private"
+share = ["Pictures"]
+
+[launcher]
+name       = "darktable"
+comment    = "Develop raw photos"
+exec       = "bin/darktable"
+mime       = ["image/x-dcraw", "image/x-adobe-dng", "image/x-canon-cr2", "image/x-canon-cr3", "image/x-canon-crw", "image/x-fuji-raf", "image/x-nikon-nef", "image/x-nikon-nrw", "image/x-olympus-orf", "image/x-panasonic-rw2", "image/x-pentax-pef", "image/x-sony-arw"]
+icon       = "darktable/usr/share/icons/hicolor/256x256/apps/darktable.png"
+categories = ["Graphics", "Photography"]
+terminal   = false
+
+[build]
+prepare = '''
+./Darktable-5.6.2-x86_64.AppImage --appimage-extract >/dev/null
+sed -i 's/^export GDK_BACKEND=x11.*/export GDK_BACKEND="${GDK_BACKEND:-wayland}"/' squashfs-root/apprun-hooks/linuxdeploy-plugin-gtk.sh
+grep -q 'GDK_BACKEND:-wayland' squashfs-root/apprun-hooks/linuxdeploy-plugin-gtk.sh
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/darktable $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/darktable/
+cat > $D/bin/darktable <<WRAP
+#!/bin/sh
+export APPDIR=$APM_PREFIX/darktable
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/darktable/AppRun "\$@"
+WRAP
+chmod 755 $D/bin/darktable
+'''

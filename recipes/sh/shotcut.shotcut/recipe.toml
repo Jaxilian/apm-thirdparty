@@ -1,0 +1,64 @@
+# Shotcut, from the project's GitHub releases (the downloads shotcut.org
+# links to): the portable Linux tarball, run through its own launcher
+# script. The sha256 is the one in sha256sums.txt beside the release (and
+# GitHub's digest of the asset), checked on 2026-11-08. GPL-3.0-or-later.
+# Fetched from the Shotcut project, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "shotcut"
+organization = "shotcut"
+version      = "26.9.27"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Shotcut video editor"
+license      = "GPL-3.0-or-later"
+homepage     = "https://www.shotcut.org/"
+
+[[source]]
+url    = "https://github.com/mltframework/shotcut/releases/download/v26.9.27/shotcut-linux-x86_64-26.9.27.txz"
+sha256 = "849da6bbd24737f9edd07ba185b46982f2fb330981c05e1752809e85bcbb7e7b"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["shotcut"]
+
+[sandbox]
+home  = "private"
+share = ["Videos", "Music", "Pictures"]
+
+[launcher]
+name       = "Shotcut"
+comment    = "Video editor"
+exec       = "bin/shotcut"
+mime       = ["application/vnd.mlt+xml"]
+icon       = "shotcut/share/icons/hicolor/128x128/apps/org.shotcut.Shotcut.png"
+categories = ["AudioVideo", "Video", "AudioVideoEditing"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/shotcut $D/bin
+cp -a $APM_SRC/Shotcut.app/. $D/shotcut/
+cd $D/shotcut/lib
+rm -f mlt-7/libmltjackrack.so qt6/multimedia/libffmpegmediaplugin.so qt6/wayland-shell-integration/libwl-shell-plugin.so
+rm -f qml/QtCore/libqtqmlcoreplugin.so qml/QtQml/XmlListModel/libqmlxmllistmodelplugin.so qml/Qt/test/controls/libquickcontrolstestutilsprivateplugin.so
+rm -f qml/QtQuick/Effects/libeffectsplugin.so qml/QtQuick/LocalStorage/libqmllocalstorageplugin.so qml/QtQuick/Particles/libparticlesplugin.so
+rm -f qml/QtQuick/Shapes/DesignHelpers/libqtquickshapesdesignhelpersplugin.so qml/QtQuick/VectorImage/libqquickvectorimageplugin.so qml/QtQuick/VectorImage/Helpers/libqquickvectorimagehelpersplugin.so
+rm -f qml/Qt/labs/animation/liblabsanimationplugin.so qml/Qt/labs/platform/liblabsplatformplugin.so qml/Qt/labs/qmlmodels/liblabsmodelsplugin.so qml/Qt/labs/settings/libqmlsettingsplugin.so
+rm -f qml/Qt/labs/sharedimage/libsharedimageplugin.so qml/Qt/labs/synchronizer/liblabssynchronizerplugin.so qml/Qt/labs/wavefrontmesh/libqmlwavefrontmeshplugin.so
+cat > $D/bin/shotcut <<WRAP
+#!/bin/sh
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland;xcb}"
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+exec $APM_PREFIX/shotcut/shotcut "\$@"
+WRAP
+chmod 755 $D/bin/shotcut
+'''

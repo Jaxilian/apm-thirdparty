@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "musescore/MuseScore"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^MuseScore-Studio-\d+\.\d+\.\d+\.\d+-x86_64\.AppImage$'

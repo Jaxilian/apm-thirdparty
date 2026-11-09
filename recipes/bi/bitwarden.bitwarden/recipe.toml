@@ -1,0 +1,60 @@
+# Bitwarden Desktop, from Bitwarden's GitHub releases (the downloads
+# bitwarden.com links to): the open-source build's .deb, unpacked, run on
+# the GTK3 runtime with Electron on Wayland. The sha256 is GitHub's digest
+# of the asset, checked on 2026-11-08 (latest-linux.yml lists only the
+# AppImage's). GPL-3.0-only (the build without the Bitwarden License
+# parts; the "commercial-" assets are those). Fetched from Bitwarden,
+# never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "bitwarden"
+organization = "bitwarden"
+version      = "2026.10.4"
+release      = 1
+min_aos      = "0.4.52"
+kind         = "app"
+summary      = "Bitwarden password manager"
+license      = "GPL-3.0-only"
+homepage     = "https://bitwarden.com/"
+
+[[source]]
+url    = "https://github.com/bitwarden/clients/releases/download/desktop-v2026.10.4/Bitwarden-2026.10.4-amd64.deb"
+sha256 = "a45a34a20a9d5becbb1c710851717583ad578597d10fbd2bd57fe597f7625f41"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["bitwarden"]
+
+[sandbox]
+home = "private"
+
+[launcher]
+name       = "Bitwarden"
+comment    = "Password manager"
+exec       = "bin/bitwarden"
+mime       = ["x-scheme-handler/bitwarden"]
+icon       = "bitwarden/bitwarden.png"
+categories = ["Utility", "Security"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bitwarden $D/bin
+cp -a $APM_SRC/opt/Bitwarden/. $D/bitwarden/
+rm -f $D/bitwarden/resources/app.asar.unpacked/node_modules/*/prebuilds/linux-x64/*.musl.node
+install -m 644 $APM_SRC/usr/share/icons/hicolor/256x256/apps/bitwarden.png $D/bitwarden/bitwarden.png
+cat > $D/bin/bitwarden <<WRAP
+#!/bin/sh
+ulimit -c 0
+export ELECTRON_NO_UPDATER=1
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/bitwarden/bitwarden-app --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/bitwarden
+'''
