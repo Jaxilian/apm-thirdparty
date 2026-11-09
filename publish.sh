@@ -21,6 +21,15 @@ cd "$(dirname "$0")"
 APM=${APM:-apm}
 TAG=index
 REPO=Jaxilian/apm-thirdparty
+if [ "${1:-}" != --local ]; then
+	LOCK=${AOS_PUBLISH_LOCK:-$HOME/Projects/OS/tmp-build/publish.lock}
+	if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
+		mkdir -p "$(dirname "$LOCK")"
+		exec 9>"$LOCK"
+		export AOS_PUBLISH_LOCKED=1
+	fi
+	flock -n 9 || { echo "publish.sh: another publish is running ($LOCK)" >&2; exit 1; }
+fi
 
 # A recipe's source of truth is recipes/<xx>/<org>.<name>/recipe.toml; the
 # index directory gets a flat copy, named so `apm index` can list it.
@@ -86,8 +95,13 @@ for f in index/*; do
 done
 [ -z "$pkgs" ] || python3 "$GHUP" "$REPO" "$TAG" $pkgs
 python3 "$GHUP" --replace "$REPO" "$TAG" $meta index/stamp.toml index/stamp.toml.minisig
-for old in $(gh release view "$TAG" -R "$REPO" --json assets -q '.assets[].name' | grep '^index-.*\.zip$'); do
-	[ -f "index/$old" ] || gh release delete-asset "$TAG" "$old" -R "$REPO" -y
+zips=$(gh release view "$TAG" -R "$REPO" --json assets -q '.assets[]|select(.name|startswith("index-") and endswith(".zip"))|"\(.createdAt) \(.name)"' | sort)
+prev=""
+for z in $(echo "$zips" | cut -d' ' -f2); do
+	[ -f "index/$z" ] || prev="$z"
+done
+for old in $(echo "$zips" | cut -d' ' -f2); do
+	[ -f "index/$old" ] || [ "$old" = "$prev" ] || gh release delete-asset "$TAG" "$old" -R "$REPO" -y
 done
 echo "published: https://github.com/$REPO/releases/download/$TAG/stamp.toml"
 echo "note: the edge cache serves the previous stamp.toml for a few minutes" >&2

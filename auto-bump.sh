@@ -42,6 +42,12 @@ BUMP_QEMU=${BUMP_QEMU:-$([ -d "${AOS_OUT:-/nonexistent}" ] && echo 1 || echo 0)}
 # and a Blender or Claude Desktop unpack is several hundred MB.
 WORK=$OS/tmp-build/auto-bump
 mkdir -p "$WORK/tmp"
+LOCK=${AOS_PUBLISH_LOCK:-$OS/tmp-build/publish.lock}
+if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
+	exec 9>"$LOCK"
+	export AOS_PUBLISH_LOCKED=1
+fi
+flock -n 9 || { echo "auto-bump: another publish is running ($LOCK)" >&2; exit 1; }
 export TMPDIR="$WORK/tmp"
 LOG=$WORK/$(date +%F).log
 exec 3>&1 >>"$LOG" 2>&1
