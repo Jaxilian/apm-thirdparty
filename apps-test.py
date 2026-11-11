@@ -43,7 +43,7 @@ APPS = {
     "krita":    ("krita", "krita"),
     "inkscape": ("inkscape", "inkscape"),
     "lutris":   ("lutris", "lutris"),
-    "vscode":   ("code", "vscode/code"),
+    "vscode":   ("vscode", "vscode/code"),
     "claude":   ("claude-desktop", "claude/claude-desktop"),
     "godot":    ("godot", "godot"),
     "godot-dotnet": ("godot-dotnet", "godot"),

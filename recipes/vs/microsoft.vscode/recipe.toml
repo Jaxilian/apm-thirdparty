@@ -1,5 +1,5 @@
 # Visual Studio Code, from Microsoft's own download: a vendor binary. The
-# recipe unpacks it and writes one wrapper, bin/code, which runs the
+# recipe unpacks it and writes one wrapper, bin/vscode, which runs the
 # editor through the GTK3 runtime's gtk3-run with Electron told to use
 # Wayland. Nothing in the tarball is modified. The URL carries the
 # build's hash, so it is stable, and Microsoft's update API publishes the
@@ -15,7 +15,7 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.145.2"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -35,7 +35,7 @@ organization = "runtime"
 track        = "*"
 
 [provides]
-command = ["code"]
+command = ["vscode"]
 
 # Its own folder, ~/AppData/<org>.<name>, is its home: settings,
 # extensions and caches stay there. It sees ~/Projects read-write (where
@@ -57,7 +57,7 @@ ssh   = true
 [launcher]
 name       = "Visual Studio Code"
 comment    = "Code editing, redefined"
-exec       = "bin/code %F"
+exec       = "bin/vscode %F"
 icon       = "vscode/resources/app/resources/linux/code.png"
 categories = ["Development", "IDE"]
 terminal   = false
@@ -79,10 +79,10 @@ rm -f $D/vscode/resources/app/extensions/microsoft-authentication/dist/libmsalru
 # command-line client, which starts the editor detached and exits at
 # once, and aos-sandbox's pid namespace dies with its first process,
 # taking the editor with it -- the launcher did nothing at all.
-cat > $D/bin/code <<WRAP
+cat > $D/bin/vscode <<WRAP
 #!/bin/sh
 # Visual Studio Code on the GTK3 runtime, on Wayland.
 exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/vscode/code --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
 WRAP
-chmod 755 $D/bin/code
+chmod 755 $D/bin/vscode
 '''
