@@ -12,6 +12,10 @@
 # namespaces here, as for Chrome. The postinst adds an apt source and an
 # AppArmor profile, neither of which applies.
 #
+# Since 3.22.6 its licensing client carries .NET's LTTng trace provider
+# (libcoreclrtraceptprovider.so), which links liblttng-ust, not on AOS:
+# removed, as in microsoft/dotnet; .NET runs without it.
+#
 # Proprietary: Unity Terms of Service. Fetched from Unity, never mirrored.
 
 recipe_version = 1
@@ -19,8 +23,8 @@ recipe_version = 1
 [package]
 name         = "unityhub"
 organization = "unity"
-version      = "3.22.5"
-release      = 3
+version      = "3.22.6"
+release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Unity Hub: installs and opens the Unity game engine"
@@ -28,8 +32,8 @@ license      = "LicenseRef-Unity-Terms-of-Service"
 homepage     = "https://unity.com/"
 
 [[source]]
-url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-3.22.5-amd64.deb"
-sha256 = "fbf711fb7f3caff1015c507c1eb5f71d1c79606522942f21e716314655321d43"
+url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-3.22.6-amd64.deb"
+sha256 = "f16b3441c6a5062245eef490415102b65d2034c491658f0b54b96cbba081f768"
 
 [[dependencies]]
 name         = "gtk3"
@@ -63,6 +67,7 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/unityhub $D/bin
 cp -a $APM_SRC/usr/lib/unityhub/. $D/unityhub/
+rm -f $D/unityhub/UnityLicensingClient_V1/libcoreclrtraceptprovider.so
 install -m 644 $APM_SRC/usr/share/icons/hicolor/512x512/apps/unityhub.png $D/unityhub/unityhub.png
 cat > $D/bin/unityhub <<WRAP
 #!/bin/sh
