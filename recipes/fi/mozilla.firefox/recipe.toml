@@ -28,7 +28,7 @@ release      = 2
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Firefox web browser"
-license      = "MPL-2.0"
+license      = "MPL-2.0 AND LicenseRef-Mozilla-Trademark"
 homepage     = "https://www.mozilla.org/firefox/"
 
 [[source]]

@@ -23,7 +23,7 @@ release      = 3
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Thunderbird mail and calendar"
-license      = "MPL-2.0"
+license      = "MPL-2.0 AND LicenseRef-Mozilla-Trademark"
 homepage     = "https://www.thunderbird.net/"
 
 [[source]]

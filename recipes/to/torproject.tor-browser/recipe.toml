@@ -11,7 +11,7 @@ release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Tor Browser, browse through the Tor network"
-license      = "MPL-2.0 AND BSD-3-Clause"
+license      = "MPL-2.0 AND BSD-3-Clause AND LicenseRef-Tor-Trademark"
 homepage     = "https://www.torproject.org/"
 
 [[source]]
