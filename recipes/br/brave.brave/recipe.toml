@@ -6,7 +6,7 @@ recipe_version = 1
 [package]
 name         = "brave"
 organization = "brave"
-version      = "1.99.55"
+version      = "1.99.57"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -15,8 +15,8 @@ license      = "MPL-2.0 AND LicenseRef-Brave-Terms"
 homepage     = "https://brave.com/"
 
 [[source]]
-url    = "https://github.com/brave/brave-browser/releases/download/v1.99.55/brave-browser-1.99.55-linux-amd64.zip"
-sha256 = "ace5409dfb5a6238e3c09576fab56ef76d31e00ed6d62f10d0b41685ab3fe200"
+url    = "https://github.com/brave/brave-browser/releases/download/v1.99.57/brave-browser-1.99.57-linux-amd64.zip"
+sha256 = "734bd9e1d24bc0a94c03b0a43845107dd8a29f572c652023cf7177f5fc3a5f38"
 strip  = 0
 
 [[dependencies]]
