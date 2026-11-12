@@ -26,7 +26,7 @@ recipe_version = 1
 [package]
 name         = "podman"
 organization = "containers"
-version      = "6.1.4"
+version      = "6.2.0"
 release      = 1
 kind         = "bin"
 summary      = "Podman: rootless containers (docker-compatible)"
@@ -36,8 +36,8 @@ homepage     = "https://podman.io/"
 min_aos      = "0.3.10"
 
 [[source]]
-url    = "https://github.com/mgoltzsche/podman-static/releases/download/v6.1.4/podman-linux-amd64.tar.gz"
-sha256 = "9dd51073fac5a1742f88cf3caff5554615cb4d67ba554d25e8807be635547af5"
+url    = "https://github.com/mgoltzsche/podman-static/releases/download/v6.2.0/podman-linux-amd64.tar.gz"
+sha256 = "981bcee9ff6a07b3a3e22b9ea98c9aa10bcf67bac2abdc3049595267122378be"
 strip  = 1
 
 [provides]
