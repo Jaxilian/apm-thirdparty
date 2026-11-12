@@ -1,0 +1,79 @@
+# Antigravity CLI (agy), Google's coding agent for the terminal, from
+# Google's own download (the URL in the updater's manifest,
+# https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json,
+# where antigravity.google/cli/install.sh fetches it): the tarball's one
+# binary, with a wrapper.
+#
+# The CLI writes ~/.gemini and ~/.config/antigravity and has no switch
+# for either (ANTIGRAVITY_GEMINI_DIR, ANTIGRAVITY_APP_DATA_DIR and
+# ANTIGRAVITY_CONFIG_REL_DIR were tried on 1.5.7 and move nothing), so
+# the wrapper runs it with HOME at ~/AppData/google.antigravity and hands
+# back what a coding tool reads from the real home: git's config
+# (GIT_CONFIG_GLOBAL), GnuPG (GNUPGHOME), gh's sign-in (GH_CONFIG_DIR),
+# npm's config, prefix and cache, pip's user base. ssh reads the account's
+# home from the password database and is not moved. The sign-in is in the
+# login keyring, not in the home. What the agent's commands no longer see:
+# ~ and $HOME are the AppData folder, so ~/Projects is not there (the
+# working folder and absolute paths are), nor ~/.bashrc, ~/.config of
+# other tools (docker, aws, kube), ~/.local/share.
+#
+# Its own updater is off (AGY_CLI_DISABLE_AUTO_UPDATE=true; "1" is not
+# taken). The weekly bump carries it.
+#
+# No sandbox, like the other developer tools.
+#
+# The manifest publishes a sha512
+# (60bca280414ed11723f58b3b671962ae394cc2d0c25e3f58e32e1c6847c978cbc77ec6f40e7f3992001c399d80aeb8b64c9ec892abddd591b12413c5ee6d9fce
+# for 1.5.7), checked against the file as downloaded on 2026-11-12; the
+# sha256 here is of that same file. Proprietary: Google Antigravity
+# Additional Terms of Service with the Google Terms of Service, which say
+# "You may not copy, modify, distribute, sell, or lease any part of our
+# services or software". The index hosts the built .apkg, which is
+# distributing it, and the moved HOME changes what the agent sees: staged,
+# not published, until the owner decides (2026-11-12). Fetched from
+# Google, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "antigravity"
+organization = "google"
+version      = "1.5.7"
+release      = 1
+kind         = "bin"
+summary      = "Antigravity CLI: Google's coding agent in the terminal"
+license      = "LicenseRef-Google-Antigravity-Terms"
+homepage     = "https://antigravity.google/"
+
+[[source]]
+url    = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.7-6190022064472064/linux-x64/cli_linux_x64.tar.gz"
+sha256 = "d6150a8d2a9e29a3d171b2325d6f66b6e7059628f4799a20c069b8ed8f78fdbb"
+
+[provides]
+command = ["agy"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec
+install -m 755 $APM_SRC/antigravity $D/libexec/agy
+cat > $D/bin/agy <<WRAP
+#!/bin/sh
+real=\$HOME
+data=\$HOME/AppData/google.antigravity
+mkdir -p "\$data" || exit 1
+if [ -z "\$GIT_CONFIG_GLOBAL" ] && [ -f "\$real/.gitconfig" ]; then
+	export GIT_CONFIG_GLOBAL="\$real/.gitconfig"
+fi
+export GNUPGHOME="\${GNUPGHOME:-\$real/.gnupg}"
+export GH_CONFIG_DIR="\${GH_CONFIG_DIR:-\$real/.config/gh}"
+export NPM_CONFIG_USERCONFIG="\${NPM_CONFIG_USERCONFIG:-\$real/.npmrc}"
+export npm_config_prefix="\${npm_config_prefix:-\$real/.local}"
+export npm_config_cache="\${npm_config_cache:-\$real/AppData/nodejs.node/cache}"
+export PYTHONUSERBASE="\${PYTHONUSERBASE:-\$real/.local}"
+export AGY_CLI_DISABLE_AUTO_UPDATE=true
+export HOME="\$data"
+exec $APM_PREFIX/libexec/agy "\$@"
+WRAP
+chmod 755 $D/bin/agy
+'''

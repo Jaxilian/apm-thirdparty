@@ -1,0 +1,6 @@
+[[source]]
+kind        = "json"
+page        = "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json"
+version_key = "version"
+url_key     = "url"
+sums        = "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json"

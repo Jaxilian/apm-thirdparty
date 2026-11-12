@@ -1,0 +1,6 @@
+[[source]]
+kind  = "regex"
+page  = "https://downloads.claude.ai/claude-code-releases/stable"
+regex = '^(\d+\.\d+\.\d+)\s*$'
+url   = "https://downloads.claude.ai/claude-code-releases/{version}/linux-x64/claude"
+sums  = "https://downloads.claude.ai/claude-code-releases/{version}/manifest.json"

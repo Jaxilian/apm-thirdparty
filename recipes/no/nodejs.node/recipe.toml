@@ -9,6 +9,10 @@
 # store is read-only: `npm install -g` goes to the home, and AOS puts
 # ~/.local/bin on PATH.
 #
+# Release 2 (2026-11-12): npm's cache and logs go to
+# ~/AppData/nodejs.node/cache (cache= in etc/npmrc), not ~/.npm. Node 26
+# ships no corepack: pnpm is pnpm/pnpm, yarn is `npm install -g yarn`.
+#
 # No sandbox, like the Rust toolchain: a developer tool works on the
 # person's files and runs what they tell it to.
 #
@@ -23,7 +27,7 @@ recipe_version = 1
 name         = "node"
 organization = "nodejs"
 version      = "26.13.0"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Node.js JavaScript runtime"
 license      = "MIT"
@@ -42,7 +46,6 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D
 cp -a $APM_SRC/. $D/
-rm -f $D/bin/corepack
 install -d $D/etc
-printf 'prefix=${HOME}/.local\n' > $D/etc/npmrc
+printf 'prefix=${HOME}/.local\ncache=${HOME}/AppData/nodejs.node/cache\n' > $D/etc/npmrc
 '''

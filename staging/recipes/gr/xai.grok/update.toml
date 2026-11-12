@@ -1,0 +1,5 @@
+[[source]]
+kind  = "regex"
+page  = "https://x.ai/cli/stable"
+regex = '^(\d+\.\d+\.\d+)\s*$'
+url   = "https://x.ai/cli/grok-{version}-linux-x86_64"

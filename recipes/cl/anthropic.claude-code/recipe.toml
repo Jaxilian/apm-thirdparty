@@ -1,0 +1,56 @@
+# Claude Code, Anthropic's coding agent for the terminal, from Anthropic's
+# own download (downloads.claude.ai/claude-code-releases, where
+# claude.ai/install.sh fetches it): the one linux-x64 binary of the stable
+# channel, with a wrapper. anthropic/claude is Claude Desktop; this is the
+# command `claude`.
+#
+# Its settings, sign-in and sessions live in ~/AppData/anthropic.claude-code
+# (CLAUDE_CONFIG_DIR, which .claude.json follows too); a CLAUDE_CONFIG_DIR
+# already set wins. Its own updater is off (DISABLE_UPDATES, Anthropic's
+# switch for a copy handed out through another channel, and
+# DISABLE_AUTOUPDATER): the store is read-only and `claude update` would
+# put a second copy in ~/.local. The weekly bump carries it.
+#
+# No sandbox, like the other developer tools: it works on the person's
+# files and runs what they tell it to.
+#
+# The sha256 is the linux-x64 checksum in the release's manifest.json
+# (https://downloads.claude.ai/claude-code-releases/2.1.311/manifest.json,
+# signed beside it as manifest.json.sig), checked against the file as
+# downloaded on 2026-11-12. Proprietary: (c) Anthropic PBC, all rights
+# reserved, use under Anthropic's Commercial Terms of Service
+# (LICENSE.md of github.com/anthropics/claude-code). Fetched from
+# Anthropic, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "claude-code"
+organization = "anthropic"
+version      = "2.1.311"
+release      = 1
+kind         = "bin"
+summary      = "Claude Code: Anthropic's coding agent in the terminal"
+license      = "LicenseRef-Anthropic-Commercial-Terms"
+homepage     = "https://claude.com/product/claude-code"
+
+[[source]]
+url    = "https://downloads.claude.ai/claude-code-releases/2.1.311/linux-x64/claude"
+sha256 = "86dc1fcc69498159eaf15f446613e847010f9036bfbbdffd4c49350be8489ada"
+
+[provides]
+command = ["claude"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec
+install -m 755 $APM_SRC/claude $D/libexec/claude
+cat > $D/bin/claude <<WRAP
+#!/bin/sh
+export CLAUDE_CONFIG_DIR="\${CLAUDE_CONFIG_DIR:-\$HOME/AppData/anthropic.claude-code}"
+export DISABLE_UPDATES=1 DISABLE_AUTOUPDATER=1
+exec $APM_PREFIX/libexec/claude "\$@"
+WRAP
+chmod 755 $D/bin/claude
+'''

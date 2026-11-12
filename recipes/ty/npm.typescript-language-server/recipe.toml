@@ -1,0 +1,58 @@
+# typescript-language-server, the language server for JavaScript and
+# TypeScript that editors start by name, with the TypeScript it falls back
+# on when a project carries none: two tarballs from the npm registry,
+# unpacked as lib/node_modules, nothing installed by npm. The server has
+# no dependencies of its own (it is bundled). TypeScript stays on 6: the
+# server drives tsserver.js, which TypeScript 7 no longer has.
+#
+# The sha256 of each is of the file as downloaded on 2026-11-12, after it
+# matched the registry's integrity (sha512):
+# typescript-language-server 6.0.3
+# sha512-iAxKyLXRNbnxGfCGZ/j4ilAb0PSNommvTvcghF8B8sq5JFGDKEQwzNEFZ0KTYEwzcA7rtRa+2OPeouiFR8L5KA==
+# typescript 6.0.3, sha512 (hex)
+# cb64efbb14993c3c906a490544f6472859be28a56a222b1d83dfc26709bd7edbca5cb3fc3515a3dfcfce0e335baf8dd2b285ea36e022b047f519d0b1a9671d07
+# Apache-2.0, both. Fetched from registry.npmjs.org, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "typescript-language-server"
+organization = "npm"
+version      = "6.0.3"
+release      = 1
+kind         = "bin"
+summary      = "Language server for JavaScript and TypeScript"
+license      = "Apache-2.0"
+homepage     = "https://github.com/typescript-language-server/typescript-language-server"
+
+[[source]]
+url    = "https://registry.npmjs.org/typescript-language-server/-/typescript-language-server-6.0.3.tgz"
+sha256 = "96c1b2aa0cd72db1d653438870f3b2b4cd6b2b508ca4903ce7c798dda59bc151"
+strip  = 1
+
+[[source]]
+url    = "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz"
+sha256 = "33cd0ee1beaa8c9e9d15a9da836c62ddea4c34a42d7c2d349dbc80d94165d22a"
+strip  = 1
+
+[[dependencies]]
+name         = "node"
+organization = "nodejs"
+track        = "*"
+
+[provides]
+command = ["typescript-language-server"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+M=$D/lib/node_modules
+install -d $D/bin $M/typescript-language-server $M/typescript
+cp -a $APM_SOURCE_1/. $M/typescript-language-server/
+cp -a $APM_SOURCE_2/. $M/typescript/
+cat > $D/bin/typescript-language-server <<WRAP
+#!/bin/sh
+exec node $APM_PREFIX/lib/node_modules/typescript-language-server/lib/cli.mjs "\$@"
+WRAP
+chmod 755 $D/bin/typescript-language-server
+'''

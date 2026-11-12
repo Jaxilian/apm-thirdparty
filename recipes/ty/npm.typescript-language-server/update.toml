@@ -1,0 +1,8 @@
+[[source]]
+kind    = "npm"
+package = "typescript-language-server"
+
+[[source]]
+kind    = "npm"
+package = "typescript"
+track   = "6"

@@ -1,0 +1,49 @@
+# Codex, OpenAI's coding agent for the terminal, from OpenAI's own GitHub
+# release (openai/codex, tag rust-v<version>): the codex-package tarball
+# for x86_64 Linux (static, musl), copied as it is (bin/codex and its
+# helpers, codex-path/rg, codex-resources), with a wrapper.
+#
+# Its settings, sign-in and sessions live in ~/AppData/openai.codex
+# (CODEX_HOME); a CODEX_HOME already set wins. Its own update check is
+# off (check_for_update_on_startup = false, given on the command line so
+# the person's config.toml stays theirs). The weekly bump carries it.
+#
+# No sandbox, like the other developer tools: it works on the person's
+# files and runs what they tell it to.
+#
+# The sha256 is the one in the release's codex-package_SHA256SUMS (and
+# GitHub's asset digest), checked against the file as downloaded on
+# 2026-11-12. Apache-2.0. Fetched from GitHub, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "codex"
+organization = "openai"
+version      = "0.167.2"
+release      = 1
+kind         = "bin"
+summary      = "Codex: OpenAI's coding agent in the terminal"
+license      = "Apache-2.0"
+homepage     = "https://github.com/openai/codex"
+
+[[source]]
+url    = "https://github.com/openai/codex/releases/download/rust-v0.167.2/codex-package-x86_64-unknown-linux-musl.tar.gz"
+sha256 = "3d77be1748d35a4bb0e7f8752cde3b11890c63338e8c599f01eafa4a59e17b3d"
+
+[provides]
+command = ["codex"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/codex
+cp -a $APM_SRC/. $D/codex/
+cat > $D/bin/codex <<WRAP
+#!/bin/sh
+export CODEX_HOME="\${CODEX_HOME:-\$HOME/AppData/openai.codex}"
+mkdir -p "\$CODEX_HOME" || exit 1
+exec $APM_PREFIX/codex/bin/codex -c check_for_update_on_startup=false "\$@"
+WRAP
+chmod 755 $D/bin/codex
+'''

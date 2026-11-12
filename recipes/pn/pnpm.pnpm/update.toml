@@ -1,0 +1,5 @@
+[[source]]
+kind  = "github"
+repo  = "pnpm/pnpm"
+tag   = '^v(\d+\.\d+\.\d+)$'
+asset = '^pnpm-linux-x64\.tar\.gz$'

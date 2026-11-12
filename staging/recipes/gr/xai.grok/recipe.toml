@@ -1,0 +1,54 @@
+# Grok Build, xAI's coding agent for the terminal, from xAI's own download
+# (x.ai/cli, where x.ai/cli/install.sh fetches it): the one static
+# linux-x86_64 binary of the stable channel, with a wrapper. The vendor's
+# install links it twice, as grok and as agent (the same program without
+# the interactive screen); so does this.
+#
+# Its settings, sign-in and sessions live in ~/AppData/xai.grok
+# (GROK_HOME); a GROK_HOME already set wins. Its own updater is off
+# (GROK_DISABLE_AUTOUPDATER). The weekly bump carries it.
+#
+# No sandbox, like the other developer tools: it works on the person's
+# files and runs what they tell it to.
+#
+# xAI publishes no checksum: the sha256 is of the file as downloaded on
+# 2026-11-12. Proprietary: xAI's Terms of Service, which could not be
+# read on 2026-11-12 (x.ai/legal answers 403 to a fetch): staged, not
+# published, until the owner has read them. Fetched from xAI, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "grok"
+organization = "xai"
+version      = "1.0.77"
+release      = 1
+kind         = "bin"
+summary      = "Grok Build: xAI's coding agent in the terminal"
+license      = "LicenseRef-xAI-Terms-of-Service"
+homepage     = "https://x.ai/cli"
+
+[[source]]
+url    = "https://x.ai/cli/grok-1.0.77-linux-x86_64"
+sha256 = "b702950aa5827d855e493278ab6215a4e0f5bceb5bba6c6243a9f55cdd143b0a"
+
+[provides]
+command = ["grok", "agent"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/libexec
+install -m 755 $APM_SRC/grok-1.0.77-linux-x86_64 $D/libexec/grok
+ln -s grok $D/libexec/agent
+for n in grok agent; do
+	cat > $D/bin/$n <<WRAP
+#!/bin/sh
+export GROK_HOME="\${GROK_HOME:-\$HOME/AppData/xai.grok}"
+export GROK_DISABLE_AUTOUPDATER=1
+exec $APM_PREFIX/libexec/$n "\$@"
+WRAP
+	chmod 755 $D/bin/$n
+done
+'''

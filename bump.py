@@ -82,6 +82,7 @@ Prose in the comments is left alone; the table says where each checksum came
 from.
 """
 import argparse
+import base64
 import functools
 import gzip
 import hashlib
@@ -401,8 +402,24 @@ def find_dotnet(rule):
     return {"version": v, "url": url, "sums": url + ".sha512", "vars": {}}
 
 
+def find_npm(rule):
+    doc = json.loads(page("https://registry.npmjs.org/" + rule["package"]))
+    ver = doc["dist-tags"]["latest"]
+    if "track" in rule:
+        vers = [v for v in doc["versions"] if re.fullmatch(r"\d+\.\d+\.\d+", v) and in_track(v, rule)]
+        if not vers:
+            raise Skip(f"no release of {rule['package']} in track {rule['track']}")
+        ver = max(vers, key=nums)
+    dist = doc["versions"][ver]["dist"]
+    algo, _, b64 = dist["integrity"].partition("-")
+    if algo != "sha512":
+        raise Skip(f"{rule['package']} {ver}: integrity is {algo}, not sha512")
+    return {"version": ver, "url": dist["tarball"], "sha512": base64.b64decode(b64).hex(),
+            "where": "integrity in the npm registry", "vars": {}}
+
+
 FINDERS = {"github": find_github, "apt": find_apt, "regex": find_regex, "redirect": find_redirect,
-           "json": find_json, "node": find_node, "dotnet": find_dotnet}
+           "json": find_json, "node": find_node, "dotnet": find_dotnet, "npm": find_npm}
 
 
 # -- the recipe --------------------------------------------------------------
@@ -412,6 +429,10 @@ def verify(sha256, sha512, found, rule):
     if found.get("sha256"):
         if found["sha256"].lower() != sha256:
             raise Skip(f"sha256 of {found['url']} does not match the {found['where']}")
+        return found["where"]
+    if found.get("sha512"):
+        if found["sha512"].lower() != sha512:
+            raise Skip(f"sha512 of {found['url']} does not match the {found['where']}")
         return found["where"]
     sums = found.get("sums")
     if not sums and "sums" in rule:
@@ -526,6 +547,12 @@ def selftest():
     assert 'version      = "4.1.0"' in out and "release      = 1" in out
     assert 'url    = "https://x/A-4.1.0/a-4.1.0.AppImage"' in out and 'sha256 = "ff"' in out
     assert "./a-4.1.0.AppImage --appimage-extract" in out and "4.0.1" not in out
+    assert verify("aa", "bb", {"sha512": "BB", "where": "w", "url": "u"}, {}) == "w"
+    try:
+        verify("aa", "bb", {"sha512": "cc", "where": "w", "url": "u"}, {})
+        raise AssertionError("a wrong sha512 was taken")
+    except Skip:
+        pass
 
     class Cut(io.BytesIO):
         def read(self, n=-1):

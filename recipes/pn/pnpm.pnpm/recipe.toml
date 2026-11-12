@@ -1,0 +1,53 @@
+# pnpm, the package manager, from pnpm's own GitHub release (pnpm/pnpm):
+# the linux-x64 tarball, the standalone program (it carries its own Node)
+# and its dist/ folder, copied as they are, with a wrapper. Node 26 ships
+# no corepack, so this is how pnpm comes to AOS.
+#
+# Its store, cache, state and what `pnpm add -g` installs live in
+# ~/AppData/pnpm.pnpm (PNPM_HOME from [provides] env, on PATH last;
+# pnpm_config_cache_dir and pnpm_config_state_dir from the wrapper);
+# each already set wins. `pnpm config set` still writes ~/.config/pnpm/rc:
+# pnpm has no switch for it.
+#
+# No sandbox, like the other developer tools.
+#
+# The sha256 is GitHub's digest of the release asset, checked against the
+# file as downloaded on 2026-11-12. MIT. Fetched from GitHub, never
+# mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "pnpm"
+organization = "pnpm"
+version      = "12.20.0"
+release      = 1
+kind         = "bin"
+summary      = "pnpm: fast, disk-saving package manager for JavaScript"
+license      = "MIT"
+homepage     = "https://pnpm.io/"
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://github.com/pnpm/pnpm/releases/download/v12.20.0/pnpm-linux-x64.tar.gz"
+sha256 = "568fd50dd174a57e80efacc04be1d6a228bb41fbebe557f2ef63a1c3a721a5f4"
+
+[provides]
+command = ["pnpm"]
+env     = ["PNPM_HOME=AppData/pnpm.pnpm"]
+path    = ["AppData/pnpm.pnpm"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/pnpm
+cp -a $APM_SRC/. $D/pnpm/
+cat > $D/bin/pnpm <<WRAP
+#!/bin/sh
+export PNPM_HOME="\${PNPM_HOME:-\$HOME/AppData/pnpm.pnpm}"
+export pnpm_config_cache_dir="\${pnpm_config_cache_dir:-\$PNPM_HOME/cache}"
+export pnpm_config_state_dir="\${pnpm_config_state_dir:-\$PNPM_HOME/state}"
+exec $APM_PREFIX/pnpm/pnpm "\$@"
+WRAP
+chmod 755 $D/bin/pnpm
+'''
