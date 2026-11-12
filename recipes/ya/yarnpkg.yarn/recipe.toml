@@ -1,0 +1,56 @@
+# Yarn (the current line, "berry"), from the npm registry
+# (@yarnpkg/cli-dist, the package Yarn's own release publishes): the one
+# bundled bin/yarn.js, run by nodejs/node, with a wrapper. Node 26 ships
+# no corepack, so this is how yarn comes to AOS, beside pnpm/pnpm. A
+# project that pins another Yarn with yarnPath still runs its own copy.
+#
+# Its cache, telemetry state and global files live in
+# ~/AppData/yarnpkg.yarn (YARN_GLOBAL_FOLDER, set by the wrapper: apm's
+# [provides] env takes NAME_HOME variables only); one already set wins.
+# `yarn config set --home` still writes ~/.yarnrc.yml: Yarn has no
+# switch for it.
+#
+# No sandbox, like the other developer tools.
+#
+# The sha256 is of the tarball as downloaded on 2026-11-12, whose sha512
+# matched the registry's integrity for 4.18.1. BSD-2-Clause. Fetched
+# from the npm registry, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "yarn"
+organization = "yarnpkg"
+version      = "4.18.1"
+release      = 1
+kind         = "bin"
+summary      = "Yarn: package manager for JavaScript projects"
+license      = "BSD-2-Clause"
+homepage     = "https://yarnpkg.com/"
+min_aos      = "0.4.37"
+
+[[source]]
+url    = "https://registry.npmjs.org/@yarnpkg/cli-dist/-/cli-dist-4.18.1.tgz"
+sha256 = "f6729593ad4c17784e3d4ade53b3ed684e3dba3af5adb9bebe21bb854fe0b153"
+strip  = 1
+
+[[dependencies]]
+name         = "node"
+organization = "nodejs"
+track        = "*"
+
+[provides]
+command = ["yarn"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin $D/yarn
+install -m 644 $APM_SRC/bin/yarn.js $APM_SRC/package.json $D/yarn/
+cat > $D/bin/yarn <<WRAP
+#!/bin/sh
+export YARN_GLOBAL_FOLDER="\${YARN_GLOBAL_FOLDER:-\$HOME/AppData/yarnpkg.yarn}"
+exec node $APM_PREFIX/yarn/yarn.js "\$@"
+WRAP
+chmod 755 $D/bin/yarn
+'''
