@@ -85,7 +85,7 @@ cat > $D/bin/vscode <<WRAP
 # Visual Studio Code on the GTK3 runtime, on Wayland. An assistant's
 # packaged folder is used when the person allowed it (it is then a
 # mount of its own), else the home's own .claude as before.
-used() { [ "\$(stat -c %d "\$1" 2>/dev/null)" != "\$(stat -c %d "\$HOME" 2>/dev/null)" ] && [ -d "\$1" ]; }
+used() { grep -q " \$1 " /proc/self/mountinfo 2>/dev/null; }
 used "\$HOME/AppData/anthropic.claude-code" && export CLAUDE_CONFIG_DIR="\$HOME/AppData/anthropic.claude-code"
 used "\$HOME/AppData/openai.codex" && export CODEX_HOME="\$HOME/AppData/openai.codex"
 used "\$HOME/AppData/xai.grok" && export GROK_HOME="\$HOME/AppData/xai.grok"
