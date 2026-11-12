@@ -28,13 +28,13 @@ recipe_version = 1
 name         = "android-studio"
 organization = "google"
 version      = "2026.2.2"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Android Studio, the IDE for Android apps"
 license      = "LicenseRef-Android-Studio-Terms"
 homepage     = "https://developer.android.com/studio"
 # The SDK's [provides] env and aos-sandbox's toolchain folders (0.4.37).
-min_aos      = "0.4.57"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://edgedl.me.gvt1.com/android/studio/ide-zips/2026.2.2.8/android-studio-rabbit2-linux.tar.gz"
@@ -68,6 +68,7 @@ command = ["android-studio"]
 x11 = true
 home  = "private"
 share = ["Projects", ".gitconfig:ro"]
+data  = ["google/android-sdk"]
 tools = true
 ssh   = true
 
