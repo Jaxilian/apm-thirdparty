@@ -29,6 +29,24 @@ if [ -z "${AOS_PUBLISH_LOCKED:-}" ]; then
 fi
 flock -n 9 || { echo "publish.sh: another publish is running ($LOCK)" >&2; exit 1; }
 
+held=$(tools/recipe-only-prune.sh index)
+if [ -n "$held" ]; then
+	echo "publish.sh: recipe only (a LicenseRef- licence): no built package of these may be in index/ or uploaded" >&2
+	echo "publish.sh: tools/recipe-only-prune.sh --yes index removes them; nothing was published" >&2
+	exit 1
+fi
+
+recipe_only_assets() {
+	only=$(grep -l '^license *= *".*LicenseRef-' recipes/*/*/recipe.toml | sed 's|/recipe.toml$||; s|.*/||; s/\./-/')
+	while read -r a; do
+		for p in $only; do
+			case "$a" in
+			"$p"-[0-9]*.apkg) echo "$a" ;;
+			esac
+		done
+	done
+}
+
 # A recipe's source of truth is recipes/<xx>/<org>.<name>/recipe.toml; the
 # index directory gets a flat copy, named so `apm index` can list it.
 rm -f index/*.recipe.toml
@@ -100,6 +118,10 @@ for z in $(echo "$zips" | cut -d' ' -f2); do
 done
 for old in $(echo "$zips" | cut -d' ' -f2); do
 	[ -f "index/$old" ] || [ "$old" = "$prev" ] || gh release delete-asset "$TAG" "$old" -R "$REPO" -y
+done
+for a in $(gh release view "$TAG" -R "$REPO" --json assets -q '.assets[].name' | recipe_only_assets); do
+	echo "recipe only, removed from the release: $a"
+	gh release delete-asset "$TAG" "$a" -R "$REPO" -y
 done
 echo "published: https://github.com/$REPO/releases/download/$TAG/stamp.toml"
 echo "note: the edge cache serves the previous stamp.toml for a few minutes" >&2

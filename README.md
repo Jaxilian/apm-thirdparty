@@ -36,6 +36,18 @@ developer toolchains (Node.js, Java, .NET, Python), unsandboxed like
 Rust in the official repository; and the Python runtime Lutris runs on. Vendor binaries are never mirrored: a recipe points at
 the vendor's own download and pins its checksum.
 
+**Recipe only.** A program whose licence does not allow redistribution
+is never uploaded as a built package: the index carries its recipe and
+each machine downloads the vendor's file at install. The marker is the
+recipe's `license`: any `LicenseRef-` in it (alone, or in a mix such as
+Zoom's with its Debian libraries) makes the package recipe only. A free
+licence with a doubt of another kind (a trademark policy) is made recipe
+only the same way, `AND LicenseRef-<Name>-Trademark`. `publish.sh` stops
+before it touches anything when index/ holds such an `.apkg`
+(`tools/recipe-only-prune.sh` lists them, `--yes` deletes them), and
+after the upload it deletes from the release every `.apkg` asset of a
+recipe whose licence says so.
+
 Chrome, Spotify, Blender, Krita, Inkscape and Lutris fetch `.deb` files
 or AppImages, which apm reads from v0.1.13 on, so they need an AOS
 release with that apm (0.3.0) to build; on 0.2.9 they are listed and
