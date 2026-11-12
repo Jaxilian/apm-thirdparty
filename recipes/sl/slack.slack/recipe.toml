@@ -23,8 +23,8 @@ recipe_version = 1
 [package]
 name         = "slack"
 organization = "slack"
-version      = "4.53.276"
-release      = 2
+version      = "4.53.287"
+release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Slack team messaging"
@@ -32,8 +32,8 @@ license      = "LicenseRef-Slack-Terms-of-Service"
 homepage     = "https://slack.com/"
 
 [[source]]
-url    = "https://packagecloud.io/slacktechnologies/slack/debian/pool/jessie/main/s/slack-desktop/slack-desktop_4.53.276_amd64.deb"
-sha256 = "8974c6a9b3ffd4ef09ced4403acaa444d743d113a185504d5a1dc405be46e746"
+url    = "https://packagecloud.io/slacktechnologies/slack/debian/pool/jessie/main/s/slack-desktop/slack-desktop_4.53.287_amd64.deb"
+sha256 = "c2057f221e41275b7eadc5b658edc00289466b6fb55c912c5894831f6900f969"
 
 [[dependencies]]
 name         = "gtk3"
