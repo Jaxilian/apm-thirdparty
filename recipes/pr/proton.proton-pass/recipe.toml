@@ -11,7 +11,7 @@ recipe_version = 1
 [package]
 name         = "proton-pass"
 organization = "proton"
-version      = "1.43.0"
+version      = "1.43.1"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -20,8 +20,8 @@ license      = "GPL-3.0-only"
 homepage     = "https://proton.me/pass"
 
 [[source]]
-url    = "https://proton.me/download/pass/linux/proton-pass_1.43.0_amd64.deb"
-sha256 = "9fb7c11b756421c02483056a3332f9a91c1bcb25fa547f39b328182379544d8e"
+url    = "https://proton.me/download/pass/linux/proton-pass_1.43.1_amd64.deb"
+sha256 = "f223898aa65d4dadef8db209fe8dbe03120960edd1402620aeb32aa3591d7062"
 
 [[dependencies]]
 name         = "gtk3"
