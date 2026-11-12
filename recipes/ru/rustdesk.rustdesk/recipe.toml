@@ -21,7 +21,7 @@ recipe_version = 1
 [package]
 name         = "rustdesk"
 organization = "rustdesk"
-version      = "1.5.1"
+version      = "1.5.3"
 release      = 1
 min_aos      = "0.4.57"
 kind         = "app"
@@ -30,8 +30,8 @@ license      = "AGPL-3.0-only"
 homepage     = "https://rustdesk.com/"
 
 [[source]]
-url    = "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-x86_64.AppImage"
-sha256 = "bb8b7ccb3f50a201dccdc89b46385cff90f33e60b4730faeda9fa5504ac4dce6"
+url    = "https://github.com/rustdesk/rustdesk/releases/download/1.5.3/rustdesk-1.5.3-x86_64.AppImage"
+sha256 = "ff7fff208fed218fc9f895457a36cc2dd31fefbfae0461a27b54f3d391204506"
 
 [[dependencies]]
 name         = "gtk3"
@@ -62,7 +62,7 @@ terminal   = false
 
 [build]
 prepare = '''
-./rustdesk-1.5.1-x86_64.AppImage --appimage-extract >/dev/null
+./rustdesk-1.5.3-x86_64.AppImage --appimage-extract >/dev/null
 python3 -I -c 'import sys; p = sys.argv[1]; d = open(p, "rb").read(); a = b"lib64/ld-linux-x86-64.so.2\0\0"; assert d.count(a) == 1; open(p, "wb").write(d.replace(a, b"/lib64/ld-linux-x86-64.so.2\0"))' squashfs-root/usr/share/rustdesk/rustdesk
 '''
 install = '''
