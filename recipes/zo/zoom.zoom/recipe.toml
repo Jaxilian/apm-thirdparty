@@ -35,7 +35,7 @@ recipe_version = 1
 name         = "zoom"
 organization = "zoom"
 version      = "7.2.1"
-release      = 3
+release      = 4
 min_aos      = "0.4.57"
 kind         = "app"
 summary      = "Zoom video meetings"
@@ -153,6 +153,9 @@ for n in $(seq 2 15); do
 	find $s -name '*.so*' -exec cp -a {} $D/lib/ \;
 done
 install -m 644 $APM_SRC/usr/share/pixmaps/Zoom.png $D/zoom/Zoom.png
+for f in $D/lib/*.so*; do
+	ln -s ../lib/${f##*/} $D/zoom/${f##*/}
+done
 cat > $D/bin/zoom <<WRAP
 #!/bin/sh
 # Zoom with the GTK3 runtime's libraries; its own Qt and CEF, and the
