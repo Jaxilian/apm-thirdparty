@@ -15,7 +15,7 @@ recipe_version = 1
 [package]
 name         = "libreoffice"
 organization = "libreoffice"
-version      = "26.8.2"
+version      = "26.8.3"
 release      = 1
 kind         = "app"
 summary      = "LibreOffice office suite"
@@ -26,13 +26,13 @@ homepage     = "https://www.libreoffice.org/"
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.2/deb/x86_64/LibreOffice_26.8.2_Linux_x86-64_deb.tar.gz"
-sha256 = "8290c8f46cb33d6df8f681cb796e0697461ea070f86ec55b63c94d7eb9d9a476"
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.3/deb/x86_64/LibreOffice_26.8.3_Linux_x86-64_deb.tar.gz"
+sha256 = "e7cd3538e85818ff9dd9bb65386769fde927011242aace5a144989f4000dcabf"
 strip  = 1
 
 [[source]]
-url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.2/deb/x86_64/LibreOffice_26.8.2_Linux_x86-64_deb_langpack_sv.tar.gz"
-sha256 = "b575e21cc78d14a0ef73f5f4eab96defc2567c88c014b2d83b51aaf0d586888a"
+url    = "https://download.documentfoundation.org/libreoffice/stable/26.8.3/deb/x86_64/LibreOffice_26.8.3_Linux_x86-64_deb_langpack_sv.tar.gz"
+sha256 = "c79e13b2c898e642e28e566cfb0287f8a1c12c4575c4cd2fd6cbb56cb289c69a"
 strip  = 1
 
 # Debian trixie's krb5 and keyutils, for the libcurl LibreOffice ships
