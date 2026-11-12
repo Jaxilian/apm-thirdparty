@@ -34,14 +34,14 @@ recipe_version = 1
 name         = "steam"
 organization = "valve"
 version      = "1.0.87"
-release      = 13
+release      = 14
 kind         = "app"
 summary      = "Steam"
 license      = "LicenseRef-Steam-Subscriber-Agreement"
 homepage     = "https://store.steampowered.com/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.57"
+min_aos      = "0.4.76"
 
 [[source]]
 url    = "https://repo.steampowered.com/steam/archive/stable/steam_1.0.0.87.tar.gz"
@@ -69,6 +69,7 @@ track        = "*"
 # flatpak-spawn (the Zenbook, 2026-10-23). Software shows it and lets the
 # person change what it sees.
 [sandbox]
+media = true
 x11 = true
 home = "private"
 flatpak_info = false
