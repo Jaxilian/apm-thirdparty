@@ -18,7 +18,7 @@ recipe_version = 1
 name         = "docker"
 organization = "docker"
 version      = "29.9.3"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Docker CLI and Compose, on podman"
 license      = "Apache-2.0"
@@ -32,8 +32,8 @@ sha256 = "3fb5d1f13014c18cc54945bc177c58a9056a482dada031e17d12cf2e6922c973"
 strip  = 1
 
 [[source]]
-url    = "https://github.com/docker/compose/releases/download/v5.7.0/docker-compose-linux-x86_64"
-sha256 = "7758048ad38e580f22559603312874fec8bb638d021a9e64182385fc17cc12a2"
+url    = "https://github.com/docker/compose/releases/download/v5.7.1/docker-compose-linux-x86_64"
+sha256 = "af426722a8af5de812fcee30cc1c39f0639f5f723cbadefb25e5d4db054064cf"
 
 [[dependencies]]
 name         = "podman"
