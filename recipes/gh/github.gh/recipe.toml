@@ -15,7 +15,7 @@ recipe_version = 1
 [package]
 name         = "gh"
 organization = "github"
-version      = "2.103.3"
+version      = "2.104.0"
 release      = 1
 kind         = "bin"
 summary      = "GitHub CLI: repositories, pull requests, issues and releases from the terminal"
@@ -23,8 +23,8 @@ license      = "MIT"
 homepage     = "https://cli.github.com/"
 
 [[source]]
-url    = "https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz"
-sha256 = "4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d"
+url    = "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_amd64.tar.gz"
+sha256 = "98cb101ad87dbbd3f6b2f2bfcbd43197ccd07643140121d8a9cfaa91eadbc24e"
 strip  = 1
 
 [provides]
