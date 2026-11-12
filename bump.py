@@ -482,13 +482,13 @@ def process(rdir, write, dl):
             found = FINDERS[rule["kind"]](rule)
             if not in_track(found["version"], rule):
                 raise Skip(f"{found['version']} is outside track {rule['track']}")
-            if idx == 1:
+            if pos == 1:
                 newest = apm_version(found["version"], rule)
                 if nums(newest) < nums(current):
                     raise Skip(f"upstream {found['version']} is behind the recipe's {current}")
             if urllib.parse.unquote(found["url"]) == urllib.parse.unquote(src["url"]):
                 continue
-            if idx == 1 and newest == current and rule.get("rebuild", True) is False:
+            if pos == 1 and newest == current and rule.get("rebuild", True) is False:
                 continue  # the same version built again elsewhere: not taken
             moves.append((src, found, rule))
         if not moves:

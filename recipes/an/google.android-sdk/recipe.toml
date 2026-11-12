@@ -7,7 +7,7 @@
 # AppData folder leaves nothing (the user, 2026-10-30).
 #
 # The base: cmdline-tools 23.0 (sdkmanager, avdmanager), platform-tools
-# 37.0.1 (adb, fastboot), build-tools 37.0.0 and platform android-37.2,
+# 37.0.3 (adb, fastboot), build-tools 37.0.0 and platform android-37.2,
 # Google's own zips from dl.google.com/android/repository, unpacked as
 # sdkmanager would lay them out. sdkmanager and Gradle take a component
 # that has only its source.properties (no package.xml), linked or not
@@ -25,20 +25,31 @@
 # `tools` in their sandbox (Android Studio, Godot, Unity Hub, VS Code) get
 # the AppData folder and the variables from aos-sandbox.
 #
-# The sha256 sums are of the files as downloaded on 2026-10-30; each
-# file's sha1 matched the one in Google's repository2-3.xml. Android
-# Software Development Kit License; fetched from Google, never mirrored.
+# build-tools' RenderScript compiler (llvm-rs-cc, through
+# libLLVM_android.so and libclang_android.so) links libncurses.so.5 and
+# libtinfo.so.5, which AOS does not have: Debian 12's libncurses5 and
+# libtinfo5, by the versions and checksums of bookworm's Packages index
+# (2026-11-12), go into build-tools/37.0.0/lib64, where their runpath
+# looks. What apm check still reports are the libraries under
+# build-tools/37.0.0/renderscript/lib: Android's own (bionic's libdl.so,
+# liblog.so, libjnigraphics.so), packed into an APK, never loaded here.
+#
+# The sha256 sums are of the files as downloaded on 2026-10-30
+# (platform-tools 37.0.3 on 2026-11-12); each file's sha1 matched the
+# one in Google's repository2-3.xml. Android Software Development Kit
+# License; the Debian libraries are X11 (ncurses), unmodified. Fetched
+# from Google and Debian, never mirrored.
 
 recipe_version = 1
 
 [package]
 name         = "android-sdk"
 organization = "google"
-version      = "37.0.1"
-release      = 2
+version      = "37.0.3"
+release      = 1
 kind         = "bin"
 summary      = "Android SDK: adb, fastboot, sdkmanager, build-tools and the platform"
-license      = "LicenseRef-Android-SDK-License"
+license      = "LicenseRef-Android-SDK-License AND X11"
 homepage     = "https://developer.android.com/tools"
 # [provides] env (apm v0.1.40) and zip sources.
 min_aos      = "0.4.75"
@@ -49,8 +60,8 @@ sha256 = "0877a1d048fe4a24efe2eff536ca4223f7adeb58648bb81909d33c446918cfa8"
 strip  = 1
 
 [[source]]
-url    = "https://dl.google.com/android/repository/platform-tools_r37.0.1-linux.zip"
-sha256 = "d230f13842f60f782a8645f9c813f8f845bf36089ea7289f28c48f17979313f1"
+url    = "https://dl.google.com/android/repository/platform-tools_r37.0.3-linux.zip"
+sha256 = "214548146cadb2ca3508143d8a1d4be4c59de5bb837253e3ede89ed74cf450d1"
 strip  = 1
 
 [[source]]
@@ -62,6 +73,14 @@ strip  = 1
 url    = "https://dl.google.com/android/repository/platform-37.2_r02.zip"
 sha256 = "17af98ec1427a1fed9ea278184aba71e53b87eca103655602f9fc64ef11ea4d3"
 strip  = 1
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/n/ncurses/libncurses5_6.4-4_amd64.deb"
+sha256 = "02f4f7f52c4ce2fc4021793a931bfd85f7870554b8e4d56576d73a4ed0bdb390"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/n/ncurses/libtinfo5_6.4-4_amd64.deb"
+sha256 = "dd347f794e651039e7b4c391f86c674fed7f415b3dca6b0937beb0d470f09c1a"
 
 # sdkmanager and avdmanager are Java programs.
 [[dependencies]]
@@ -82,6 +101,9 @@ cp -a $APM_SOURCE_1/. $D/sdk/cmdline-tools/latest/
 cp -a $APM_SOURCE_2/. $D/sdk/platform-tools/
 cp -a $APM_SOURCE_3/. $D/sdk/build-tools/37.0.0/
 cp -a $APM_SOURCE_4/. $D/sdk/platforms/android-37.2/
+for s in $APM_SOURCE_5 $APM_SOURCE_6; do
+	find $s -name '*.so.5*' -exec cp -a {} $D/sdk/build-tools/37.0.0/lib64/ \;
+done
 chmod -R a+rX $D/sdk
 cat > $D/bin/android-sdk <<'WRAP'
 #!/bin/sh

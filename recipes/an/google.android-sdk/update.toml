@@ -7,3 +7,15 @@ kind   = "regex"
 page   = "https://dl.google.com/android/repository/repository2-3.xml"
 regex  = 'platform-tools_r(\d+\.\d+\.\d+)-linux\.zip'
 url    = "https://dl.google.com/android/repository/platform-tools_r{version}-linux.zip"
+
+[[source]]
+source   = 5
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/bookworm/main/binary-amd64/Packages.xz"
+package  = "libncurses5"
+
+[[source]]
+source   = 6
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/bookworm/main/binary-amd64/Packages.xz"
+package  = "libtinfo5"

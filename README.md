@@ -69,7 +69,8 @@ source: a GitHub release, an apt Packages index, a listing page and a
 regex, a redirect, a JSON API, an npm registry package (`kind = "npm"`, `package`,
 checked against the registry's sha512 integrity), Node's or .NET's
 release metadata; the
-format is in bump.py's docstring. A recipe without one is left alone.
+format is in bump.py's docstring. The first rule's source gives the
+package its version (android-sdk's is its second source, platform-tools). A recipe without one is left alone.
 apm reads recipe.toml strictly (unknown tables are an error), which is
 why the rule is a sidecar; publish.sh does not copy it.
 
