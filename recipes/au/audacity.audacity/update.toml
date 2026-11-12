@@ -3,3 +3,8 @@ kind  = "github"
 repo  = "audacity/audacity"
 tag   = '^Audacity-(\d+\.\d+\.\d+)$'
 asset = '^audacity-linux-\d+\.\d+\.\d+-x86_64\.AppImage$'
+
+[[source]]
+kind     = "apt"
+packages = "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz"
+package  = "libnspr4"

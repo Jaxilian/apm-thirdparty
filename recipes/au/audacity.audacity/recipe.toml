@@ -8,28 +8,39 @@
 # the AppImage's AppRun, which sets its own loader path. Sound goes
 # through the machine's PipeWire (ALSA and PulseAudio clients both work).
 #
+# AOS has no NSS, so AppRun takes the AppImage's fallback copy
+# (fallback/libnss3.so/), and since 4.0.2 that copy links NSPR, which the
+# AppImage does not carry: Debian 13's libnspr4 (libnspr4.so, libplc4.so,
+# libplds4.so), by the version and checksum of trixie's Packages index
+# (2026-11-12), goes into that folder.
+#
 # The sha256 is the one in CHECKSUMS.txt beside the release on GitHub
 # (and GitHub's own digest of the asset), checked on 2026-10-09.
-# GPL-3.0-only. Fetched from the Audacity team, never mirrored.
+# GPL-3.0-only; NSPR is MPL-2.0, unmodified. Fetched from the Audacity
+# team and Debian, never mirrored.
 
 recipe_version = 1
 
 [package]
 name         = "audacity"
 organization = "audacity"
-version      = "4.0.1"
-release      = 2
+version      = "4.0.2"
+release      = 1
 kind         = "app"
 summary      = "Audacity audio editor and recorder"
-license      = "GPL-3.0-only"
+license      = "GPL-3.0-only AND MPL-2.0"
 homepage     = "https://www.audacityteam.org/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://github.com/audacity/audacity/releases/download/Audacity-4.0.1/audacity-linux-4.0.1-x86_64.AppImage"
-sha256 = "ca2f04f172124d1f18ac608749854c5d31f04ab266a758c348190c05d9b2087c"
+url    = "https://github.com/audacity/audacity/releases/download/Audacity-4.0.2/audacity-linux-4.0.2-x86_64.AppImage"
+sha256 = "a5f8787aa13cdb500a60fc013403b986776876b960cca962bc6e7fff066172f3"
+
+[[source]]
+url    = "https://deb.debian.org/debian/pool/main/n/nspr/libnspr4_4.36-1_amd64.deb"
+sha256 = "87fc2039ee89cff2b8010fa9535706b1def40031acfc52bf12197dcb3cb7b064"
 
 # The AppImage brings its own toolkit but reads the machine's fonts
 # through /usr/share/fonts, which on AOS is the aos/fonts package.
@@ -58,12 +69,13 @@ terminal   = false
 
 [build]
 prepare = '''
-./audacity-linux-4.0.1-x86_64.AppImage --appimage-extract >/dev/null
+./audacity-linux-4.0.2-x86_64.AppImage --appimage-extract >/dev/null
 '''
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/audacity $D/bin
 cp -a $APM_SRC/squashfs-root/. $D/audacity/
+find $APM_SOURCE_2 -name '*.so' -exec cp -a {} $D/audacity/fallback/libnss3.so/ ';'
 cat > $D/bin/audacity <<WRAP
 #!/bin/sh
 # Audacity as the team ships it: AppRun sets its own loader path and
