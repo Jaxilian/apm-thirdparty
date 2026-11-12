@@ -24,7 +24,7 @@ recipe_version = 1
 [package]
 name         = "dotnet"
 organization = "microsoft"
-version      = "10.0.403"
+version      = "10.0.404"
 release      = 1
 kind         = "bin"
 summary      = ".NET 10 SDK"
@@ -32,8 +32,8 @@ license      = "MIT"
 homepage     = "https://dotnet.microsoft.com/"
 
 [[source]]
-url    = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.403/dotnet-sdk-10.0.403-linux-x64.tar.gz"
-sha256 = "cd7224fe8e8ba57c15f1601439ff8785a1a72b54ae5c89dd5302a32dcfbddf18"
+url    = "https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.404/dotnet-sdk-10.0.404-linux-x64.tar.gz"
+sha256 = "c0610757a818fde4b960d27a0ac421f273068a05dc5ec7abafc01dbf84e9cb4d"
 
 [provides]
 command = ["dotnet"]
