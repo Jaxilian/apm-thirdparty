@@ -16,11 +16,8 @@
 # read on 2026-11-12 (x.ai/legal answers 403 to a fetch). Fetched from
 # xAI, never mirrored.
 #
-# Staged, not published (the owner, 2026-11-12): the proprietary
-# assistants ship as a recipe only, each machine fetching the program
-# from its vendor, and nothing of them is uploaded. Until apm installs a
-# recipe from this repository without running anything as root, it stays
-# here.
+# Recipe only (the owner, 2026-11-12): each machine downloads the
+# program from the vendor; no built package of it goes into index/.
 
 recipe_version = 1
 
