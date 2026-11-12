@@ -23,12 +23,12 @@ recipe_version = 1
 name         = "rustup"
 organization = "rust-lang"
 version      = "1.29.3"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "rustup: installs and updates Rust toolchains, per person"
 license      = "MIT OR Apache-2.0"
 homepage     = "https://rustup.rs/"
-min_aos      = "0.4.37"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://static.rust-lang.org/rustup/archive/1.29.3/x86_64-unknown-linux-gnu/rustup-init"
@@ -44,6 +44,7 @@ track        = "*"
 command = ["rustup"]
 env     = ["RUSTUP_HOME=AppData/rust-lang.rustup/rustup", "CARGO_HOME=AppData/rust-lang.rustup/cargo"]
 path    = ["AppData/rust-lang.rustup/cargo/bin"]
+cache   = ["cargo/registry", "cargo/git"]
 
 [build]
 install = '''

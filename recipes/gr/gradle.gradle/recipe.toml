@@ -19,13 +19,13 @@ recipe_version = 1
 name         = "gradle"
 organization = "gradle"
 version      = "9.8.2"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Gradle, the build tool of Java and Android projects"
 license      = "Apache-2.0"
 homepage     = "https://gradle.org/"
 # [provides] env (apm v0.1.40) and a zip source.
-min_aos      = "0.4.37"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://services.gradle.org/distributions/gradle-9.8.2-bin.zip"
@@ -40,6 +40,7 @@ track        = "*"
 [provides]
 command = ["gradle"]
 env     = ["GRADLE_USER_HOME=AppData/gradle.gradle"]
+cache   = ["caches", "wrapper", "daemon", "native", "jdks", "notifications", "kotlin-profile", "workers", ".tmp"]
 
 [build]
 install = '''

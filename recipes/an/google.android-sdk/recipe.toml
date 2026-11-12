@@ -35,13 +35,13 @@ recipe_version = 1
 name         = "android-sdk"
 organization = "google"
 version      = "37.0.1"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Android SDK: adb, fastboot, sdkmanager, build-tools and the platform"
 license      = "LicenseRef-Android-SDK-License"
 homepage     = "https://developer.android.com/tools"
 # [provides] env (apm v0.1.40) and zip sources.
-min_aos      = "0.4.37"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip"
@@ -72,6 +72,7 @@ track        = "*"
 [provides]
 command = ["android-sdk", "adb", "fastboot", "sdkmanager", "avdmanager", "emulator"]
 env     = ["ANDROID_HOME=AppData/google.android-sdk", "ANDROID_USER_HOME=AppData/google.android-sdk/.android"]
+cache   = [".android/cache", ".android/build-cache"]
 
 [build]
 install = '''

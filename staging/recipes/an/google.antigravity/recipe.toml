@@ -28,10 +28,13 @@
 # sha256 here is of that same file. Proprietary: Google Antigravity
 # Additional Terms of Service with the Google Terms of Service, which say
 # "You may not copy, modify, distribute, sell, or lease any part of our
-# services or software". The index hosts the built .apkg, which is
-# distributing it, and the moved HOME changes what the agent sees: staged,
-# not published, until the owner decides (2026-11-12). Fetched from
-# Google, never mirrored.
+# services or software". Fetched from Google, never mirrored.
+#
+# Staged, not published (the owner, 2026-11-12, who accepts the moved
+# HOME): the proprietary assistants ship as a recipe only, each machine
+# fetching the program from its vendor, and nothing of them is uploaded.
+# Until apm installs a recipe from this repository without running
+# anything as root, it stays here.
 
 recipe_version = 1
 

@@ -61,6 +61,12 @@ format is in bump.py's docstring. A recipe without one is left alone.
 apm reads recipe.toml strictly (unknown tables are an error), which is
 why the rule is a sidecar; publish.sh does not copy it.
 
+npm/vscode-langservers is the one recipe bumped by hand: its 33 sources
+are a resolved npm lock, and a new release needs it resolved again.
+`python3 -I recipes/vs/npm.vscode-langservers/sources.py VERSION` (Node
+installed) rewrites the recipe's sources, checked against the registry's
+integrity; then the header's count and date, `apm build`, `apm check`.
+
 ```sh
 python3 -I bump.py                   # dry run: recipe, current, newest, action
 python3 -I bump.py --write           # rewrite what has a newer upstream

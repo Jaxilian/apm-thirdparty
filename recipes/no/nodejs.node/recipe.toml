@@ -12,6 +12,10 @@
 # Release 2 (2026-11-12): npm's cache and logs go to
 # ~/AppData/nodejs.node/cache (cache= in etc/npmrc), not ~/.npm. Node 26
 # ships no corepack: pnpm is pnpm/pnpm, yarn is `npm install -g yarn`.
+# [provides] cache lets the sandboxes with the tools write that cache
+# (AOS 0.4.75); a cache needs an env beside it, and COREPACK_HOME is the
+# one Node has: a corepack installed with npm keeps its package managers
+# there.
 #
 # No sandbox, like the Rust toolchain: a developer tool works on the
 # person's files and runs what they tell it to.
@@ -32,6 +36,7 @@ kind         = "bin"
 summary      = "Node.js JavaScript runtime"
 license      = "MIT"
 homepage     = "https://nodejs.org/"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://nodejs.org/dist/v26.13.0/node-v26.13.0-linux-x64.tar.xz"
@@ -40,6 +45,8 @@ strip  = 1
 
 [provides]
 command = ["node", "npm", "npx"]
+env     = ["COREPACK_HOME=AppData/nodejs.node/corepack"]
+cache   = ["cache"]
 
 [build]
 install = '''

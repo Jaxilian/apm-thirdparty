@@ -8,7 +8,9 @@
 # 2026-11-12; the list below is that lock file's, in its order.
 #
 # No update.toml: a newer release needs the lock resolved again, which
-# the weekly bump cannot do.
+# the weekly bump cannot do. `python3 -I sources.py VERSION` beside this
+# file does it (npm resolves, every tarball is checked against its
+# integrity, the sources and the list below are rewritten).
 #
 # The sha256 of each is of the file as downloaded on 2026-11-12, after it
 # matched the sha512 integrity the registry's lock entry carries. MIT;

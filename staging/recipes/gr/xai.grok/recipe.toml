@@ -13,9 +13,14 @@
 #
 # xAI publishes no checksum: the sha256 is of the file as downloaded on
 # 2026-11-12. Proprietary: xAI's Terms of Service, which could not be
-# read on 2026-11-12 (x.ai/legal answers 403 to a fetch): staged, not
-# published, until the owner has read them. Fetched from xAI, never
-# mirrored.
+# read on 2026-11-12 (x.ai/legal answers 403 to a fetch). Fetched from
+# xAI, never mirrored.
+#
+# Staged, not published (the owner, 2026-11-12): the proprietary
+# assistants ship as a recipe only, each machine fetching the program
+# from its vendor, and nothing of them is uploaded. Until apm installs a
+# recipe from this repository without running anything as root, it stays
+# here.
 
 recipe_version = 1
 
