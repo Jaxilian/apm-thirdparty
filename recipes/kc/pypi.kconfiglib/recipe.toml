@@ -6,7 +6,7 @@
 # unpacked into lib/python3/site-packages of the package, and
 # astral/python's sitecustomize.py (release 2) puts every installed
 # package's lib/python3/site-packages on sys.path, the system store's and
-# ~/.apm's. Nothing goes to ~/.local: `pip install --user` is what this
+# ~/AppData/aos.apm's. Nothing goes to ~/.local: `pip install --user` is what this
 # replaces. The wheel's console scripts (menuconfig, genconfig, ...) are
 # one-line wrappers written here, since nothing runs pip at install.
 #

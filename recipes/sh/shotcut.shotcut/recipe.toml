@@ -10,8 +10,8 @@ recipe_version = 1
 name         = "shotcut"
 organization = "shotcut"
 version      = "26.9.27"
-release      = 1
-min_aos      = "0.4.52"
+release      = 2
+min_aos      = "0.4.76"
 kind         = "app"
 summary      = "Shotcut video editor"
 license      = "GPL-3.0-or-later"
@@ -30,6 +30,7 @@ track        = "*"
 command = ["shotcut"]
 
 [sandbox]
+media = true
 home  = "private"
 share = ["Videos", "Music", "Pictures"]
 

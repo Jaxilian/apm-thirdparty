@@ -20,8 +20,8 @@ recipe_version = 1
 name         = "calibre"
 organization = "calibre"
 version      = "9.18.0"
-release      = 1
-min_aos      = "0.4.57"
+release      = 2
+min_aos      = "0.4.76"
 kind         = "app"
 summary      = "calibre e-book library, reader and converter"
 license      = "GPL-3.0-only"
@@ -45,6 +45,7 @@ track        = "*"
 command = ["calibre", "ebook-viewer", "ebook-convert", "ebook-edit"]
 
 [sandbox]
+media = true
 home  = "private"
 share = ["Documents", "Downloads"]
 

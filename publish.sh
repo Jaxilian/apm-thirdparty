@@ -92,7 +92,9 @@ for f in index/*.apkg; do
 	echo "superseded: $f"; rm -f "$f"
 done
 
-APM_ROOT=${APM_THIRDPARTY_ROOT:-$HOME/.apm} "$APM" index index --sign
+USTORE=$HOME/AppData/aos.apm
+[ -d "$USTORE" ] || [ ! -d "$HOME/.apm" ] || USTORE=$HOME/.apm
+APM_ROOT=${APM_THIRDPARTY_ROOT:-$USTORE} "$APM" index index --sign
 [ "$1" = --local ] && exit 0
 
 gh release view "$TAG" -R "$REPO" >/dev/null 2>&1 || \

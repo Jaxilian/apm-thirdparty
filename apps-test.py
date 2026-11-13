@@ -103,7 +103,10 @@ def local_index():
     subprocess.run([APM, "index", idx, "--sign"], check=True, stdout=subprocess.DEVNULL)
     # `apm repo add newapps URL` pins the key at URL/apm.pub: the host's,
     # which signed the stamp above (as bump-check.py does).
-    shutil.copy(os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub"), os.path.join(idx, "apm.pub"))
+    pub = os.path.join(os.path.expanduser("~"), "AppData", "aos.apm", "etc", "keys", "apm.pub")
+    if not os.path.exists(pub):
+        pub = os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub")
+    shutil.copy(pub, os.path.join(idx, "apm.pub"))
     shutil.copy(APM, os.path.join(www, "apm"))
     return www
 

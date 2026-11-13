@@ -1,10 +1,10 @@
 # GitHub CLI (gh), from GitHub's own release: the official linux_amd64
-# tarball, copied as it is (bin/gh and the manual pages), the way the
-# Node.js and Rust toolchain recipes do it. A static Go binary: nothing
-# of the runtime is needed.
+# tarball (gh and the manual pages), with a wrapper. A static Go binary:
+# nothing of the runtime is needed.
 #
 # No sandbox, like the other developer tools: it works on the person's
-# repositories and keeps its token in ~/.config/gh (or the keyring).
+# repositories and keeps its token in ~/AppData/github.gh/config (or the
+# keyring).
 #
 # The sha256 is the one in gh_<version>_checksums.txt beside the release
 # asset, checked against the file as downloaded on 2026-10-22. MIT.
@@ -16,7 +16,7 @@ recipe_version = 1
 name         = "gh"
 organization = "github"
 version      = "2.104.0"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "GitHub CLI: repositories, pull requests, issues and releases from the terminal"
 license      = "MIT"
@@ -33,8 +33,23 @@ command = ["gh"]
 [build]
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
-install -d $D/bin $D/share/man/man1 $D/share/doc/gh
-install -m 755 $APM_SRC/bin/gh $D/bin/gh
+install -d $D/bin $D/libexec $D/share/man/man1 $D/share/doc/gh
+install -m 755 $APM_SRC/bin/gh $D/libexec/gh
+cat > $D/bin/gh <<WRAP
+#!/bin/sh
+A="\$HOME/AppData/github.gh"
+if [ -z "\$GH_CONFIG_DIR" ] && [ ! -e "\$A/config/hosts.yml" ]; then
+	for O in "\$HOME/AppData/aos.desktop/config/gh" "\$HOME/.config/gh"; do
+		[ -f "\$O/hosts.yml" ] || continue
+		mkdir -p "\$A/config" && mv -n "\$O"/* "\$A/config/" && rmdir "\$O"
+		break
+	done
+fi
+export GH_CONFIG_DIR="\${GH_CONFIG_DIR:-\$A/config}"
+export GH_PATH=$APM_ROOT/bin/gh
+exec $APM_PREFIX/libexec/gh "\$@"
+WRAP
+chmod 755 $D/bin/gh
 cp -a $APM_SRC/share/man/man1/. $D/share/man/man1/
 cp $APM_SRC/LICENSE $D/share/doc/gh/
 '''

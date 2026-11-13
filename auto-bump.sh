@@ -16,7 +16,7 @@
 #      board/aos/abi-baseline.txt, BASELINE=). The dependencies' builds
 #      come from the newest .apkg of that package in either repo's index/
 #      (what the publish ships), else from the user store
-#      (~/.apm/packages/<org>/<name>/current); a dependency found
+#      (~/AppData/aos.apm/packages/<org>/<name>/current); a dependency found
 #      in neither (a recipe-only one, aos/fonts) is noted and the check
 #      runs without it. A failed check is put back like a failed build.
 #   5. with BUMP_QEMU=1 (the default when AOS_OUT names a build),
@@ -100,7 +100,8 @@ closure_of() {
 	pkg=$(echo "$1" | tr / -)
 	newest=$(ls "$OS"/apm-thirdparty/index/"$pkg"-[0-9]*.apkg "$OS"/apm-recipes/index/"$pkg"-[0-9]*.apkg 2>/dev/null | sort -V | tail -1)
 	if [ -n "$newest" ]; then echo "--closure $1=$newest"; return; fi
-	cur=$HOME/.apm/packages/$1/current
+	cur=$HOME/AppData/aos.apm/packages/$1/current
+	[ -e "$cur" ] || cur=$HOME/.apm/packages/$1/current
 	if [ -d "$cur" ]; then echo "--closure $1=$cur"; return; fi
 	echo "note: no build of $1 at hand; apm check runs without it" >&2
 }

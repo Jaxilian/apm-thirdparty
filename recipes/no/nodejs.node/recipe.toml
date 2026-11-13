@@ -5,9 +5,10 @@
 #
 # npm and npx come with it (lib/node_modules/npm): they need apm v0.1.15,
 # which packs a recipe's payload whole (v0.1.14 dropped every directory
-# named node_modules). etc/npmrc sets prefix=${HOME}/.local, since the
-# store is read-only: `npm install -g` goes to the home, and AOS puts
-# ~/.local/bin on PATH.
+# named node_modules). etc/npmrc sets
+# prefix=${HOME}/AppData/nodejs.node/global, since the store is
+# read-only: `npm install -g` goes there, and [provides] path puts its
+# bin on PATH.
 #
 # Release 2 (2026-11-12): npm's cache and logs go to
 # ~/AppData/nodejs.node/cache (cache= in etc/npmrc), not ~/.npm. Node 26
@@ -31,7 +32,7 @@ recipe_version = 1
 name         = "node"
 organization = "nodejs"
 version      = "26.13.1"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Node.js JavaScript runtime"
 license      = "MIT"
@@ -46,6 +47,7 @@ strip  = 1
 [provides]
 command = ["node", "npm", "npx"]
 env     = ["COREPACK_HOME=AppData/nodejs.node/corepack"]
+path    = ["AppData/nodejs.node/global/bin"]
 cache   = ["cache"]
 
 [build]
@@ -54,5 +56,5 @@ D=$APM_DESTDIR$APM_PREFIX
 install -d $D
 cp -a $APM_SRC/. $D/
 install -d $D/etc
-printf 'prefix=${HOME}/.local\ncache=${HOME}/AppData/nodejs.node/cache\n' > $D/etc/npmrc
+printf 'prefix=${HOME}/AppData/nodejs.node/global\ncache=${HOME}/AppData/nodejs.node/cache\n' > $D/etc/npmrc
 '''

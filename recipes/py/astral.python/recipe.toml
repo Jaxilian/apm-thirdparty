@@ -10,7 +10,7 @@
 #
 # Release 2 (2026-11-01): a sitecustomize.py that puts every installed
 # package's lib/python3/site-packages on sys.path, the system store's and
-# ~/.apm's, so a Python library is a package in Software (pypi/kconfiglib
+# ~/AppData/aos.apm's, so a Python library is a package in Software (pypi/kconfiglib
 # is the first) and nothing need go to ~/.local.
 #
 # No sandbox, like the Rust toolchain: a developer tool.
@@ -26,7 +26,7 @@ recipe_version = 1
 name         = "python"
 organization = "astral"
 version      = "3.13.18"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Python 3.13"
 license      = "PSF-2.0"
@@ -48,13 +48,13 @@ cp -a $APM_SRC/. $D/
 cat > $D/lib/python3.13/site-packages/sitecustomize.py <<'PY'
 # AOS: every package in Software that carries Python modules keeps them
 # in its own lib/python3/site-packages (pypi/kconfiglib and the like);
-# the system store's first, then the person's ~/.apm. Nothing in ~/.local.
+# the system store's first, then the person's ~/AppData/aos.apm. Nothing in ~/.local.
 import glob
 import os
 import site
 
 _home = os.path.expanduser("~")
-for _root in ("/opt/apm/packages", os.path.join(_home, ".apm", "packages")):
+for _root in ("/opt/apm/packages", os.path.join(_home, "AppData", "aos.apm", "packages")):
     for _dir in sorted(glob.glob(os.path.join(_root, "*", "*", "current", "lib", "python3", "site-packages"))):
         site.addsitedir(_dir)
 PY

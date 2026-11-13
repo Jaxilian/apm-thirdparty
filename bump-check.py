@@ -92,8 +92,10 @@ def local_index(work, apkgs, recipes):
     subprocess.run([APM, "index", idx, "--sign"], check=True, stdout=subprocess.DEVNULL)
     # `apm repo add bump URL` pins the key at URL/apm.pub: the host key's
     # public half, from where `apm index --sign` took the secret one
-    # (~/.apm/etc/keys, apm-core sign.rs key_dir).
-    pub = os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub")
+    # (~/AppData/aos.apm/etc/keys, apm-core sign.rs key_dir).
+    pub = os.path.join(os.path.expanduser("~"), "AppData", "aos.apm", "etc", "keys", "apm.pub")
+    if not os.path.exists(pub):
+        pub = os.path.join(os.path.expanduser("~"), ".apm", "etc", "keys", "apm.pub")
     shutil.copy(pub, os.path.join(idx, "apm.pub"))
     shutil.copy(APM, os.path.join(www, "apm"))
     shutil.copy(SANDBOX, os.path.join(www, "aos-sandbox"))

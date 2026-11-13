@@ -10,8 +10,8 @@ recipe_version = 1
 name         = "darktable"
 organization = "darktable"
 version      = "5.6.2"
-release      = 1
-min_aos      = "0.4.52"
+release      = 2
+min_aos      = "0.4.76"
 kind         = "app"
 summary      = "darktable photo workflow and raw developer"
 license      = "GPL-3.0-or-later"
@@ -30,6 +30,7 @@ track        = "*"
 command = ["darktable"]
 
 [sandbox]
+media = true
 home  = "private"
 share = ["Pictures"]
 
