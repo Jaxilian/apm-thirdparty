@@ -18,7 +18,7 @@ recipe_version = 1
 [package]
 name         = "typescript-language-server"
 organization = "npm"
-version      = "6.0.3"
+version      = "6.1.0"
 release      = 1
 kind         = "bin"
 summary      = "Language server for JavaScript and TypeScript"
@@ -26,8 +26,8 @@ license      = "Apache-2.0"
 homepage     = "https://github.com/typescript-language-server/typescript-language-server"
 
 [[source]]
-url    = "https://registry.npmjs.org/typescript-language-server/-/typescript-language-server-6.0.3.tgz"
-sha256 = "96c1b2aa0cd72db1d653438870f3b2b4cd6b2b508ca4903ce7c798dda59bc151"
+url    = "https://registry.npmjs.org/typescript-language-server/-/typescript-language-server-6.1.0.tgz"
+sha256 = "7e32f3958f4ce9f6e5d7169dd091602456896d2768a62a32b5abc62ea51767b0"
 strip  = 1
 
 [[source]]

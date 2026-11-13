@@ -33,7 +33,7 @@ recipe_version = 1
 [package]
 name         = "claude"
 organization = "anthropic"
-version      = "5.1231.2"
+version      = "5.11492.2"
 release      = 1
 kind         = "app"
 summary      = "Claude Desktop: chat, Cowork and Claude Code from Anthropic (Linux beta)"
@@ -44,8 +44,8 @@ homepage     = "https://claude.ai/download"
 min_aos      = "0.4.52"
 
 [[source]]
-url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_5.1231.2_amd64.deb"
-sha256 = "eb4d16c9aff0a696366d88728f74fa55136be7cfde3c1fe35af4062b45955b6f"
+url    = "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_5.11492.2_amd64.deb"
+sha256 = "d10944fa5663b997400cf66c5c7738fd6acf654f8aaeaca5b994eb147aa6b35f"
 
 [[dependencies]]
 name         = "gtk3"

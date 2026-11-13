@@ -20,7 +20,7 @@ recipe_version = 1
 [package]
 name         = "codex"
 organization = "openai"
-version      = "0.167.2"
+version      = "0.169.0"
 release      = 1
 kind         = "bin"
 summary      = "Codex: OpenAI's coding agent in the terminal"
@@ -28,8 +28,8 @@ license      = "Apache-2.0"
 homepage     = "https://github.com/openai/codex"
 
 [[source]]
-url    = "https://github.com/openai/codex/releases/download/rust-v0.167.2/codex-package-x86_64-unknown-linux-musl.tar.gz"
-sha256 = "3d77be1748d35a4bb0e7f8752cde3b11890c63338e8c599f01eafa4a59e17b3d"
+url    = "https://github.com/openai/codex/releases/download/rust-v0.169.0/codex-package-x86_64-unknown-linux-musl.tar.gz"
+sha256 = "3b8ed091149cc63a59046b9f094bcfa21cdb4dda15ede441ce369bcee4a71ba0"
 
 [provides]
 command = ["codex"]
