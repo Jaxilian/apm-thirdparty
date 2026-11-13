@@ -15,7 +15,7 @@ recipe_version = 1
 name         = "vscode"
 organization = "microsoft"
 version      = "1.146.0"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -46,11 +46,7 @@ command = ["vscode"]
 # editor has no terminal (the G14, 0.3.8).
 [sandbox]
 home = "private"
-# ~/.claude and ~/.claude.json: Claude Code's sign-in and settings, the
-# same ones the Terminal's claude uses (without them VS Code's Claude
-# signed out, 2026-10-23). A hidden folder may be shared read-write since
-# AOS 0.4.13 / apm v0.1.27, hence min_aos.
-share = ["Projects", ".gitconfig:ro", ".claude", ".claude.json"]
+share = ["Projects"]
 data  = ["anthropic/claude-code", "openai/codex", "xai/grok", "google/antigravity", "aos/git"]
 tools = true
 ssh   = true
