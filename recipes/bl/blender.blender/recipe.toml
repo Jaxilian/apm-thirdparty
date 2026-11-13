@@ -9,8 +9,11 @@
 # links libXt, libSM and libICE, which neither the runtime nor AOS has;
 # those come from Debian 13's archive as further sources, by the exact
 # versions and checksums of Debian's index, into lib/ here. What Blender
-# names and does not find -- CUDA, HIP, oneAPI, ncurses for Python's
-# curses -- it loads only when asked and does without.
+# names and does not find -- CUDA, which it loads only when asked -- it
+# does without. The parts that link what AOS has no library for are left
+# out, since they could never load: Open Image Denoise's HIP and SYCL
+# devices with the Level Zero adapter (AMD's and Intel's GPU runtimes)
+# and Python's curses modules.
 #
 # The Foundation publishes blender-<version>.sha256 beside each release;
 # a bump is two text edits. GPL-2.0-or-later; the libXt/SM/ICE libraries
@@ -77,6 +80,9 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/blender $D/lib $D/bin
 cp -a $APM_SRC/. $D/blender/
+rm -f $D/blender/lib/libOpenImageDenoise_device_hip.so* $D/blender/lib/libOpenImageDenoise_device_sycl.so*
+rm -f $D/blender/lib/libur_adapter_level_zero*.so*
+rm -f $D/blender/*/python/lib/python3.*/lib-dynload/_curses*.so
 for s in $APM_SOURCE_2 $APM_SOURCE_3 $APM_SOURCE_4; do
 	cp -a $s/usr/lib/x86_64-linux-gnu/*.so* $D/lib/
 done
