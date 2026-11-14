@@ -160,19 +160,21 @@ def final_url(url):
 
 @retried
 def download(url, directory):
-    """Fetch url into directory; (path, sha256, sha512)."""
+    """Fetch url into directory; (path, sha256, sha512, size)."""
     os.makedirs(directory, exist_ok=True)
     name = urllib.parse.unquote(url.rsplit("/", 1)[-1])
     path = os.path.join(directory, name)
     h256, h512 = hashlib.sha256(), hashlib.sha512()
+    size = 0
     part = path + ".part"
     with request(url) as r, open(part, "wb") as f:
         while chunk := r.read(1 << 20):
             f.write(chunk)
+            size += len(chunk)
             h256.update(chunk)
             h512.update(chunk)
     os.replace(part, path)
-    return path, h256.hexdigest(), h512.hexdigest()
+    return path, h256.hexdigest(), h512.hexdigest(), size
 
 
 # -- versions ----------------------------------------------------------------
@@ -445,15 +447,20 @@ def verify(sha256, sha512, found, rule):
 
 
 def rewrite(text, old_version, new_version, release, moves):
-    """moves: [(old_url, new_url, sha256)]; the recipe text with them applied."""
+    """moves: [(old_url, new_url, sha256, size)]; the recipe text with them applied."""
     lines = text.split("\n")
-    for old_url, new_url, sha in moves:
+    for old_url, new_url, sha, size in moves:
         i = next(k for k, l in enumerate(lines) if re.match(r'\s*url\s*=\s*"' + re.escape(old_url) + '"', l))
         lines[i] = lines[i].replace(old_url, new_url)
         j = next(k for k in range(i + 1, len(lines)) if re.match(r"\s*sha256\s*=", lines[k]))
         lines[j] = re.sub(r'"[0-9A-Fa-f]*"', f'"{sha}"', lines[j])
+        top = max((k for k in range(i) if lines[k].strip() == "[[source]]"), default=i)
+        end = next((k for k in range(i + 1, len(lines)) if lines[k].startswith("[")), len(lines))
+        for k in range(top, end):
+            if re.match(r"\s*size\s*=", lines[k]):
+                lines[k] = re.sub(r"\d+", str(size), lines[k], count=1)
     text = "\n".join(lines)
-    for old_url, new_url, _ in moves:
+    for old_url, new_url, _, _ in moves:
         old_name, new_name = (urllib.parse.unquote(u.rsplit("/", 1)[-1]) for u in (old_url, new_url))
         if old_name != new_name:
             text = text.replace(old_name, new_name)
@@ -499,9 +506,9 @@ def process(rdir, write, dl):
             return name, current, newest, action + " (dry run)", ""
         applied, provenance = [], []
         for src, found, rule in moves:
-            path, s256, s512 = download(found["url"], dl)
+            path, s256, s512, size = download(found["url"], dl)
             provenance.append(verify(s256, s512, found, rule))
-            applied.append((src["url"], found["url"], s256))
+            applied.append((src["url"], found["url"], s256, size))
         with open(recipe_path, "w") as f:
             f.write(rewrite(text, current, newest, new_release, applied))
         return name, current, newest, action, "; ".join(sorted(set(provenance)))
@@ -543,7 +550,11 @@ def selftest():
     text = ('[package]\nversion      = "4.0.1"\nrelease      = 3\n\n[[source]]\n'
             'url    = "https://x/A-4.0.1/a-4.0.1.AppImage"\nsha256 = "00"\n\n[build]\n'
             "prepare = '''\n./a-4.0.1.AppImage --appimage-extract\n'''\n")
-    out = rewrite(text, "4.0.1", "4.1.0", 1, [("https://x/A-4.0.1/a-4.0.1.AppImage", "https://x/A-4.1.0/a-4.1.0.AppImage", "ff")])
+    out = rewrite(text, "4.0.1", "4.1.0", 1, [("https://x/A-4.0.1/a-4.0.1.AppImage", "https://x/A-4.1.0/a-4.1.0.AppImage", "ff", 7)])
+    assert "size" not in out
+    sized = rewrite(text.replace('sha256 = "00"', 'size   = 5\nsha256 = "00"') + '[[source]]\nurl = "https://x/b"\nsize = 5\nsha256 = "11"\n',
+                    "4.0.1", "4.1.0", 1, [("https://x/A-4.0.1/a-4.0.1.AppImage", "https://x/A-4.1.0/a-4.1.0.AppImage", "ff", 7)])
+    assert 'size   = 7\nsha256 = "ff"' in sized and 'size = 5\nsha256 = "11"' in sized
     assert 'version      = "4.1.0"' in out and "release      = 1" in out
     assert 'url    = "https://x/A-4.1.0/a-4.1.0.AppImage"' in out and 'sha256 = "ff"' in out
     assert "./a-4.1.0.AppImage --appimage-extract" in out and "4.0.1" not in out
@@ -591,8 +602,8 @@ def selftest():
         slept.clear()
         with tempfile.TemporaryDirectory() as d:
             urllib.request.urlopen = fake([Cut(b""), io.BytesIO(b"whole")])
-            path, s256, _ = download("https://x/f.bin", d)
-            assert open(path, "rb").read() == b"whole" and s256 == hashlib.sha256(b"whole").hexdigest()
+            path, s256, _, size = download("https://x/f.bin", d)
+            assert open(path, "rb").read() == b"whole" and s256 == hashlib.sha256(b"whole").hexdigest() and size == 5
             assert os.listdir(d) == ["f.bin"] and slept == [10]
     finally:
         urllib.request.urlopen, time.sleep = real_urlopen, real_sleep
