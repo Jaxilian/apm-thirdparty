@@ -23,7 +23,7 @@ recipe_version = 1
 [package]
 name         = "unityhub"
 organization = "unity"
-version      = "3.22.6"
+version      = "4.0.0"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -32,8 +32,8 @@ license      = "LicenseRef-Unity-Terms-of-Service"
 homepage     = "https://unity.com/"
 
 [[source]]
-url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-3.22.6-amd64.deb"
-sha256 = "f16b3441c6a5062245eef490415102b65d2034c491658f0b54b96cbba081f768"
+url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-4.0.0-amd64.deb"
+sha256 = "da8107e57890c366d9d4fda449016d809148ee93f98560317879f6832c57ca14"
 
 [[dependencies]]
 name         = "gtk3"

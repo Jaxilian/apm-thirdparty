@@ -18,7 +18,7 @@ recipe_version = 1
 [package]
 name         = "firefox-developer"
 organization = "mozilla"
-version      = "161.0.2"
+version      = "161.0.3"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -27,8 +27,8 @@ license      = "MPL-2.0"
 homepage     = "https://www.mozilla.org/firefox/developer/"
 
 [[source]]
-url    = "https://download-installer.cdn.mozilla.net/pub/devedition/releases/161.0b2/linux-x86_64/en-US/firefox-161.0b2.tar.xz"
-sha256 = "f019d58888ae4043b9da9a76595b0b863a42178c9568a9f186c72eb9e58dd8db"
+url    = "https://download-installer.cdn.mozilla.net/pub/devedition/releases/161.0b3/linux-x86_64/en-US/firefox-161.0b3.tar.xz"
+sha256 = "75d0e6a925e91a9e51e5b3da35b3e496798c9409b9889c749665964f6c4b7f2b"
 strip  = 1
 
 [[dependencies]]
