@@ -5,9 +5,12 @@
 # (its own loader, glibc, Qt 6 with the Wayland plugin); the wrapper runs
 # its AppRun on Wayland.
 #
-# Two files of the AppImage are removed: its updaters (bin/
-# prismlauncher_updater, bin/AppImageUpdate.AppImage). Prism offers no
-# self-update without them; apm updates the package.
+# Four files of the AppImage are removed: its updaters (bin/
+# prismlauncher_updater, bin/AppImageUpdate.AppImage), since Prism offers
+# no self-update without them and apm updates the package; and its GBM
+# backend (dri_gbm.so, which wants a Mesa the bundle does not carry) and
+# Qt's TIFF plugin (libqtiff.so, which wants libtiff.so.5), neither of
+# which AOS needs.
 #
 # Minecraft needs Java: the wrapper puts adoptium/java (Temurin 21) first
 # on PATH, where Prism finds it. Minecraft versions that want another
@@ -26,13 +29,13 @@ recipe_version = 1
 name         = "prismlauncher"
 organization = "prismlauncher"
 version      = "11.1.1"
-release      = 4
+release      = 5
 kind         = "app"
 summary      = "Prism Launcher for Minecraft"
 license      = "GPL-3.0-only"
 homepage     = "https://prismlauncher.org/"
 # Needs the sandbox's gpu field (round 41); an older apm holds it.
-min_aos      = "0.4.57"
+min_aos      = "0.4.76"
 
 [[source]]
 url    = "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.1/PrismLauncher-Linux-x86_64.AppImage"
@@ -62,6 +65,7 @@ command = ["prismlauncher"]
 # directory, in a home of its own; Downloads for modpacks and mods
 # fetched with a browser.
 [sandbox]
+media = true
 x11 = true
 home  = "private"
 share = ["Downloads"]
@@ -86,6 +90,8 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/prismlauncher $D/bin
 cp -a $APM_SRC/squashfs-root/. $D/prismlauncher/
+rm $D/prismlauncher/shared/lib/gbm/dri_gbm.so
+rm $D/prismlauncher/shared/lib/home/runner/work/PrismLauncher/Qt/*/gcc_64/plugins/imageformats/libqtiff.so
 cat > $D/bin/prismlauncher <<WRAP
 #!/bin/sh
 # Prism Launcher as the project ships it, on Wayland, with Temurin first

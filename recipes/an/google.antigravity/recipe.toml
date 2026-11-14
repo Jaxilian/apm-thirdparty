@@ -39,7 +39,7 @@ recipe_version = 1
 name         = "antigravity"
 organization = "google"
 version      = "1.5.8"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Antigravity CLI: Google's coding agent in the terminal"
 license      = "LicenseRef-Google-Antigravity-Terms"
@@ -62,15 +62,13 @@ cat > $D/bin/agy <<WRAP
 real=\$HOME
 data=\$HOME/AppData/google.antigravity
 mkdir -p "\$data" || exit 1
-if [ -z "\$GIT_CONFIG_GLOBAL" ] && [ -f "\$real/.gitconfig" ]; then
-	export GIT_CONFIG_GLOBAL="\$real/.gitconfig"
-fi
-export GNUPGHOME="\${GNUPGHOME:-\$real/.gnupg}"
-export GH_CONFIG_DIR="\${GH_CONFIG_DIR:-\$real/.config/gh}"
+export GIT_CONFIG_GLOBAL="\${GIT_CONFIG_GLOBAL:-\$real/AppData/aos.git/config}"
+export GNUPGHOME="\${GNUPGHOME:-\$real/AppData/aos.gnupg}"
+export GH_CONFIG_DIR="\${GH_CONFIG_DIR:-\$real/AppData/github.gh/config}"
 export NPM_CONFIG_USERCONFIG="\${NPM_CONFIG_USERCONFIG:-\$real/.npmrc}"
-export npm_config_prefix="\${npm_config_prefix:-\$real/.local}"
+export npm_config_prefix="\${npm_config_prefix:-\$real/AppData/nodejs.node/global}"
 export npm_config_cache="\${npm_config_cache:-\$real/AppData/nodejs.node/cache}"
-export PYTHONUSERBASE="\${PYTHONUSERBASE:-\$real/.local}"
+export PYTHONUSERBASE="\${PYTHONUSERBASE:-\$real/AppData/aos.desktop}"
 export AGY_CLI_DISABLE_AUTO_UPDATE=true
 export HOME="\$data"
 exec $APM_PREFIX/libexec/agy "\$@"

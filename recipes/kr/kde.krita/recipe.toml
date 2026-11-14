@@ -26,7 +26,7 @@ recipe_version = 1
 name         = "krita"
 organization = "kde"
 version      = "6.0.4"
-release      = 2
+release      = 3
 kind         = "app"
 summary      = "Krita digital painting"
 license      = "GPL-3.0-or-later"
@@ -50,10 +50,12 @@ track        = "*"
 command = ["krita"]
 
 # Its own folder for settings and resources, and ~/Pictures read-write
-# for paintings; a file elsewhere is opened through the file dialog.
+# for paintings; a file elsewhere is opened through the file dialog. No
+# network.
 [sandbox]
 home = "private"
 share = ["Pictures"]
+network = false
 
 [launcher]
 name       = "Krita"

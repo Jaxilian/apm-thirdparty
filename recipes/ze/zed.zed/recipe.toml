@@ -24,14 +24,14 @@ recipe_version = 1
 name         = "zed"
 organization = "zed"
 version      = "1.28.1"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "Zed code editor"
 license      = "GPL-3.0-or-later"
 homepage     = "https://zed.dev/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.12"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://zed.dev/api/releases/stable/1.28.1/zed-linux-x86_64.tar.gz"
@@ -51,11 +51,12 @@ command = ["zed"]
 # Its own folder, ~/AppData/<org>.<name>, is its home: settings,
 # extensions and caches stay there. It sees ~/Projects read-write (where
 # repositories live; Open Folder on anything else asks once and restarts
-# it into the folder) and ~/.gitconfig read-only, plus the SSH keys
+# it into the folder) and git's settings (aos/git's data) read-only, plus the SSH keys
 # and the installed tools, as for VS Code.
 [sandbox]
 home = "private"
-share = ["Projects", ".gitconfig:ro"]
+share = ["Projects"]
+data  = ["aos/git"]
 tools = true
 ssh   = true
 

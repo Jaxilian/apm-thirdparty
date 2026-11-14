@@ -6,8 +6,9 @@
 # plugin from its GitHub release. bin/docker starts `podman system
 # service` for the account once (a transient user unit, or a detached
 # process where there is no user manager), points DOCKER_HOST at its
-# socket and links the Compose plugin into ~/.docker/cli-plugins, the
-# place the client looks that is not the read-only store.
+# socket and links the Compose plugin into cli-plugins under
+# ~/AppData/docker.docker (DOCKER_CONFIG, never ~/.docker), the place the
+# client looks that is not the read-only store.
 #
 # No sandbox: it is a client of the podman package. Apache-2.0 (both).
 # Fetched from Docker and GitHub, never mirrored.
@@ -18,7 +19,7 @@ recipe_version = 1
 name         = "docker"
 organization = "docker"
 version      = "29.9.3"
-release      = 2
+release      = 3
 kind         = "bin"
 summary      = "Docker CLI and Compose, on podman"
 license      = "Apache-2.0"
@@ -65,7 +66,12 @@ if [ ! -S "\$sock" ]; then
 		sleep 0.25
 	done
 fi
-plug=\${DOCKER_CONFIG:-\$HOME/.docker}/cli-plugins
+A="\$HOME/AppData/docker.docker"
+if [ -z "\$DOCKER_CONFIG" ] && [ -d "\$HOME/.docker" ] && [ ! -e "\$A" ]; then
+	mkdir -p "\$HOME/AppData" && mv "\$HOME/.docker" "\$A"
+fi
+export DOCKER_CONFIG="\${DOCKER_CONFIG:-\$A}"
+plug=\$DOCKER_CONFIG/cli-plugins
 [ -e "\$plug/docker-compose" ] || { mkdir -p "\$plug" && ln -sfn $APM_PREFIX/lib/docker/cli-plugins/docker-compose "\$plug/docker-compose"; }
 exec $APM_PREFIX/libexec/docker "\$@"
 WRAP

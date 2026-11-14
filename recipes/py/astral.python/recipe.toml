@@ -13,6 +13,9 @@
 # ~/AppData/aos.apm's, so a Python library is a package in Software (pypi/kconfiglib
 # is the first) and nothing need go to ~/.local.
 #
+# Release 3 (2026-11-14): the prompt's history is
+# ~/AppData/astral.python/history (PYTHON_HISTORY), not ~/.python_history.
+#
 # No sandbox, like the Rust toolchain: a developer tool.
 #
 # The sha256 is the one in the release's SHA256SUMS (and GitHub's asset
@@ -26,7 +29,7 @@ recipe_version = 1
 name         = "python"
 organization = "astral"
 version      = "3.13.18"
-release      = 2
+release      = 3
 kind         = "bin"
 summary      = "Python 3.13"
 license      = "PSF-2.0"
@@ -54,6 +57,13 @@ import os
 import site
 
 _home = os.path.expanduser("~")
+if "PYTHON_HISTORY" not in os.environ:
+    _data = os.path.join(_home, "AppData", "astral.python")
+    try:
+        os.makedirs(_data, exist_ok=True)
+        os.environ["PYTHON_HISTORY"] = os.path.join(_data, "history")
+    except OSError:
+        pass
 for _root in ("/opt/apm/packages", os.path.join(_home, "AppData", "aos.apm", "packages")):
     for _dir in sorted(glob.glob(os.path.join(_root, "*", "*", "current", "lib", "python3", "site-packages"))):
         site.addsitedir(_dir)

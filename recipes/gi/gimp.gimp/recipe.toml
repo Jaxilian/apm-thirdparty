@@ -21,7 +21,7 @@ recipe_version = 1
 name         = "gimp"
 organization = "gimp"
 version      = "3.2.8"
-release      = 1
+release      = 2
 kind         = "app"
 summary      = "GIMP image editor"
 license      = "GPL-3.0-or-later"
@@ -45,10 +45,11 @@ track        = "*"
 command = ["gimp"]
 
 # Its own folder for settings and plug-ins, and ~/Pictures read-write;
-# a picture elsewhere is opened through the file dialog.
+# a picture elsewhere is opened through the file dialog. No network.
 [sandbox]
 home = "private"
 share = ["Pictures"]
+network = false
 
 [launcher]
 name       = "GIMP"

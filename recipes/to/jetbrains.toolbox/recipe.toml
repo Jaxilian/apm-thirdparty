@@ -27,14 +27,14 @@ recipe_version = 1
 name         = "toolbox"
 organization = "jetbrains"
 version      = "3.9.1"
-release      = 3
+release      = 4
 kind         = "app"
 summary      = "JetBrains Toolbox: installs and updates JetBrains IDEs"
 license      = "LicenseRef-JetBrains-Toolbox-App"
 homepage     = "https://www.jetbrains.com/toolbox-app/"
 # Needs AOS 0.4.12's aos-sandbox (the home in ~/AppData, `:ro` shares,
 # --ssh, --no-flatpak-info); an older one would not know them.
-min_aos      = "0.4.57"
+min_aos      = "0.4.75"
 
 [[source]]
 url    = "https://download.jetbrains.com/toolbox/jetbrains-toolbox-3.9.1.89198.tar.gz"
@@ -56,12 +56,13 @@ command = ["jetbrains-toolbox"]
 
 # The IDEs it installs land in its own folder (~/AppData/<org>.<name>
 # is their home) and open projects from ~/Projects, read-write;
-# ~/.gitconfig read-only, the SSH keys (read-only, the agent's socket) for
+# git's settings (aos/git's data) read-only, the SSH keys (read-only, the agent's socket) for
 # git over ssh, the installed tools, the network on (the default).
 [sandbox]
 x11 = true
 home = "private"
-share = ["Projects", ".gitconfig:ro"]
+share = ["Projects"]
+data  = ["aos/git"]
 tools = true
 ssh   = true
 
