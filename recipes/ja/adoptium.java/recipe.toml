@@ -1,8 +1,16 @@
 # Java: Eclipse Temurin JDK 21 (LTS), from Adoptium's own release on
 # GitHub (adoptium/temurin21-binaries): the linux x64 JDK tarball, copied
 # into the package as it is. The JDK finds its home from the binary's
-# real path, so it needs no JAVA_HOME and no wrapper; set JAVA_HOME to
+# real path, so it needs no JAVA_HOME; set JAVA_HOME to
 # /opt/apm/packages/adoptium/java/current for tools that ask for one.
+#
+# bin/java and bin/jshell are wrappers over the real launchers beside
+# them (java.bin, jshell.bin): they put the preferences API's user root
+# in ~/AppData/adoptium.java (java.util.prefs.userRoot) instead of
+# ~/.java; a -D of the same name on the command line wins. A wrapper and
+# not JAVA_TOOL_OPTIONS, which the JVM announces on stderr at every
+# start. A program that loads libjvm itself is not covered, and
+# ~/.java/fonts (AWT's font cache) follows user.home alone.
 #
 # The version is Temurin's 21.0.12.1+1 (a respin of 21.0.12) without its
 # fourth part, since a version here has three.
@@ -20,7 +28,7 @@ recipe_version = 1
 name         = "java"
 organization = "adoptium"
 version      = "21.0.13"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Java 21 development kit (Eclipse Temurin)"
 license      = "GPL-2.0-only WITH Classpath-exception-2.0"
@@ -39,4 +47,16 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D
 cp -a $APM_SRC/. $D/
+for n in java jshell; do
+	mv $D/bin/$n $D/bin/$n.bin
+done
+cat > $D/bin/java <<WRAP
+#!/bin/sh
+exec $APM_PREFIX/bin/java.bin -Djava.util.prefs.userRoot="\$HOME/AppData/adoptium.java" "\$@"
+WRAP
+cat > $D/bin/jshell <<WRAP
+#!/bin/sh
+exec $APM_PREFIX/bin/jshell.bin -J-Djava.util.prefs.userRoot="\$HOME/AppData/adoptium.java" "\$@"
+WRAP
+chmod 755 $D/bin/java $D/bin/jshell
 '''

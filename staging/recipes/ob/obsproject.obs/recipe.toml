@@ -1,0 +1,288 @@
+# OBS Studio, from the OBS Project's own GitHub release
+# (obsproject/obs-studio): the .deb it builds for Ubuntu 26.04, unpacked,
+# nothing compiled. That build links Ubuntu 26.04's libraries, and AOS
+# has no Qt, so the ones the core and runtime/gtk3 lack ride along, each
+# the .deb of Ubuntu's own archive (archive.ubuntu.com, resolute and
+# resolute-updates): Qt 6.10 (base, SVG, the Wayland client and its
+# xdg-shell plugin, the portal platform theme), ICU, PCRE2, libproxy and
+# the libcurl-gnutls it wants with that one's own needs (nghttp2, idn2,
+# rtmp, ldap, sasl, ssh2, psl, Kerberos), mbedTLS, LuaJIT, x264, SRT,
+# RIST, libvpl, v4l, speexdsp and qrcodegen. FFmpeg, Python, PipeWire
+# and the GL libraries are the core's; PulseAudio, NSS and ALSA are the
+# runtime's.
+#
+# Wayland only: Qt's xcb, eglfs, linuxfb and VNC platforms and the
+# evdev/tslib input plugins are left out with the libraries only they
+# need. OBS finds its modules and data from the binary's path
+# (../lib/x86_64-linux-gnu/obs-modules, ../share/obs), so the tree keeps
+# upstream's shape under obs/.
+#
+# The sha256 of the OBS .deb is GitHub's digest of the release asset,
+# checked against the file as downloaded on 2026-11-14; each Ubuntu
+# .deb's is the SHA256 of the archive's Packages index, checked the same
+# way. GPL-2.0-or-later, as OBS Studio is; the libraries keep their own
+# licences (Qt LGPL-3.0-only, x264 GPL-2.0-or-later). Fetched from the
+# OBS Project and from Ubuntu, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "obs"
+organization = "obsproject"
+version      = "33.0.1"
+release      = 1
+min_aos      = "0.4.76"
+kind         = "app"
+summary      = "OBS Studio: screen recording and live streaming"
+license      = "GPL-2.0-or-later"
+homepage     = "https://obsproject.com/"
+
+[[source]]
+url    = "https://github.com/obsproject/obs-studio/releases/download/33.0.1/OBS-Studio-33.0.1-Ubuntu-26.04-x86_64.deb"
+sha256 = "a9f062057576074439e6467f2716e3bbed6a0edab6ebf2c2f9595a3d2f1dc57f"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/libb/libb2/libb2-1_0.98.1-1.1build2_amd64.deb"
+sha256 = "6e00e57d60d69274599febe2dbe0959b0e92f0277d741986cae7481f7bb2403c"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb"
+sha256 = "bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/c/cjson/libcjson1_1.7.19-2_amd64.deb"
+sha256 = "1c47d315a46d610708aecdcafbc5b2c59c28f174dfb8a562290a17620bda3549"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/e/e2fsprogs/libcom-err2_1.47.2-3ubuntu4_amd64.deb"
+sha256 = "180b6ea0b9c07d4fd2ede79e29ee8eca830cd9384f856507e28dc24d1d3ae514"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3t64-gnutls_8.18.0-1ubuntu2.8_amd64.deb"
+sha256 = "8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/d/double-conversion/libdouble-conversion3_3.4.0-1_amd64.deb"
+sha256 = "b178176ba18a499a35dc1cc3b5258e16da0791872fc96c16934cd747425ae892"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/g/gcc-16/libgomp1_16-20260322-1ubuntu1_amd64.deb"
+sha256 = "add19738c63794d2aa9ac529d3b8aebe2e88980faecb6c1c59f07aefd6c3c314"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/k/krb5/libgssapi-krb5-2_1.22.1-2ubuntu4.1_amd64.deb"
+sha256 = "d156dd940bff6dec8b6880cd0da4d515398d03d7b2e8b3163a935e701f80aa27"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu78_78.2-2ubuntu1_amd64.deb"
+sha256 = "c8b97930f9e365d6d00978144b468ac8397ef07d2fb2c453869f05fc3a98c4ca"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/libi/libidn2/libidn2-0_2.3.8-4build1_amd64.deb"
+sha256 = "92bdac0f443a648859d06dee3defb9c96864fd76df6cfe617ca70bb261344767"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/k/krb5/libk5crypto3_1.22.1-2ubuntu4.1_amd64.deb"
+sha256 = "8e99ef104a6bf49bea708747fdf4c28eb4fcebd6dba9e55ecfa919211eb5ab75"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/k/keyutils/libkeyutils1_1.6.3-6ubuntu3_amd64.deb"
+sha256 = "ea7d3cc642ffe2459c35a85c894f80e92499b9eba13bdcb225e0aa751c0970be"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/k/krb5/libkrb5-3_1.22.1-2ubuntu4.1_amd64.deb"
+sha256 = "54612a2019863c44d80218f40d40670c3684108f4b2a760aae644ab68457e239"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/k/krb5/libkrb5support0_1.22.1-2ubuntu4.1_amd64.deb"
+sha256 = "127d735efece139dfb7109ac3709da7eb8923bef090c20a10dbaf4c4fa45001d"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/o/openldap/libldap2_2.6.10+dfsg-1ubuntu5_amd64.deb"
+sha256 = "8d3a361e8655a0ff4a390243059949fa6f22d42d0e266f58b57c124eb21d2993"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/l/luajit/libluajit-5.1-2_2.1.0+openresty20251030-1_amd64.deb"
+sha256 = "ff202bebd520b2cca0d1f507d10dc7ed7cdb771b2c6f92de59f7a36ab630433f"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/m/mbedtls/libmbedcrypto16_3.6.5-0.1ubuntu2_amd64.deb"
+sha256 = "dd320215c1bd6e954d5aea07e640f7063865af9ef55bd64c5d9cd3cbd1bf7555"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/m/mbedtls/libmbedtls21_3.6.5-0.1ubuntu2_amd64.deb"
+sha256 = "5b3ec9e23f8fc475160c15714f268634fabdbad8b3df32cc8dd2e634bdacea5e"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/m/mbedtls/libmbedx509-7_3.6.5-0.1ubuntu2_amd64.deb"
+sha256 = "ed69a413d170094d6d6a91bb538c16c91d3f664b7166a1740245bbbbefd4540f"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/m/md4c/libmd4c0_0.5.2-2build1_amd64.deb"
+sha256 = "ad96a6753d3c8dbfdfba9e6fde56b2c61554daeb5ee7fe58599cfe797a2edb23"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/n/nghttp2/libnghttp2-14_1.68.0-2ubuntu0.2_amd64.deb"
+sha256 = "9c92ca4435998b7981cf81f957177b71079563b022c282a4b8b7829113a5d08e"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/libpcre2-16-0_10.46-1ubuntu0.1_amd64.deb"
+sha256 = "4721be3dde02bdf0078d26f89902d3b8c70c53827ea6d9c0bb79ef6ca96b5d89"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/libp/libproxy/libproxy1v5_0.5.12-1_amd64.deb"
+sha256 = "2ad0a703309adfdf14477543fae4f5b7dc7e32f8f7cd17d87c40be9161997239"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/libp/libpsl/libpsl5t64_0.21.2-1.1build2_amd64.deb"
+sha256 = "1ae62705714f660ecdfd70273fce5b226b6cb7b9fe53776531799093edc99774"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qr-code-generator/libqrcodegencpp1_1.8.0-1.2build2_amd64.deb"
+sha256 = "8ed0f5266c8e43e1f310b464245fa98fbb0601dacfa9ad3e2c6917e01b511e0f"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6core6t64_6.10.2+dfsg-7_amd64.deb"
+sha256 = "0d23c34db65e658caea593fc4eab396f0870d3251fc2d2b65bfd17b7538f6b67"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6dbus6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "1865a1d9953a91a9eeacfbfb77d6f493f814e08ba055bb35523596df678e5e74"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6gui6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "b78a30448460549c98b682c22ca3b1bfa9afc58774d06f1fb83cfdbdb7e5c972"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6network6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "8acd1b4a3e6815c9e47fa00f6abeb91cda60c596405822e62a18678f4118e77b"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6opengl6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "17f0321ba10003744578b0e00442863f8b02f4204b5eb923414ef60040d90c6f"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-svg/libqt6svg6_6.10.2-2_amd64.deb"
+sha256 = "925c5008c85ffb3f313c43defd82ea1e041d0d457aa77dbe630f9b87bc7d58ba"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6waylandclient6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "b99fcd24d522b3fc02eafef4eccd52aca590df018669d580d0a21006a2347665"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6widgets6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "78a969e971379eb95cc39582ef731ee534976d54ac155b9d2b5240671217163d"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6wlshellintegration6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "fd84a723a9ac52048304f10ced45a22cd1c656357440069b450944c9029fde24"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/libqt6xml6_6.10.2+dfsg-7_amd64.deb"
+sha256 = "073618699a6d75ab58fd8f50bab8f58d263acb58d1c6316988d4c6ec3c53d8ef"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/libr/librist/librist4_0.2.11+dfsg-1build1_amd64.deb"
+sha256 = "8ac5e57d8c723da1803adbd65b8bd62908295cd0495e97637a0e881d17f94ab9"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-3_amd64.deb"
+sha256 = "77cbd0ddf7e7487079ec300ff7751322de5e7d67f0f46749591b78ff1442cbe8"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg1-9ubuntu3_amd64.deb"
+sha256 = "11b9b2ce6702d86dd3dea60e08bd15255d7fd9545431a9e555eec47770404de0"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/s/speexdsp/libspeexdsp1_1.2.1-3build1_amd64.deb"
+sha256 = "f7f312d0b692658e5aaa9c6c4860baa9edbf8855fbc37d20e9b7f2ad17358943"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/s/srt/libsrt1.5-openssl_1.5.4-3_amd64.deb"
+sha256 = "c0f6c033e968343633cc2c8680010ac18aeb7bc68e97d52caa45f903b09b137a"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/libs/libssh2/libssh2-1t64_1.11.1-1ubuntu0.26.04.4_amd64.deb"
+sha256 = "bb3e334dc885d124d38cd4350f1cb4606c03ce58e9f53dc51a84c2c8d11c84e1"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/v/v4l-utils/libv4l-0t64_1.32.0-2ubuntu1_amd64.deb"
+sha256 = "23b41e9e45ca64525f64f23e50d325123382225b68db18dd3a6b74be50a43cd4"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/main/v/v4l-utils/libv4lconvert0t64_1.32.0-2ubuntu1_amd64.deb"
+sha256 = "aa9fbbedeb94f9def39a05f9d953d0c9a72b0dc8b59c944b53844ec25f23f2f5"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/libv/libvpl/libvpl2_2.16.0-1_amd64.deb"
+sha256 = "9eeeb743928a908c51b28752596dc1ebc7c12ec83fe8672f2df6e5329065e070"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/x/x264/libx264-165_0.165.3222+gitb35605ac-3build1_amd64.deb"
+sha256 = "241892e87536b734becdae89571e22ad68db6fa3be8f274df7b1690afe9b7738"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-svg/qt6-svg-plugins_6.10.2-2_amd64.deb"
+sha256 = "c6b956f3c6926d08cbada5811096bc77f406ad29e99011b0d8d61c2bd8cb00fa"
+
+[[source]]
+url    = "https://archive.ubuntu.com/ubuntu/pool/universe/q/qt6-base/qt6-xdgdesktopportal-platformtheme_6.10.2+dfsg-7_amd64.deb"
+sha256 = "d6a5106fe15f37e1e63c06fdccbc446640da5578e6dd150d04263bca9d636537"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["obs"]
+
+[sandbox]
+media      = true
+home       = "private"
+share      = ["Videos", "Music", "Pictures"]
+camera     = true
+microphone = true
+
+[launcher]
+name       = "OBS Studio"
+comment    = "Record the screen and stream live"
+exec       = "bin/obs"
+app_id     = "com.obsproject.Studio"
+icon       = "obs/share/icons/hicolor/256x256/apps/com.obsproject.Studio.png"
+categories = ["AudioVideo", "Recorder"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+L=$D/obs/lib/x86_64-linux-gnu
+install -d $D/obs $D/bin
+cp -a $APM_SRC/usr/local/. $D/obs/
+for n in $(seq 2 48); do
+	eval s=\$APM_SOURCE_$n
+	cp -a $s/usr/lib/x86_64-linux-gnu/. $L/
+done
+rm -rf $D/obs/include $L/cmake $L/pkgconfig
+Q=$L/qt6/plugins
+rm -rf $Q/generic $Q/xcbglintegrations $Q/egldeviceintegrations
+rm -f $Q/platforms/libqeglfs.so $Q/platforms/libqlinuxfb.so $Q/platforms/libqvkkhrdisplay.so $Q/platforms/libqxcb.so
+rm -f $L/libQt6EglFS* $L/libQt6EglFs* $L/libQt6XcbQpa*
+mv $L/libproxy/libpxbackend-1.0.so $L/
+rmdir $L/libproxy
+cd $Q/wayland-graphics-integration-client
+rm -f libvulkan-server.so libdmabuf-server.so libdrm-egl-server.so libshm-emulation-server.so
+cat > $D/bin/obs <<WRAP
+#!/bin/sh
+export LD_LIBRARY_PATH="$APM_PREFIX/obs/lib/x86_64-linux-gnu\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+export QT_PLUGIN_PATH=$APM_PREFIX/obs/lib/x86_64-linux-gnu/qt6/plugins
+export QT_QPA_PLATFORM="\${QT_QPA_PLATFORM:-wayland}"
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/obs/bin/obs "\$@"
+WRAP
+chmod 755 $D/bin/obs
+'''

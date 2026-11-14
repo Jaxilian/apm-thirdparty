@@ -7,8 +7,10 @@
 # Its cache, telemetry state and global files live in
 # ~/AppData/yarnpkg.yarn (YARN_GLOBAL_FOLDER, set by the wrapper: apm's
 # [provides] env takes NAME_HOME variables only); one already set wins.
-# `yarn config set --home` still writes ~/.yarnrc.yml: Yarn has no
-# switch for it.
+# The home .yarnrc.yml (`yarn config set --home`) lives there too: Yarn
+# has no switch for it and takes it from os.homedir(), so home.js,
+# loaded ahead of yarn.js, answers that call with the folder. Only the
+# yarn process sees it; the scripts it runs keep the real HOME.
 #
 # No sandbox, like the other developer tools.
 #
@@ -22,7 +24,7 @@ recipe_version = 1
 name         = "yarn"
 organization = "yarnpkg"
 version      = "4.18.1"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "Yarn: package manager for JavaScript projects"
 license      = "BSD-2-Clause"
@@ -47,10 +49,15 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/bin $D/yarn
 install -m 644 $APM_SRC/bin/yarn.js $APM_SRC/package.json $D/yarn/
+cat > $D/yarn/home.js <<HOME
+const os = require("os");
+const home = process.env.YARN_GLOBAL_FOLDER;
+os.homedir = () => home;
+HOME
 cat > $D/bin/yarn <<WRAP
 #!/bin/sh
 export YARN_GLOBAL_FOLDER="\${YARN_GLOBAL_FOLDER:-\$HOME/AppData/yarnpkg.yarn}"
-exec node $APM_PREFIX/yarn/yarn.js "\$@"
+exec node -r $APM_PREFIX/yarn/home.js $APM_PREFIX/yarn/yarn.js "\$@"
 WRAP
 chmod 755 $D/bin/yarn
 '''

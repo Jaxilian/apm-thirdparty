@@ -6,8 +6,11 @@
 # Its store, cache, state and what `pnpm add -g` installs live in
 # ~/AppData/pnpm.pnpm (PNPM_HOME from [provides] env, on PATH last;
 # pnpm_config_cache_dir and pnpm_config_state_dir from the wrapper);
-# each already set wins. `pnpm config set` still writes ~/.config/pnpm/rc:
-# pnpm has no switch for it.
+# each already set wins. Its global config.yaml and auth.ini follow
+# XDG_CONFIG_HOME and nothing else, and every script pnpm runs inherits
+# that variable, so it is not pointed at pnpm's own folder: the session's
+# value stands (~/AppData/aos.desktop/config/pnpm), and where there is
+# no session the wrapper gives the same one, never ~/.config.
 #
 # No sandbox, like the other developer tools.
 #
@@ -21,7 +24,7 @@ recipe_version = 1
 name         = "pnpm"
 organization = "pnpm"
 version      = "12.20.0"
-release      = 1
+release      = 2
 kind         = "bin"
 summary      = "pnpm: fast, disk-saving package manager for JavaScript"
 license      = "MIT"
@@ -47,6 +50,7 @@ cat > $D/bin/pnpm <<WRAP
 export PNPM_HOME="\${PNPM_HOME:-\$HOME/AppData/pnpm.pnpm}"
 export pnpm_config_cache_dir="\${pnpm_config_cache_dir:-\$PNPM_HOME/cache}"
 export pnpm_config_state_dir="\${pnpm_config_state_dir:-\$PNPM_HOME/state}"
+export XDG_CONFIG_HOME="\${XDG_CONFIG_HOME:-\$HOME/AppData/aos.desktop/config}"
 exec $APM_PREFIX/pnpm/pnpm "\$@"
 WRAP
 chmod 755 $D/bin/pnpm

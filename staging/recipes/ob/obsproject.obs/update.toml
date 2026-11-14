@@ -1,0 +1,240 @@
+[[source]]
+kind  = "github"
+repo  = "obsproject/obs-studio"
+tag   = '^(\d+\.\d+\.\d+)$'
+asset = '^OBS-Studio-[\d.]+-Ubuntu-26\.04-x86_64\.deb$'
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libb2-1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libbrotli1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libcjson1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libcom-err2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libcurl3t64-gnutls"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libdouble-conversion3"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libgomp1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libgssapi-krb5-2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libicu78"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libidn2-0"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libk5crypto3"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libkeyutils1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libkrb5-3"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libkrb5support0"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libldap2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libluajit-5.1-2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libmbedcrypto16"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libmbedtls21"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libmbedx509-7"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libmd4c0"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libnghttp2-14"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libpcre2-16-0"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libproxy1v5"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libpsl5t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqrcodegencpp1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6core6t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6dbus6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6gui6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6network6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6opengl6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6svg6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6waylandclient6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6widgets6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6wlshellintegration6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libqt6xml6"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "librist4"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "librtmp1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libsasl2-2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libspeexdsp1"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libsrt1.5-openssl"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute-updates/main/binary-amd64/Packages.xz"
+package  = "libssh2-1t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libv4l-0t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz"
+package  = "libv4lconvert0t64"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libvpl2"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "libx264-165"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "qt6-svg-plugins"
+
+[[source]]
+kind     = "apt"
+packages = "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/binary-amd64/Packages.xz"
+package  = "qt6-xdgdesktopportal-platformtheme"
