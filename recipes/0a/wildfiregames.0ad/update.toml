@@ -1,0 +1,5 @@
+[[source]]
+kind  = "regex"
+page  = "https://releases.wildfiregames.com/"
+regex = 'href="0ad-(\d+\.\d+\.\d+)-x86_64\.AppImage"'
+url   = "https://releases.wildfiregames.com/0ad-{version}-x86_64.AppImage"

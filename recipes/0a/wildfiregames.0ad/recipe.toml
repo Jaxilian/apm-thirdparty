@@ -1,0 +1,62 @@
+# 0 A.D., from Wildfire Games' own release server: the official x86_64
+# AppImage, extracted with its own --appimage-extract. pyrogenesis finds
+# its libraries through RUNPATH $ORIGIN/../lib and its data in ../data.
+# The sha256 is the one Wildfire Games publishes beside the file
+# (0ad-0.28.0-x86_64.AppImage.sha256sum), checked against the file as
+# downloaded on 2026-11-16. The game data is 3.6 GB, past GitHub's 2 GiB
+# asset limit: recipe only in practice, each machine fetches the file from
+# Wildfire Games, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "0ad"
+organization = "wildfiregames"
+version      = "0.28.0"
+release      = 1
+kind         = "app"
+summary      = "0 A.D., a real-time strategy game of ancient warfare"
+license      = "GPL-2.0-or-later AND CC-BY-SA-3.0"
+homepage     = "https://play0ad.com/"
+min_aos      = "0.4.76"
+
+[[source]]
+url    = "https://releases.wildfiregames.com/0ad-0.28.0-x86_64.AppImage"
+sha256 = "869dd85adcb4e02b7dc8f76853a20003b1c50e328fc43b3a12336f33570add18"
+
+[[dependencies]]
+name         = "fonts"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["0ad"]
+
+[sandbox]
+media = true
+home  = "private"
+gpu   = true
+
+[launcher]
+name       = "0 A.D."
+comment    = "A real-time strategy game of ancient warfare"
+exec       = "bin/0ad"
+icon       = "0ad/usr/share/icons/hicolor/128x128/apps/0ad.png"
+categories = ["Game", "StrategyGame"]
+terminal   = false
+
+[build]
+prepare = '''
+./0ad-0.28.0-x86_64.AppImage --appimage-extract >/dev/null
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/0ad $D/bin
+cp -a $APM_SRC/squashfs-root/. $D/0ad/
+cat > $D/bin/0ad <<WRAP
+#!/bin/sh
+export SDL_VIDEODRIVER="\${SDL_VIDEODRIVER:-wayland}"
+exec $APM_PREFIX/0ad/usr/bin/pyrogenesis "\$@"
+WRAP
+chmod 755 $D/bin/0ad
+'''

@@ -1,0 +1,46 @@
+# Miri, the Rust project's interpreter for undefined behaviour and leaks,
+# through rust-lang/rustup: it ships only with nightly Rust, so this
+# package downloads nothing itself. Its cargo-miri installs the nightly
+# toolchain with miri and rust-src on first use, into rustup's own
+# ~/AppData/rust-lang.rustup, and keeps Miri's sysroot in
+# ~/AppData/rust-lang.miri. MIT OR Apache-2.0, as Miri; written
+# 2026-11-16.
+
+recipe_version = 1
+
+[package]
+name         = "miri"
+organization = "rust-lang"
+version      = "1.0.0"
+release      = 1
+kind         = "bin"
+summary      = "Miri: undefined behaviour and leaks in Rust code (cargo miri test)"
+license      = "MIT OR Apache-2.0"
+homepage     = "https://github.com/rust-lang/miri"
+min_aos      = "0.4.75"
+
+[[dependencies]]
+name         = "rustup"
+organization = "rust-lang"
+track        = "*"
+
+[provides]
+command = ["cargo-miri"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/bin
+cat > $D/bin/cargo-miri <<'WRAP'
+#!/bin/sh
+export RUSTUP_HOME="${RUSTUP_HOME:-$HOME/AppData/rust-lang.rustup/rustup}"
+export CARGO_HOME="${CARGO_HOME:-$HOME/AppData/rust-lang.rustup/cargo}"
+export XDG_CACHE_HOME="$HOME/AppData/rust-lang.miri"
+unset CARGO RUSTC RUSTUP_TOOLCHAIN
+if ! rustup component list --toolchain nightly --installed 2>/dev/null | grep -q '^miri'; then
+	rustup toolchain install nightly --profile minimal --component miri,rust-src >&2 || exit 1
+fi
+exec rustup run nightly cargo-miri "$@"
+WRAP
+chmod 755 $D/bin/cargo-miri
+'''
