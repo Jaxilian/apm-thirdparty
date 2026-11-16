@@ -27,7 +27,7 @@ recipe_version = 1
 [package]
 name         = "telegram"
 organization = "telegram"
-version      = "7.4.3"
+version      = "7.4.4"
 release      = 1
 kind         = "app"
 summary      = "Telegram Desktop messenger"
@@ -38,12 +38,12 @@ homepage     = "https://desktop.telegram.org/"
 min_aos      = "0.4.52"
 
 [[source]]
-url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.4.3.tar.xz"
-sha256 = "a2032e74a3c57c183cc280938b89d85d965fd8d1eacbfb5967faa7b3bee402ca"
+url    = "https://td.telegram.org/linux-x64/td-setup-linux-x64-7.4.4.tar.xz"
+sha256 = "607d77344a332268df1ab0c3c9b5adb70a6204e5f78cb668ab3fa58245c0888e"
 strip  = 1
 
 [[source]]
-url    = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/v7.4.3/Telegram/Resources/art/icon256.png"
+url    = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/v7.4.4/Telegram/Resources/art/icon256.png"
 sha256 = "3fb1400c7dc9bbc3b5cb3ffedcbf4a9b09c53e28b57a7ff33a8a6b9048864090"
 
 [[dependencies]]

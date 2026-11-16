@@ -17,7 +17,7 @@ recipe_version = 1
 [package]
 name         = "dbeaver"
 organization = "dbeaver"
-version      = "26.2.4"
+version      = "26.2.5"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -26,8 +26,8 @@ license      = "Apache-2.0"
 homepage     = "https://dbeaver.io/"
 
 [[source]]
-url    = "https://github.com/dbeaver/dbeaver/releases/download/26.2.4/dbeaver-ce-26.2.4-linux-x86_64.tar.gz"
-sha256 = "a0dce46bb01cd2447c2d51388a39d3cda7ac58930fc558ebf3945aca5b859360"
+url    = "https://github.com/dbeaver/dbeaver/releases/download/26.2.5/dbeaver-ce-26.2.5-linux-x86_64.tar.gz"
+sha256 = "0d310629cecf6619966940844c629fa99f0391673655cc3124bb6a227ba92397"
 strip  = 1
 
 [[dependencies]]
