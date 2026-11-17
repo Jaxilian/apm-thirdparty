@@ -20,7 +20,7 @@ list of [[source]] tables, the Nth for the recipe's Nth [[source]] (or
 
 Keys every kind takes:
 
-    kind          github | apt | regex | redirect | json | node | dotnet
+    kind          github | apt | regex | redirect | json | node | dotnet | cuda
     track         stay on this line: "24", "3.13", "21" -- a prefix of the
                   apm version; candidates outside it are not considered
     version_from  regex over the upstream version string whose groups,
@@ -73,6 +73,9 @@ The kinds:
     node      nodejs.org/dist/index.json: the newest LTS release.
     dotnet    the .NET release metadata: the latest SDK of the active LTS
               channel (track = "10.0" names a channel instead).
+    cuda      NVIDIA's CUDA redist: the newest redistrib_X.Y.Z.json in
+              track; component = its key (cuda_nvcc), whose linux-x86_64
+              archive and sha256 the source takes.
 
 What a bump writes: version, the moved sources' url and sha256, release = 1
 for a new version, and the old file name wherever the recipe spells it out
@@ -420,8 +423,22 @@ def find_npm(rule):
             "where": "integrity in the npm registry", "vars": {}}
 
 
+def find_cuda(rule):
+    base = "https://developer.download.nvidia.com/compute/cuda/redist/"
+    found = set(re.findall(r"redistrib_(\d+\.\d+\.\d+)\.json", page(base)))
+    vers = [v for v in found if in_track(v, rule)]
+    if not vers:
+        raise Skip("no CUDA release in track")
+    v = max(vers, key=nums)
+    doc = json.loads(page(f"{base}redistrib_{v}.json"))
+    a = doc[rule["component"]]["linux-x86_64"]
+    return {"version": v, "url": base + a["relative_path"], "sha256": a["sha256"],
+            "where": f"sha256 in redistrib_{v}.json", "vars": {}}
+
+
 FINDERS = {"github": find_github, "apt": find_apt, "regex": find_regex, "redirect": find_redirect,
-           "json": find_json, "node": find_node, "dotnet": find_dotnet, "npm": find_npm}
+           "json": find_json, "node": find_node, "dotnet": find_dotnet, "npm": find_npm,
+           "cuda": find_cuda}
 
 
 # -- the recipe --------------------------------------------------------------

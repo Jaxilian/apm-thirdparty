@@ -1,0 +1,39 @@
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "cuda_nvcc"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "cuda_crt"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "libnvvm"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "cuda_cudart"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "cccl"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "cuda_nvrtc"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "libcublas"
+
+[[source]]
+kind      = "cuda"
+track     = "13.4"
+component = "libcurand"

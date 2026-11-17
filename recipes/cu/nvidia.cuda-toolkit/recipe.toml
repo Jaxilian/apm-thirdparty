@@ -1,0 +1,92 @@
+# The CUDA Toolkit 13.4.3 (redistrib_13.4.3.json, released 2026-10-13),
+# from NVIDIA's per-component redistributable archives at
+# https://developer.download.nvidia.com/compute/cuda/redist/: cuda_nvcc,
+# cuda_crt, libnvvm, cuda_cudart, cccl, cuda_nvrtc, libcublas and
+# libcurand for linux-x86_64. Each sha256 is the one redistrib_13.4.3.json
+# gives, checked against the downloads on 2026-11-17. NVIDIA CUDA Toolkit
+# EULA; fetched from NVIDIA, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "cuda-toolkit"
+organization = "nvidia"
+version      = "13.4.3"
+release      = 1
+kind         = "bin"
+summary      = "CUDA Toolkit: nvcc, the CUDA runtime, cuBLAS, cuRAND and NVRTC"
+license      = "LicenseRef-NVIDIA-CUDA-Toolkit-EULA"
+homepage     = "https://developer.nvidia.com/cuda-toolkit"
+min_aos      = "0.4.85"
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/cuda_nvcc/linux-x86_64/cuda_nvcc-linux-x86_64-13.4.92-archive.tar.xz"
+sha256 = "60998f40cc9df5826b2a846e2dcc328133fbc5ef539398ce0a21cf5dcac7193d"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/cuda_crt/linux-x86_64/cuda_crt-linux-x86_64-13.4.92-archive.tar.xz"
+sha256 = "c969e61ded12dbf0cf20ace72867f1622ec0e8ea1e1d305e27761012025f7aaa"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/libnvvm/linux-x86_64/libnvvm-linux-x86_64-13.4.92-archive.tar.xz"
+sha256 = "0e619cf3d5b27f7c812665599ca9761fc296e56129b24a85d822a5d8a1a3bd75"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/cuda_cudart/linux-x86_64/cuda_cudart-linux-x86_64-13.4.92-archive.tar.xz"
+sha256 = "0ac5dbc538d04e9983bc493b410cce4b459e1ee9f5f6654b6464ef7b3e14a8b5"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/cccl/linux-x86_64/cccl-linux-x86_64-13.3.4.3.1-archive.tar.xz"
+sha256 = "6b7516074f42f80dd3feb9c11318c8e1c5ab56cdd9f18fff4c5ace2e7e0a8209"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/cuda_nvrtc/linux-x86_64/cuda_nvrtc-linux-x86_64-13.4.92-archive.tar.xz"
+sha256 = "defc747cfa5953b86f4c67414fc349d21149e9d513c096cb89c64b8ec4c0c932"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/libcublas/linux-x86_64/libcublas-linux-x86_64-13.8.0.4-archive.tar.xz"
+sha256 = "bd6ffcce561672da6abb928214a6694f392741e7d1e2d7dfde0da4bd651706b6"
+strip  = 1
+
+[[source]]
+url    = "https://developer.download.nvidia.com/compute/cuda/redist/libcurand/linux-x86_64/libcurand-linux-x86_64-10.4.4.72-archive.tar.xz"
+sha256 = "6f725f9187dc5f675308b830f786c163f5b1b499d86986f94fb60aa701c13c0b"
+strip  = 1
+
+[[dependencies]]
+name         = "devel"
+organization = "aos"
+track        = "*"
+
+[provides]
+command = ["nvcc", "ptxas", "nvlink", "fatbinary"]
+soname  = ["libcudart.so.13", "libcublas.so.13", "libcublasLt.so.13", "libcurand.so.10", "libnvrtc.so.13", "libnvrtc-builtins.so.13.4"]
+global  = true
+env     = ["CUDA_HOME=/opt/apm/packages/nvidia/cuda-toolkit/current/cuda", "CUDA_PATH=/opt/apm/packages/nvidia/cuda-toolkit/current/cuda"]
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/cuda $D/bin $D/lib
+for s in $APM_SOURCE_1 $APM_SOURCE_2 $APM_SOURCE_3 $APM_SOURCE_4 $APM_SOURCE_5 $APM_SOURCE_6 $APM_SOURCE_7 $APM_SOURCE_8; do
+	cp -a $s/. $D/cuda/
+done
+cp $APM_SOURCE_5/LICENSE $D/cuda/LICENSE.cccl
+cp $APM_SOURCE_1/LICENSE $D/cuda/LICENSE
+rm -f $D/cuda/lib/libcublas_static.a $D/cuda/lib/libcublasLt_static.a $D/cuda/lib/libcurand_static.a $D/cuda/lib/libnvrtc_static.a $D/cuda/lib/libnvrtc-builtins_static.a
+ln -s lib $D/cuda/lib64
+for l in libcudart.so.13 libcublas.so.13 libcublasLt.so.13 libcurand.so.10 libnvrtc.so.13 libnvrtc-builtins.so.13.4; do
+	ln -s ../cuda/lib/$l $D/lib/$l
+done
+for c in ptxas nvlink fatbinary; do
+	ln -s ../cuda/bin/$c $D/bin/$c
+done
+printf '#!/bin/sh\nexec "$(dirname "$(dirname "$(readlink -f "$0")")")/cuda/bin/nvcc" "$@"\n' > $D/bin/nvcc
+chmod 755 $D/bin/nvcc
+'''
