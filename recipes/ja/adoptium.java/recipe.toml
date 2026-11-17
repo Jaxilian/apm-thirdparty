@@ -9,8 +9,7 @@
 # in ~/AppData/adoptium.java (java.util.prefs.userRoot) instead of
 # ~/.java; a -D of the same name on the command line wins. A wrapper and
 # not JAVA_TOOL_OPTIONS, which the JVM announces on stderr at every
-# start. A program that loads libjvm itself is not covered, and
-# ~/.java/fonts (AWT's font cache) follows user.home alone.
+# start. A program that loads libjvm itself is not covered.
 #
 # The version is Temurin's 21.0.12.1+1 (a respin of 21.0.12) without its
 # fourth part, since a version here has three.
@@ -28,7 +27,7 @@ recipe_version = 1
 name         = "java"
 organization = "adoptium"
 version      = "21.0.13"
-release      = 2
+release      = 3
 kind         = "bin"
 summary      = "Java 21 development kit (Eclipse Temurin)"
 license      = "GPL-2.0-only WITH Classpath-exception-2.0"
@@ -47,16 +46,82 @@ install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D
 cp -a $APM_SRC/. $D/
-for n in java jshell; do
+for n in java jshell jconsole; do
 	mv $D/bin/$n $D/bin/$n.bin
 done
+T=$(mktemp -d)
+cd $T
+$D/bin/jar xf $D/lib/src.zip java.desktop/sun/font/FcFontConfiguration.java
+F=java.desktop/sun/font/FcFontConfiguration.java
+sed -i 's|String dir = userDir+fs+".java"+fs+"fonts"+fs+version;|String dir = System.getProperty("aos.java.fontcache", userDir+fs+".java"+fs+"fonts")+fs+version;|' $F
+grep -q aos.java.fontcache $F
+P=jar/aos/fontcache
+mkdir -p $P
+cat > $P/Agent.java <<'SRC'
+package aos.fontcache;
+
+import java.io.File;
+import java.io.InputStream;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
+import java.security.ProtectionDomain;
+import java.util.jar.JarFile;
+
+public class Agent implements ClassFileTransformer {
+    private final byte[] bytes;
+
+    private Agent(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
+    public static void premain(String args, Instrumentation inst) {
+        try {
+            File path = new File(Agent.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            try (JarFile jar = new JarFile(path);
+                    InputStream in = jar.getInputStream(jar.getJarEntry("aos/fontcache/FcFontConfiguration.bin"))) {
+                inst.addTransformer(new Agent(in.readAllBytes()));
+            }
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+    public byte[] transform(Module m, ClassLoader l, String name, Class<?> c,
+            ProtectionDomain d, byte[] b) {
+        if (l != null || c != null || !"sun/font/FcFontConfiguration".equals(name)) {
+            return null;
+        }
+        return bytes;
+    }
+}
+SRC
+cat > $P/NOTICE <<'TXT'
+FcFontConfiguration.bin is sun/font/FcFontConfiguration.class, compiled
+from FcFontConfiguration.java beside it: this JDK's own source from
+lib/src.zip with one line changed, so that the font cache directory is
+the aos.java.fontcache property when it is set (user.home/.java/fonts
+when not), to keep the cache out of the home. Agent.java hands the JVM
+that class. Both are GPL-2.0-only WITH Classpath-exception-2.0, as the
+JDK they come from.
+TXT
+cp $F $P/FcFontConfiguration.java
+$D/bin/javac -J-XX:-UsePerfData --patch-module java.desktop=java.desktop -d cls $F
+mv cls/sun/font/FcFontConfiguration.class $P/FcFontConfiguration.bin
+$D/bin/javac -J-XX:-UsePerfData -d jar $P/Agent.java
+printf 'Premain-Class: aos.fontcache.Agent\n' > mf
+$D/bin/jar -J-XX:-UsePerfData cfm $D/lib/aos-fontcache.jar mf -C jar .
+cd /
+rm -r $T
+A="\$HOME/AppData/adoptium.java"
 cat > $D/bin/java <<WRAP
 #!/bin/sh
-exec $APM_PREFIX/bin/java.bin -Djava.util.prefs.userRoot="\$HOME/AppData/adoptium.java" "\$@"
+exec $APM_PREFIX/bin/java.bin -javaagent:$APM_PREFIX/lib/aos-fontcache.jar -Daos.java.fontcache="$A/fonts" -Djava.util.prefs.userRoot="$A" "\$@"
 WRAP
-cat > $D/bin/jshell <<WRAP
+for n in jshell jconsole; do
+	cat > $D/bin/$n <<WRAP
 #!/bin/sh
-exec $APM_PREFIX/bin/jshell.bin -J-Djava.util.prefs.userRoot="\$HOME/AppData/adoptium.java" "\$@"
+exec $APM_PREFIX/bin/$n.bin -J-javaagent:$APM_PREFIX/lib/aos-fontcache.jar -J-Daos.java.fontcache="$A/fonts" -J-Djava.util.prefs.userRoot="$A" "\$@"
 WRAP
-chmod 755 $D/bin/java $D/bin/jshell
+done
+chmod 755 $D/bin/java $D/bin/jshell $D/bin/jconsole
 '''
