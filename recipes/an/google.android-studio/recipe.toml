@@ -28,7 +28,7 @@ recipe_version = 1
 name         = "android-studio"
 organization = "google"
 version      = "2026.2.2"
-release      = 3
+release      = 4
 kind         = "app"
 summary      = "Android Studio, the IDE for Android apps"
 license      = "LicenseRef-Android-Studio-Terms"
@@ -67,8 +67,8 @@ command = ["android-studio"]
 [sandbox]
 x11 = true
 home  = "private"
-share = ["Projects", ".gitconfig:ro"]
-data  = ["google/android-sdk"]
+share = ["Projects"]
+data  = ["google/android-sdk", "aos/git"]
 tools = true
 ssh   = true
 
