@@ -1,0 +1,342 @@
+# graphify 0.9.111, the code knowledge-graph tool behind the Claude Code
+# graphify skill: PyPI's graphifyy (github.com/Graphify-Labs/graphify) and
+# the 30 wheels uv resolved for it on this machine on 2026-11-16 (networkx,
+# numpy, PyYAML, RapidFuzz, tree-sitter and 25 grammars), each the cp313 or
+# abi3 manylinux x86_64 wheel, in a venv of its own on astral/python 3.13.
+# The sha256 of each is PyPI's (pypi.org/pypi/<project>/<version>/json),
+# read on 2026-11-17. Patched at build: its cache files follow
+# GRAPHIFY_CACHE_HOME, then ~/AppData/pypi.graphifyy/cache, then
+# XDG_CACHE_HOME, then ~/.cache; a user-scope codex skill goes to
+# CODEX_HOME; its Claude skill finds this graphify before uv's.
+# Apache-2.0; the wheels BSD-3-Clause, MIT, Apache-2.0, and in numpy's
+# 0BSD, Zlib, CC0-1.0, BSD-3-Clause-Open-MPI and libgfortran's
+# GPL-3.0-or-later WITH GCC-exception-3.1. Fetched from
+# files.pythonhosted.org, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "graphifyy"
+organization = "pypi"
+version      = "0.9.111"
+release      = 1
+kind         = "bin"
+summary      = "graphify: a knowledge graph of a code base, for Claude Code and other agents"
+license      = "Apache-2.0 AND BSD-3-Clause AND MIT AND 0BSD AND Zlib AND CC0-1.0 AND BSD-3-Clause-Open-MPI AND GPL-3.0-or-later WITH GCC-exception-3.1"
+homepage     = "https://github.com/Graphify-Labs/graphify"
+min_aos      = "0.4.39"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/16/79/e99497b940b4d4e92d3b27967fd331137c21fc5ad3fdd74fe2526a5a5bc3/graphifyy-0.9.111-py3-none-any.whl"
+sha256 = "1d377d7f6b0a3bea07b1b3887290132e2499137c1092c749331522764c5035f1"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/7e/cd/fe58041e9011f307c490e3e17dd48cc516448f7c698a3f2d9d9d65d7e6a8/networkx-3.7-py3-none-any.whl"
+sha256 = "e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/40/d6/68dd5a83914bbcaf32b3165993f7955979916708cb0156d1e28231e18803/numpy-2.5.5-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "824025655df929268bfe6b47ed91a00d14209a6f760847cf150be446829e1ce4"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/74/27/e5b8f34d02d9995b80abcef563ea1f8b56d20134d8f4e5e81733b1feceb2/pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "0f29edc409a6392443abf94b9cf89ce99889a1dd5376d94316ae5145dfedd5d6"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/70/42/4bf9dc905df33bb4515895ff87f777d8df25a3617c0bf8f5d4716813d9ea/rapidfuzz-3.14.6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "6bb896f89a387219c671ebc33c4a636b222010cc3c5c83884a7fc8707bf0bbf9"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/ed/4c/b430d2cb43f8badfb3a3fa9d6cd7c8247698187b5674008c9d67b2a90c8e/tree_sitter-0.25.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "b878e296e63661c8e124177cc3084b041ba3f5936b43076d57c487822426f614"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/d7/22/9f70bc3d3b942ab9fc0f89c1dc9e087519a3a94f64ae6b7377aae3a7a0f0/tree_sitter_bash-0.25.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "3f484c4bb8796cde7a87ca351e6116f09653edac0eb3c6d238566359dd28b117"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/e9/8c/0dfb88d726f8821d1c4c36042f092be974a800afd734307a595b8604190c/tree_sitter_c-0.24.2-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "5041ef67eb68ce6bc8bb0b1f8ef3a5585ce523dae0c7eec109ab0627dd75aede"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/41/5a/a8855cbb5bbab28adb29c2c7f0e7be5a9f1d21450c13b3c3e613190d9b8c/tree_sitter_c_sharp-0.23.5-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "aa88a780204cd153c4c1ae2d59c654cee1402212fa0d069823d6d34301587438"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/6a/4d/23e390234d2acd351f5563b1079c515d7c1fe13ddb7392cee543be74dda3/tree_sitter_cpp-0.23.4-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "773d2cafc08bbc0f998687fa33f42f378c1a371cdb582870c4d13abb06092706"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/31/35/78c94e164542ad08098b83cb7e046261f3ab2edade96e29727dd209bfa35/tree_sitter_elixir-0.3.5-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "ebfe3491a3d00ac50b12a3bfcabb1c564f3809ed8a095099fe87f49d6b3987e6"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/57/86/0923f061e36f229d99660a8f53f8e3b57da459e08512c09e256de820c472/tree_sitter_fortran-0.6.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "ac4800b4abc1b25e6e7ab4a3f2eae274c5b19107beb18d3a473c0f67509c7486"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/86/fb/b30d63a08044115d8b8bd196c6c2ab4325fb8db5757249a4ef0563966e2e/tree_sitter_go-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "04b3b3cb4aff18e74e28d49b716c6f24cb71ddfdd66768987e26e4d0fa812f74"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/c6/b7/451ac5e158f2418fea7eb0744254dd27238359c070420d69d711aaf06356/tree_sitter_groovy-0.1.2-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "9e938e9c2cd5fdb08fd1b28d7d621d15ea959a17a4bc0b77833e07a94fe7d263"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/29/09/e0d08f5c212062fd046db35c1015a2621c2631bc8b4aae5740d7adb276ad/tree_sitter_java-0.23.5-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "370b204b9500b847f6d0c5ad584045831cee69e9a3e4d878535d39e4a7e4c4f1"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/5f/c4/7da74ecdcd8a398f88bd003a87c65403b5fe0e958cdd43fbd5fd4a398fcf/tree_sitter_javascript-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "9dc04ba91fc8583344e57c1f1ed5b2c97ecaaf47480011b92fbeab8dda96db75"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/77/08/10001992526670e0d6f24c571b179f0ece90e5e014a4b98a3ce076884f32/tree_sitter_json-0.24.8-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "85cca779872f7278f3a74eb38533d34b9c4de4fd548615e3361fa64fe350ad0a"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/0b/4c/09534d31ab95c3da2284f538bb134bf6fe064770c0bf6fe4fb6f2b028d9e/tree_sitter_julia-0.23.1-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "7d4f6ae938198fc0be9b6ea76313ade24fcdb89be01a791e0cc90c88fae5743d"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/65/bd/0f3aac45eb88b6b3173ac9c23bc41d8865943cbbe1caaafc001cd1b73c90/tree_sitter_kotlin-1.1.0-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "9a92afe24b634cf914c5812af0f5c53184b1c18bdf6ee5505c83afac81f6bf6c"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/45/2b/1edfd9bef9a1cc11047cd87ca9c60707b8425080cfc0498a7d3bc762d783/tree_sitter_lua-0.5.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "5ec448c854fea32414a0449147d648bc5baddf7a0357008c4abe3269db35370a"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/60/cd/a153a4268b9b405a69ee3e427f19fc570a3c63d4b4d7766bee5a7ba28744/tree_sitter_objc-3.0.2-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "e71282ac9c096a966bf2fa6a4ecdbea4bd037d3e01ea4aa9bbc64d9a4c0022f6"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/9a/c6/fd863a7a779d0ab67688939eba0e08bff7b1ffe731288d3d3610df21217b/tree_sitter_php-0.24.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "7a1404a30f2972498ace040b0029738b8dac45d0a12932ccb8b605eb94bafbe4"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/de/ff/5bba5fef4b3808ade114512ebf44e0c192050cc825cdcf42fa2043e5abd0/tree_sitter_powershell-0.26.4-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "56508e4ac7aad1e3b26f2ef96b8d2b60b149c4efa0c23742e91e809a11db73ee"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/aa/cb/d9b0b67d037922d60cbe0359e0c86457c2da721bc714381a63e2c8e35eba/tree_sitter_python-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "86f118e5eecad616ecdb81d171a36dde9bef5a0b21ed71ea9c3e390813c3baf5"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/23/dd/1171b5dd25da10f768732a20fb62d2e3ae66e3b42329351f2ce5bf723abb/tree_sitter_ruby-0.23.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "f7bcd93972b4ca2803856d4fe0fbd04123ff29c4592bbb9f12a27528bd252341"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/ca/45/a051bbd3045a61182dde25b93ae9a33d2677c935b16952283e12eaf46051/tree_sitter_rust-0.24.2-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "e033c5a93b57c88e0a835880de39fc802909ff69f57aaff6000211c196ea5190"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/d9/ee/36932f6d4255597d1fc33e2051edaa1ff94550c239a9bef7d37e68b09bdf/tree_sitter_scala-0.26.13-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+sha256 = "e3ff5a30430243b3e49a3784499209cd5678010c6a164c0b695e5aedbe0fe006"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/9c/d1/05bcef72968411fefb7d6a0a2ccfb5bb3d248600949fe01fb80c6c3db57a/tree_sitter_swift-0.7.4-cp38-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+sha256 = "d11d15a479d7d3b14c7fc526b4daab107995feca5752936fec5c60cc7fa6fe4d"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/49/d1/a71c36da6e2b8a4ed5e2970819b86ef13ba77ac40d9e333cb17df6a2c5db/tree_sitter_typescript-0.23.2-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "e96d36b85bcacdeb8ff5c2618d75593ef12ebaf1b4eace3477e2bdb2abb1752c"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/2a/c1/8782535dbb6ea1f3556eb2bc473f5f131339739278775171fc42b0a57536/tree_sitter_verilog-1.0.3-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "747dd7d4bc95fb389bc37225f82d16f0c40549856e9a244be3ff9d7bfe62b730"
+
+[[source]]
+url    = "https://files.pythonhosted.org/packages/78/02/275523eb05108d83e154f52c7255763bac8b588ae14163563e19479322a7/tree_sitter_zig-1.1.2-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+sha256 = "e924509dcac5a6054da357e3d6bcf37ea82984ee1d2a376569753d32f61ea8bb"
+
+[[dependencies]]
+name         = "python"
+organization = "astral"
+track        = "3.13.*"
+
+[provides]
+command = ["graphify", "graphify-mcp"]
+env     = ["GRAPHIFY_CACHE_HOME=AppData/pypi.graphifyy/cache"]
+
+[build]
+prepare = '''
+python3 -I - <<'PY'
+import pathlib
+import re
+import sys
+
+
+def sub(path, old, new, count=1):
+    p = pathlib.Path(path)
+    text = p.read_text(encoding="utf-8")
+    found = text.count(old)
+    if found != count:
+        sys.exit(f"{path}: {found} of {old!r}, {count} expected: upstream changed, the patch is stale")
+    p.write_text(text.replace(old, new), encoding="utf-8", newline="\n")
+
+
+sub("graphify/paths.py",
+    "\n\ndef out_path(*parts: str) -> Path:\n",
+    "\n\ndef cache_home() -> Path:\n"
+    "    value = os.environ.get(\"GRAPHIFY_CACHE_HOME\", \"\")\n"
+    "    if os.path.isabs(value):\n"
+    "        return Path(value)\n"
+    "    appdata = Path.home() / \"AppData\"\n"
+    "    if appdata.is_dir():\n"
+    "        return appdata / \"pypi.graphifyy\" / \"cache\"\n"
+    "    value = os.environ.get(\"XDG_CACHE_HOME\", \"\")\n"
+    "    if os.path.isabs(value):\n"
+    "        return Path(value)\n"
+    "    return Path.home() / \".cache\"\n"
+    "\n\ndef out_path(*parts: str) -> Path:\n")
+
+sub("graphify/install.py",
+    "from graphify.paths import GRAPHIFY_OUT as _GRAPHIFY_OUT\n",
+    "from graphify.paths import GRAPHIFY_OUT as _GRAPHIFY_OUT\n"
+    "from graphify.paths import cache_home as _cache_home\n")
+sub("graphify/install.py",
+    "    return Path.home() / \".cache\" / \"graphify\" / \"skill-locks\" / f\"{digest}.lock\"\n",
+    "    return _cache_home() / \"graphify\" / \"skill-locks\" / f\"{digest}.lock\"\n")
+
+sub("graphify/install.py",
+    "        return Path(os.environ[\"CLAUDE_CONFIG_DIR\"]) / \"skills\" / \"graphify\" / \"SKILL.md\"\n"
+    "    return Path.home() / cfg[\"skill_dst\"]\n",
+    "        return Path(os.environ[\"CLAUDE_CONFIG_DIR\"]) / \"skills\" / \"graphify\" / \"SKILL.md\"\n"
+    "    if platform_name == \"codex\" and os.environ.get(\"CODEX_HOME\"):\n"
+    "        return Path(os.environ[\"CODEX_HOME\"]) / \"skills\" / \"graphify\" / \"SKILL.md\"\n"
+    "    return Path.home() / cfg[\"skill_dst\"]\n")
+
+sub("graphify/querylog.py",
+    "from typing import Any\n",
+    "from typing import Any\n\nfrom graphify.paths import cache_home\n")
+sub("graphify/querylog.py",
+    "        return Path.home() / \".cache\" / \"graphify-queries.log\"\n",
+    "        return cache_home() / \"graphify-queries.log\"\n")
+
+sub("graphify/hooks.py",
+    "_log = os.environ.get('GRAPHIFY_REBUILD_LOG') or os.path.join(os.path.expanduser('~'), '.cache', 'graphify-rebuild.log')\n",
+    "_home = os.path.expanduser('~')\n"
+    "_app = os.path.join(_home, 'AppData', 'pypi.graphifyy', 'cache') if os.path.isdir(os.path.join(_home, 'AppData')) else ''\n"
+    "_dirs = [os.environ.get('GRAPHIFY_CACHE_HOME') or '', _app, os.environ.get('XDG_CACHE_HOME') or '']\n"
+    "_cache = next((d for d in _dirs if os.path.isabs(d)), os.path.join(_home, '.cache'))\n"
+    "_log = os.environ.get('GRAPHIFY_REBUILD_LOG') or os.path.join(_cache, 'graphify-rebuild.log')\n")
+sub("graphify/hooks.py",
+    "_GRAPHIFY_LOG=\"${HOME}/.cache/graphify-rebuild.log\"\n",
+    "_GFY_CACHE=\"${HOME}/.cache\"\n"
+    "case \"${XDG_CACHE_HOME:-}\" in /*) _GFY_CACHE=\"$XDG_CACHE_HOME\" ;; esac\n"
+    "[ -d \"${HOME}/AppData\" ] && _GFY_CACHE=\"${HOME}/AppData/pypi.graphifyy/cache\"\n"
+    "case \"${GRAPHIFY_CACHE_HOME:-}\" in /*) _GFY_CACHE=\"$GRAPHIFY_CACHE_HOME\" ;; esac\n"
+    "_GRAPHIFY_LOG=\"$_GFY_CACHE/graphify-rebuild.log\"\n", 4)
+
+uv = (
+    "# 1. uv tool installs — most reliable on modern Mac/Linux\n"
+    "if [ -z \"$PYTHON\" ] && command -v uv >/dev/null 2>&1; then\n"
+    "    _UV_PY=$(uv tool run --from graphifyy python -c \"import sys; print(sys.executable)\" 2>/dev/null)\n"
+    "    if [ -n \"$_UV_PY\" ]; then PYTHON=\"$_UV_PY\"; fi\n"
+    "fi\n")
+shebang = (
+    "# 2. Read shebang from graphify binary (pipx and direct pip installs)\n"
+    "if [ -z \"$PYTHON\" ] && [ -n \"$GRAPHIFY_BIN\" ]; then\n"
+    "    _SHEBANG=$(head -1 \"$GRAPHIFY_BIN\" | tr -d '#!')\n"
+    "    case \"$_SHEBANG\" in\n"
+    "        *[!a-zA-Z0-9/_.@-]*) ;;\n"
+    "        *) \"$_SHEBANG\" -c \"import graphify\" 2>/dev/null && PYTHON=\"$_SHEBANG\" ;;\n"
+    "    esac\n"
+    "fi\n")
+sub("graphify/skill.md", uv + shebang,
+    shebang.replace("# 2. Read shebang from graphify binary (pipx and direct pip installs)",
+                    "# 1. Read shebang from the graphify on PATH (apm, pipx and direct pip installs)")
+    + "case \"${_SHEBANG:-}\" in\n"
+    "    /opt/apm/packages/pypi/graphifyy/*)\n"
+    "        [ -n \"$PYTHON\" ] || { echo \"graphify: the apm package pypi/graphifyy cannot import graphify with $_SHEBANG (astral/python moved to a new minor?): it needs a rebuild. Not falling back to uv.\" >&2; exit 1; } ;;\n"
+    "esac\n"
+    + uv.replace("# 1. uv tool installs", "# 2. uv tool installs"))
+
+home_cache = re.compile(r"home\(\) / \"\.cache\"|expanduser\('~'\), '\.cache'|_home, '\.cache'|HOME\}?/\.cache")
+hits = {}
+for f in sorted(pathlib.Path("graphify").rglob("*.py")):
+    n = len(home_cache.findall(f.read_text(encoding="utf-8")))
+    if n:
+        hits[str(f)] = n
+if hits != {"graphify/hooks.py": 5, "graphify/paths.py": 1}:
+    sys.exit(f"a home cache path outside the patch: {hits}")
+PY
+'''
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+PY=/opt/apm/packages/astral/python/current/bin/python3
+V=$D/venv
+SP=$V/lib/python3.13/site-packages
+test "$($PY -c 'import sys; print(sys.version_info[:2] == (3, 13))')" = True
+install -d $SP $V/bin $D/bin
+printf 'home = /opt/apm/packages/astral/python/current/bin\ninclude-system-site-packages = false\nversion = 3.13\n' > $V/pyvenv.cfg
+printf '#!/bin/bash\nexec -a "$0" %s "$@"\n' $PY > $V/bin/python3
+chmod 755 $V/bin/python3
+cp -a $APM_SRC/. $SP/
+for n in $(seq 2 31); do
+	eval "s=\$APM_SOURCE_$n"
+	cp -a $s/. $SP/
+done
+entry() {
+	cat > $D/bin/$1 <<EOF
+#!/opt/apm/packages/pypi/graphifyy/current/venv/bin/python3
+import os
+import sys
+
+if sys.version_info[:2] != (3, 13):
+    sys.exit("$1: pypi/graphifyy is built for Python 3.13, astral/python is " + sys.version.split()[0] + ": it needs a rebuild")
+home = os.path.expanduser("~")
+os.environ.setdefault("CLAUDE_CONFIG_DIR", os.path.join(home, "AppData", "anthropic.claude-code"))
+os.environ.setdefault("CODEX_HOME", os.path.join(home, "AppData", "openai.codex"))
+from $2 import $3
+sys.exit($3())
+EOF
+	chmod 755 $D/bin/$1
+}
+entry graphify graphify.__main__ main
+entry graphify-mcp graphify.serve _main
+$PY -I -m compileall -q -j 0 --invalidation-mode checked-hash -s $APM_DESTDIR -p / $SP
+$PY -I - $SP <<'PY'
+import importlib.metadata as md
+import os
+import re
+import sys
+import tempfile
+from pathlib import Path
+
+from pip._vendor.packaging.requirements import Requirement
+
+sp = sys.argv[1]
+sys.path.insert(0, sp)
+dists = {re.sub(r"[-_.]+", "-", d.metadata["Name"]).lower(): d for d in md.distributions(path=[sp])}
+if len(dists) != 31:
+    sys.exit(f"{len(dists)} wheels in site-packages, 31 expected")
+for line in dists["graphifyy"].requires:
+    r = Requirement(line)
+    if r.marker and not r.marker.evaluate({"extra": ""}):
+        continue
+    d = dists.get(re.sub(r"[-_.]+", "-", r.name).lower())
+    if d is None or not r.specifier.contains(d.version, prereleases=True):
+        sys.exit(f"graphifyy wants {line}; the recipe has {d.version if d else 'none'}")
+
+import graphify.__main__
+import graphify.extract
+import graphify.serve
+from graphify.paths import cache_home
+
+home = Path(tempfile.mkdtemp())
+os.environ["HOME"] = str(home)
+for k in ("GRAPHIFY_CACHE_HOME", "XDG_CACHE_HOME"):
+    os.environ.pop(k, None)
+assert cache_home() == home / ".cache"
+os.environ["XDG_CACHE_HOME"] = "relative"
+assert cache_home() == home / ".cache"
+os.environ["XDG_CACHE_HOME"] = "/x"
+assert cache_home() == Path("/x")
+(home / "AppData").mkdir()
+assert cache_home() == home / "AppData" / "pypi.graphifyy" / "cache"
+os.environ["GRAPHIFY_CACHE_HOME"] = "/g"
+assert cache_home() == Path("/g")
+PY
+'''

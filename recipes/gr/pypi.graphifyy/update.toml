@@ -1,0 +1,6 @@
+[[source]]
+kind        = "json"
+page        = "https://pypi.org/pypi/graphifyy/json"
+version_key = "info.version"
+url_key     = "urls.0.url"
+sha256_key  = "urls.0.digests.sha256"
