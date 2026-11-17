@@ -28,7 +28,7 @@ recipe_version = 1
 name         = "dotnet"
 organization = "microsoft"
 version      = "10.0.404"
-release      = 2
+release      = 3
 kind         = "bin"
 summary      = ".NET 10 SDK"
 license      = "MIT"
@@ -55,6 +55,7 @@ cat > $D/bin/dotnet <<WRAP
 export DOTNET_ROOT=$APM_PREFIX/dotnet
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+export DOTNET_GENERATE_ASPNET_CERTIFICATE="\${DOTNET_GENERATE_ASPNET_CERTIFICATE:-false}"
 A="\$HOME/AppData/microsoft.dotnet"
 export DOTNET_CLI_HOME="\${DOTNET_CLI_HOME:-\$A}"
 export NUGET_PACKAGES="\${NUGET_PACKAGES:-\$A/nuget/packages}"
