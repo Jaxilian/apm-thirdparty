@@ -38,7 +38,7 @@ recipe_version = 1
 [package]
 name         = "antigravity"
 organization = "google"
-version      = "1.5.9"
+version      = "1.5.13"
 release      = 1
 kind         = "bin"
 summary      = "Antigravity CLI: Google's coding agent in the terminal"
@@ -46,8 +46,8 @@ license      = "LicenseRef-Google-Antigravity-Terms"
 homepage     = "https://antigravity.google/"
 
 [[source]]
-url    = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.9-4515810895593472/linux-x64/cli_linux_x64.tar.gz"
-sha256 = "8b1f5e56779f2434a0af36f1b715a8392a084de550f8c68bc79821f95fabf3fa"
+url    = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.13-5999302598852608/linux-x64/cli_linux_x64.tar.gz"
+sha256 = "7fa9cc6df0d09562693d637c406a86c1b0f52ab3364714b1fd2d79cc6060d4b2"
 
 [provides]
 command = ["agy"]

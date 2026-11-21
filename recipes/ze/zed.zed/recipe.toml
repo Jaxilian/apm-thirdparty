@@ -23,8 +23,8 @@ recipe_version = 1
 [package]
 name         = "zed"
 organization = "zed"
-version      = "1.28.1"
-release      = 2
+version      = "1.29.3"
+release      = 1
 kind         = "app"
 summary      = "Zed code editor"
 license      = "GPL-3.0-or-later"
@@ -34,8 +34,8 @@ homepage     = "https://zed.dev/"
 min_aos      = "0.4.75"
 
 [[source]]
-url    = "https://zed.dev/api/releases/stable/1.28.1/zed-linux-x86_64.tar.gz"
-sha256 = "9c3fc4cbe533e72c8d0e864a62be2b88d69cc44b9f52cd25d4c21d054dda3742"
+url    = "https://zed.dev/api/releases/stable/1.29.3/zed-linux-x86_64.tar.gz"
+sha256 = "44b0f350aa7bf4551d1b0aaa2d3b673a6de2c03bc5e979b3592fd2180b4f77c1"
 strip  = 1
 
 # Zed reads the machine's fonts through fontconfig: /usr/share/fonts,

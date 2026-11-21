@@ -30,7 +30,7 @@ recipe_version = 1
 [package]
 name         = "claude-code"
 organization = "anthropic"
-version      = "2.1.311"
+version      = "2.1.323"
 release      = 1
 kind         = "bin"
 summary      = "Claude Code: Anthropic's coding agent in the terminal"
@@ -38,8 +38,8 @@ license      = "LicenseRef-Anthropic-Commercial-Terms"
 homepage     = "https://claude.com/product/claude-code"
 
 [[source]]
-url    = "https://downloads.claude.ai/claude-code-releases/2.1.311/linux-x64/claude"
-sha256 = "86dc1fcc69498159eaf15f446613e847010f9036bfbbdffd4c49350be8489ada"
+url    = "https://downloads.claude.ai/claude-code-releases/2.1.323/linux-x64/claude"
+sha256 = "604d29a6869409106b6a1110bdadcc8b72e8654a5a865d23258f938a696e348e"
 
 [provides]
 command = ["claude"]

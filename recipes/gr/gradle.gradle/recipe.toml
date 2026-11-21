@@ -18,7 +18,7 @@ recipe_version = 1
 [package]
 name         = "gradle"
 organization = "gradle"
-version      = "9.9.1"
+version      = "9.9.2"
 release      = 1
 kind         = "bin"
 summary      = "Gradle, the build tool of Java and Android projects"
@@ -28,8 +28,8 @@ homepage     = "https://gradle.org/"
 min_aos      = "0.4.75"
 
 [[source]]
-url    = "https://services.gradle.org/distributions/gradle-9.9.1-bin.zip"
-sha256 = "d8a18a7a841dd5df825d35a685fad6f2d7f12ac0c280e57b67c27b4a520ba228"
+url    = "https://services.gradle.org/distributions/gradle-9.9.2-bin.zip"
+sha256 = "971fcd7150ca4ba04852c0b2ca0d2d0ab9468e14b03473eab19528809914c76b"
 strip  = 1
 
 [[dependencies]]

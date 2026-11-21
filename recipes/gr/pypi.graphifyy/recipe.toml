@@ -18,7 +18,7 @@ recipe_version = 1
 [package]
 name         = "graphifyy"
 organization = "pypi"
-version      = "0.9.111"
+version      = "0.9.114"
 release      = 1
 kind         = "bin"
 summary      = "graphify: a knowledge graph of a code base, for Claude Code and other agents"
@@ -27,8 +27,8 @@ homepage     = "https://github.com/Graphify-Labs/graphify"
 min_aos      = "0.4.39"
 
 [[source]]
-url    = "https://files.pythonhosted.org/packages/16/79/e99497b940b4d4e92d3b27967fd331137c21fc5ad3fdd74fe2526a5a5bc3/graphifyy-0.9.111-py3-none-any.whl"
-sha256 = "1d377d7f6b0a3bea07b1b3887290132e2499137c1092c749331522764c5035f1"
+url    = "https://files.pythonhosted.org/packages/ef/4f/44f9f4271c4de7c9b65777a01f3ce28dc6a1ca04360f812fa942371a4827/graphifyy-0.9.114-py3-none-any.whl"
+sha256 = "cf3cb57e87840a0c6ef7399578a95ad7ff6a83539dc71dcef0465b1b7f3a3453"
 
 [[source]]
 url    = "https://files.pythonhosted.org/packages/7e/cd/fe58041e9011f307c490e3e17dd48cc516448f7c698a3f2d9d9d65d7e6a8/networkx-3.7-py3-none-any.whl"
