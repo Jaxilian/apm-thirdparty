@@ -6,7 +6,7 @@ recipe_version = 1
 [package]
 name         = "waterfox"
 organization = "waterfox"
-version      = "6.7.8"
+version      = "6.7.9"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -15,8 +15,8 @@ license      = "MPL-2.0"
 homepage     = "https://www.waterfox.com/"
 
 [[source]]
-url    = "https://cdn.waterfox.com/waterfox/releases/6.7.8/Linux_x86_64/waterfox-6.7.8.tar.bz2"
-sha256 = "29b8bcc0265fdea7dcf0471c6ef8e296f48ca6973e039b9d181a93e7b654ef15"
+url    = "https://cdn.waterfox.com/waterfox/releases/6.7.9/Linux_x86_64/waterfox-6.7.9.tar.bz2"
+sha256 = "b528cca5e96a2d9676b021277c1cb632f9e10dbfa27e845866278754e0c8c5b6"
 strip  = 1
 
 [[dependencies]]

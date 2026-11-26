@@ -24,7 +24,7 @@ recipe_version = 1
 [package]
 name         = "grok"
 organization = "xai"
-version      = "1.0.77"
+version      = "1.0.92"
 release      = 1
 kind         = "bin"
 summary      = "Grok Build: xAI's coding agent in the terminal"
@@ -32,8 +32,8 @@ license      = "LicenseRef-xAI-Terms-of-Service"
 homepage     = "https://x.ai/cli"
 
 [[source]]
-url    = "https://x.ai/cli/grok-1.0.77-linux-x86_64"
-sha256 = "b702950aa5827d855e493278ab6215a4e0f5bceb5bba6c6243a9f55cdd143b0a"
+url    = "https://x.ai/cli/grok-1.0.92-linux-x86_64"
+sha256 = "add4d201dbf2c0bd6077a36feb55a76939de30bae48dbb06f16b2307d38ceacb"
 
 [provides]
 command = ["grok", "agent"]
@@ -42,7 +42,7 @@ command = ["grok", "agent"]
 install = '''
 D=$APM_DESTDIR$APM_PREFIX
 install -d $D/bin $D/libexec
-install -m 755 $APM_SRC/grok-1.0.77-linux-x86_64 $D/libexec/grok
+install -m 755 $APM_SRC/grok-1.0.92-linux-x86_64 $D/libexec/grok
 ln -s grok $D/libexec/agent
 for n in grok agent; do
 	cat > $D/bin/$n <<WRAP

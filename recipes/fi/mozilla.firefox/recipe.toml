@@ -23,7 +23,7 @@ recipe_version = 1
 [package]
 name         = "firefox"
 organization = "mozilla"
-version      = "160.0.0"
+version      = "161.0.0"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -32,8 +32,8 @@ license      = "MPL-2.0 AND LicenseRef-Mozilla-Trademark"
 homepage     = "https://www.mozilla.org/firefox/"
 
 [[source]]
-url    = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/160.0/linux-x86_64/en-US/firefox-160.0.tar.xz"
-sha256 = "fde774e9757c8878534c05ec210db592bf6a1b244c57941ffb2e364c04f35fcd"
+url    = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/161.0/linux-x86_64/en-US/firefox-161.0.tar.xz"
+sha256 = "3e9b1e5132d7b53b1ad968c7300281e90e6a0ef57d0656b1516202d686d25733"
 strip  = 1
 
 [[dependencies]]

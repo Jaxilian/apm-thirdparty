@@ -52,8 +52,8 @@ recipe_version = 1
 [package]
 name         = "lutris"
 organization = "lutris"
-version      = "0.5.22"
-release      = 8
+version      = "0.5.23"
+release      = 1
 kind         = "app"
 summary      = "Lutris game launcher"
 license      = "GPL-3.0-or-later"
@@ -65,8 +65,8 @@ homepage     = "https://lutris.net/"
 min_aos      = "0.4.76"
 
 [[source]]
-url    = "https://github.com/lutris/lutris/releases/download/v0.5.22/lutris_0.5.22_all.deb"
-sha256 = "88a350357e0438b423cdf93108f27942de094dc19f973df73839f3b0b0bafaa0"
+url    = "https://github.com/lutris/lutris/releases/download/v0.5.23/lutris_0.5.23_all.deb"
+sha256 = "6459e8a208053e5f9e5db24939e668356933b116e71ac37c22d3d773b00c5f13"
 
 [[dependencies]]
 name         = "python"

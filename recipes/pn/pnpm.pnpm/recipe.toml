@@ -23,7 +23,7 @@ recipe_version = 1
 [package]
 name         = "pnpm"
 organization = "pnpm"
-version      = "12.21.0"
+version      = "12.24.0"
 release      = 1
 kind         = "bin"
 summary      = "pnpm: fast, disk-saving package manager for JavaScript"
@@ -32,8 +32,8 @@ homepage     = "https://pnpm.io/"
 min_aos      = "0.4.37"
 
 [[source]]
-url    = "https://github.com/pnpm/pnpm/releases/download/v12.21.0/pnpm-linux-x64.tar.gz"
-sha256 = "84c4773bcf4a217f4083cd7b2a91e4cee6103cf42426c1282ef37d308f55a410"
+url    = "https://github.com/pnpm/pnpm/releases/download/v12.24.0/pnpm-linux-x64.tar.gz"
+sha256 = "1c67021e5203fb4c9cf11d9a4ade225417b299e6ef0316203e15b85cbe374585"
 
 [provides]
 command = ["pnpm"]

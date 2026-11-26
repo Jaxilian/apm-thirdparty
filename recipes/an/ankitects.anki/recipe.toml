@@ -23,7 +23,7 @@ recipe_version = 1
 name         = "anki"
 organization = "ankitects"
 version      = "26.9.4"
-release      = 1
+release      = 2
 min_aos      = "0.4.57"
 kind         = "app"
 summary      = "Anki flashcards with spaced repetition"
@@ -36,8 +36,8 @@ sha256 = "1f4a6bdffcfbfc75dc5ef632aa0e44b87bdf7615679d40be8bb8db44efc06e9a"
 strip  = 1
 
 [[source]]
-url    = "https://deb.debian.org/debian/pool/main/b/brotli/libbrotli1_1.1.0-2+b7_amd64.deb"
-sha256 = "0fb79f88db210afbd69282ab9649e525f393ec6950ca34da1a6b359250b8d7db"
+url    = "https://deb.debian.org/debian/pool/main/b/brotli/libbrotli1_1.1.0-2+deb13u1_amd64.deb"
+sha256 = "db46824c60fee46aff3cc0be3e5f736bc606cae669b1fb17516a41e8073251a9"
 
 [[source]]
 url    = "https://deb.debian.org/debian/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb"

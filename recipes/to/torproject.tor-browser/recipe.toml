@@ -7,7 +7,7 @@ recipe_version = 1
 [package]
 name         = "tor-browser"
 organization = "torproject"
-version      = "16.0.1"
+version      = "16.0.3"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -16,8 +16,8 @@ license      = "MPL-2.0 AND BSD-3-Clause AND LicenseRef-Tor-Trademark"
 homepage     = "https://www.torproject.org/"
 
 [[source]]
-url    = "https://archive.torproject.org/tor-package-archive/torbrowser/16.0.1/tor-browser-linux-x86_64-16.0.1.tar.xz"
-sha256 = "5b36ad610c20c81faa72caf27d1cd3a11f14a327c320b4cec581400016ba78b0"
+url    = "https://archive.torproject.org/tor-package-archive/torbrowser/16.0.3/tor-browser-linux-x86_64-16.0.3.tar.xz"
+sha256 = "b039d69954c941c3e36fb8139418acad9bc19c11018a9eb6cfcabb5a62fddabe"
 strip  = 1
 
 [[dependencies]]

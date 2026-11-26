@@ -25,8 +25,8 @@ recipe_version = 1
 [package]
 name         = "krita"
 organization = "kde"
-version      = "6.0.4"
-release      = 3
+version      = "6.0.5"
+release      = 1
 kind         = "app"
 summary      = "Krita digital painting"
 license      = "GPL-3.0-or-later"
@@ -36,8 +36,8 @@ homepage     = "https://krita.org/"
 min_aos      = "0.4.12"
 
 [[source]]
-url    = "https://download.kde.org/stable/krita/6.0.4.1/krita-6.0.4.1-x86_64.AppImage"
-sha256 = "9ab5a78927c7369f8665df4d85f186fcbae46501968715aac0685776e1399f91"
+url    = "https://download.kde.org/stable/krita/6.0.5/krita-6.0.5-x86_64.AppImage"
+sha256 = "e269c691f1968878f647d8e5f9a9289953a33a7652cc8b972c81867582618cbb"
 
 # The AppImage brings its own toolkit but reads the machine's fonts
 # through /usr/share/fonts, which on AOS is the aos/fonts package.
@@ -67,7 +67,7 @@ terminal   = false
 
 [build]
 prepare = '''
-./krita-6.0.4.1-x86_64.AppImage --appimage-extract >/dev/null
+./krita-6.0.5-x86_64.AppImage --appimage-extract >/dev/null
 rm -f squashfs-root/usr/lib/libsystemd.so*
 '''
 install = '''

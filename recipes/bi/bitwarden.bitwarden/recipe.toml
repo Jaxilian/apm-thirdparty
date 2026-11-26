@@ -11,7 +11,7 @@ recipe_version = 1
 [package]
 name         = "bitwarden"
 organization = "bitwarden"
-version      = "2026.10.4"
+version      = "2026.11.0"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -20,8 +20,8 @@ license      = "GPL-3.0-only"
 homepage     = "https://bitwarden.com/"
 
 [[source]]
-url    = "https://github.com/bitwarden/clients/releases/download/desktop-v2026.10.4/Bitwarden-2026.10.4-amd64.deb"
-sha256 = "a45a34a20a9d5becbb1c710851717583ad578597d10fbd2bd57fe597f7625f41"
+url    = "https://github.com/bitwarden/clients/releases/download/desktop-v2026.11.0/bit-Bitwarden-2026.11.0-amd64.deb"
+sha256 = "e8c95d91a96661ea827fbc0626d76a1ef7825ee54c8f46f23f218d7c1c88c95a"
 
 [[dependencies]]
 name         = "gtk3"

@@ -7,7 +7,7 @@ recipe_version = 1
 [package]
 name         = "mullvad-browser"
 organization = "mullvad"
-version      = "16.0.1"
+version      = "16.0.3"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -16,8 +16,8 @@ license      = "MPL-2.0"
 homepage     = "https://mullvad.net/browser"
 
 [[source]]
-url    = "https://archive.torproject.org/tor-package-archive/mullvadbrowser/16.0.1/mullvad-browser-linux-x86_64-16.0.1.tar.xz"
-sha256 = "c1760c918232a2a20bb91ad2fa23ca1f6639af3a4e91f774cbab0589d6c22446"
+url    = "https://archive.torproject.org/tor-package-archive/mullvadbrowser/16.0.3/mullvad-browser-linux-x86_64-16.0.3.tar.xz"
+sha256 = "73deadb98edae3ca88d6607681bd904e9cba61efd429386970e2ee5749f86bed"
 strip  = 1
 
 [[dependencies]]

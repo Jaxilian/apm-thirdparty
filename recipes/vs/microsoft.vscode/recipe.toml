@@ -14,8 +14,8 @@ recipe_version = 1
 [package]
 name         = "vscode"
 organization = "microsoft"
-version      = "1.146.0"
-release      = 3
+version      = "1.148.0"
+release      = 1
 kind         = "app"
 summary      = "Visual Studio Code"
 license      = "LicenseRef-Microsoft-Software-License-Terms"
@@ -25,8 +25,8 @@ homepage     = "https://code.visualstudio.com/"
 min_aos      = "0.4.75"
 
 [[source]]
-url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/69047191fc427f2f92828279aae1d90d8eeda7ab/code-stable-x64-1794340754.tar.gz"
-sha256 = "cbdb7bde3d358c7297cf1d9d6adc16dfb1d0179501fb2c152df48593e39e3600"
+url    = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/661626d0e72f97806550790a98fb87116c9db825/code-stable-x64-1795525921.tar.gz"
+sha256 = "7acdaf01a1d7a27c55828156ec3fdbe75b8e0809070fecd10de022c4982a0f16"
 strip  = 1
 
 [[dependencies]]

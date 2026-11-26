@@ -23,8 +23,8 @@ recipe_version = 1
 [package]
 name         = "yarn"
 organization = "yarnpkg"
-version      = "4.18.1"
-release      = 2
+version      = "4.19.0"
+release      = 1
 kind         = "bin"
 summary      = "Yarn: package manager for JavaScript projects"
 license      = "BSD-2-Clause"
@@ -32,8 +32,8 @@ homepage     = "https://yarnpkg.com/"
 min_aos      = "0.4.37"
 
 [[source]]
-url    = "https://registry.npmjs.org/@yarnpkg/cli-dist/-/cli-dist-4.18.1.tgz"
-sha256 = "f6729593ad4c17784e3d4ade53b3ed684e3dba3af5adb9bebe21bb854fe0b153"
+url    = "https://registry.npmjs.org/@yarnpkg/cli-dist/-/cli-dist-4.19.0.tgz"
+sha256 = "96a5c3ec72472c44e16042caded154ad4c5cf267ab42ed337a9aa1f501a4f735"
 strip  = 1
 
 [[dependencies]]

@@ -9,8 +9,8 @@ recipe_version = 1
 [package]
 name         = "shotcut"
 organization = "shotcut"
-version      = "26.9.27"
-release      = 2
+version      = "26.11.15"
+release      = 1
 min_aos      = "0.4.76"
 kind         = "app"
 summary      = "Shotcut video editor"
@@ -18,8 +18,8 @@ license      = "GPL-3.0-or-later"
 homepage     = "https://www.shotcut.org/"
 
 [[source]]
-url    = "https://github.com/mltframework/shotcut/releases/download/v26.9.27/shotcut-linux-x86_64-26.9.27.txz"
-sha256 = "849da6bbd24737f9edd07ba185b46982f2fb330981c05e1752809e85bcbb7e7b"
+url    = "https://github.com/mltframework/shotcut/releases/download/v26.11.15/shotcut-linux-x86_64-26.11.15.txz"
+sha256 = "9b92e233b8ce672991908ccf07d0f7c69639dc4a4c1302f6097c288fa303eeb5"
 
 [[dependencies]]
 name         = "fonts"

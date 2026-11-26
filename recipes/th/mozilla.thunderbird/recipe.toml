@@ -18,7 +18,7 @@ recipe_version = 1
 [package]
 name         = "thunderbird"
 organization = "mozilla"
-version      = "160.0.0"
+version      = "161.0.0"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -27,8 +27,8 @@ license      = "MPL-2.0 AND LicenseRef-Mozilla-Trademark"
 homepage     = "https://www.thunderbird.net/"
 
 [[source]]
-url    = "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/160.0/linux-x86_64/en-US/thunderbird-160.0.tar.xz"
-sha256 = "41d15339d61a267328b81090e69417db6b65c05c8ebc7b9b721217102a6914ab"
+url    = "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/161.0/linux-x86_64/en-US/thunderbird-161.0.tar.xz"
+sha256 = "dabba4ad768d14d3d840947ed966377a0978e3c16546fe429ac371ca2ae5c055"
 strip  = 1
 
 [[dependencies]]
