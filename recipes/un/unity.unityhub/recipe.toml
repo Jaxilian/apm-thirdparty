@@ -1,16 +1,13 @@
 # Unity Hub, from Unity's own apt repository: the .deb Unity publishes,
-# unpacked, with one wrapper that runs unityhub-bin (Electron) through
-# the GTK3 runtime on Wayland. The Hub installs the Unity editors itself,
+# unpacked, with one wrapper that runs unityhub (a GPUI program since
+# 4.0, like Zed) on Wayland. The Hub installs the Unity editors itself,
 # into its home (~/AppData/unity.unityhub/Unity/Hub/Editor), and needs a
 # Unity account to do so. Bump from
 # https://hub.unity3d.com/linux/repos/deb/dists/stable/main/binary-amd64/Packages
 # (Filename and SHA256 of the newest unityhub).
 #
-# The .deb's own launcher only adds --no-sandbox where it cannot read
-# kernel.unprivileged_userns_clone, a Debian sysctl AOS's kernel does not
-# have; the wrapper skips it: Chromium's sandbox works through user
-# namespaces here, as for Chrome. The postinst adds an apt source and an
-# AppArmor profile, neither of which applies.
+# The postinst adds an apt source and an AppArmor profile, neither of
+# which applies.
 #
 # Since 3.22.6 its licensing client carries .NET's LTTng trace provider
 # (libcoreclrtraceptprovider.so), which links liblttng-ust, not on AOS:
@@ -23,7 +20,7 @@ recipe_version = 1
 [package]
 name         = "unityhub"
 organization = "unity"
-version      = "3.22.6"
+version      = "4.0.2"
 release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
@@ -32,12 +29,12 @@ license      = "LicenseRef-Unity-Terms-of-Service"
 homepage     = "https://unity.com/"
 
 [[source]]
-url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-3.22.6-amd64.deb"
-sha256 = "f16b3441c6a5062245eef490415102b65d2034c491658f0b54b96cbba081f768"
+url    = "https://hub.unity3d.com/linux/repos/deb/pool/main/u/unity/unityhub_amd64/UnityHubSetup-4.0.2-amd64.deb"
+sha256 = "ce784d80cce5117b387c96310d3322327a54d5e6fc4dba1c1874f179d341082c"
 
 [[dependencies]]
-name         = "gtk3"
-organization = "runtime"
+name         = "fonts"
+organization = "aos"
 track        = "*"
 
 [provides]
@@ -71,8 +68,7 @@ rm -f $D/unityhub/UnityLicensingClient_V1/libcoreclrtraceptprovider.so
 install -m 644 $APM_SRC/usr/share/icons/hicolor/512x512/apps/unityhub.png $D/unityhub/unityhub.png
 cat > $D/bin/unityhub <<WRAP
 #!/bin/sh
-# Unity Hub on the GTK3 runtime, on Wayland.
-exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/unityhub/unityhub-bin --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+exec $APM_PREFIX/unityhub/unityhub "\$@"
 WRAP
 chmod 755 $D/bin/unityhub
 '''

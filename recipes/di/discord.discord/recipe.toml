@@ -17,8 +17,8 @@ recipe_version = 1
 [package]
 name         = "discord"
 organization = "discord"
-version      = "1.0.168"
-release      = 2
+version      = "1.0.171"
+release      = 1
 min_aos      = "0.4.52"
 kind         = "app"
 summary      = "Discord voice and text chat"
@@ -26,8 +26,8 @@ license      = "LicenseRef-Discord-Terms-of-Service"
 homepage     = "https://discord.com/"
 
 [[source]]
-url    = "https://stable.dl2.discordapp.net/distro/app/stable/linux/x64/1.0.168/Discord.tar.gz"
-sha256 = "f25a97173c895a3f64d49261609f9c91309b20c1d4eb7670a2cb4caf808041c0"
+url    = "https://stable.dl2.discordapp.net/distro/app/stable/linux/x64/1.0.171/Discord.tar.gz"
+sha256 = "efc517cf1551d93bdcb6f5c03fec52c2f05eb82805bd0ab2beed671bce56fdc8"
 strip  = 1
 
 [[dependencies]]
@@ -78,9 +78,13 @@ elif ! grep -q SKIP_HOST_UPDATE "\$cfg/discord/settings.json"; then
 fi
 if [ ! -x "\$cfg/discord/Discord" ]; then
 	mkdir -p "\$cfg/discord" || exit 1
-	app_dir=\$($APM_PREFIX/discord/updater_bootstrap --no-zenity "\$cfg/discord" stable https://updates.discord.com/) || {
+	out=\$($APM_PREFIX/discord/updater_bootstrap --no-gui "\$cfg/discord" stable https://updates.discord.com/) || {
 		echo "discord: the bootstrap failed to fetch the application" >&2; exit 2; }
-	exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "\$cfg/discord/\$app_dir/Discord" --ozone-platform=wayland --enable-features=WebRTCPipeWireCapturer "\$@"
+	app_dir=\$(printf '%s\\n' "\$out" | tail -n 1)
+	if [ ! -x "\$cfg/discord/Discord" ] && [ -x "\$cfg/discord/\$app_dir/Discord" ]; then
+		exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "\$cfg/discord/\$app_dir/Discord" --ozone-platform=wayland --enable-features=WebRTCPipeWireCapturer "\$@"
+	fi
+	[ -x "\$cfg/discord/Discord" ] || { echo "discord: the bootstrap left no application in \$cfg/discord" >&2; exit 2; }
 fi
 exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run "\$cfg/discord/Discord" --ozone-platform=wayland --enable-features=WebRTCPipeWireCapturer "\$@"
 WRAP
