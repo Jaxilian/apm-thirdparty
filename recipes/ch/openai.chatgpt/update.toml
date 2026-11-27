@@ -1,0 +1,4 @@
+[[source]]
+kind     = "apt"
+packages = "https://persistent.oaistatic.com/codex-app-prod/linux/deb/dists/stable/main/binary-amd64/Packages"
+package  = "chatgpt"

@@ -1,0 +1,65 @@
+# ChatGPT desktop (with Codex), from OpenAI's own apt repository at
+# https://persistent.oaistatic.com/codex-app-prod/linux/deb, whose
+# dists/stable/InRelease is signed by "Codex Linux Repository"
+# (3BFA0E4A E8B8CC16 A2D9BA68 4A3B4A56 6C4660E4, the key the package's
+# postinst installs); the signature, the Packages file's hash in it and
+# the .deb's sha256 in that were checked on 2026-11-27. The owner's link,
+# .../linux/rpm/latest/chatgpt.x86_64.rpm, is the same release as an rpm,
+# which apm does not unpack. Proprietary: OpenAI's terms; fetched from
+# OpenAI, never mirrored.
+
+recipe_version = 1
+
+[package]
+name         = "chatgpt"
+organization = "openai"
+version      = "26.1120.50957"
+release      = 1
+kind         = "app"
+summary      = "ChatGPT desktop: chat and Codex from OpenAI"
+license      = "LicenseRef-OpenAI-Terms-of-Use"
+homepage     = "https://chatgpt.com/download"
+min_aos      = "0.4.75"
+
+[[source]]
+url    = "https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_26.1120.50957_amd64.deb"
+sha256 = "e8ab38df96d6070fd5d4582a606490637728243bb529e9edae19b3f0a6e664d2"
+
+[[dependencies]]
+name         = "gtk3"
+organization = "runtime"
+track        = "*"
+
+[provides]
+command = ["chatgpt"]
+
+[sandbox]
+home       = "private"
+share      = ["Projects"]
+data       = ["aos/git"]
+tools      = true
+microphone = true
+
+[launcher]
+name       = "ChatGPT"
+comment    = "Chat and Codex from OpenAI"
+exec       = "bin/chatgpt"
+mime       = ["x-scheme-handler/codex"]
+icon       = "chatgpt/chatgpt.png"
+categories = ["Utility", "Development"]
+terminal   = false
+
+[build]
+install = '''
+D=$APM_DESTDIR$APM_PREFIX
+install -d $D/chatgpt $D/bin
+cp -a $APM_SRC/usr/lib/chatgpt/. $D/chatgpt/
+rm -f $D/chatgpt/libqt5_shim.so $D/chatgpt/libqt6_shim.so
+install -m 644 $APM_SRC/usr/share/pixmaps/chatgpt.png $D/chatgpt/chatgpt.png
+install -m 644 $APM_SRC/usr/share/doc/chatgpt/copyright $D/chatgpt/copyright
+cat > $D/bin/chatgpt <<WRAP
+#!/bin/sh
+exec /opt/apm/packages/runtime/gtk3/current/bin/gtk3-run $APM_PREFIX/chatgpt/ChatGPT --ozone-platform=wayland --password-store=gnome-libsecret "\$@"
+WRAP
+chmod 755 $D/bin/chatgpt
+'''
