@@ -20,8 +20,8 @@ recipe_version = 1
 [package]
 name         = "calibre"
 organization = "calibre"
-version      = "9.18.0"
-release      = 2
+version      = "9.19.0"
+release      = 1
 min_aos      = "0.4.76"
 kind         = "app"
 summary      = "calibre e-book library, reader and converter"
@@ -29,8 +29,8 @@ license      = "GPL-3.0-only"
 homepage     = "https://calibre-ebook.com/"
 
 [[source]]
-url    = "https://download.calibre-ebook.com/9.18.0/calibre-9.18.0-x86_64.txz"
-sha256 = "da638166fb3dd204be77cf0f871a40d803536b3e5948969c5233b8e4f1e1dbe6"
+url    = "https://download.calibre-ebook.com/9.19.0/calibre-9.19.0-x86_64.txz"
+sha256 = "35c1cbda1a2548aceeb89cb0a4be47a36025b5dc102ac046f7eaf98ba46a452d"
 
 [[dependencies]]
 name         = "gtk3"
